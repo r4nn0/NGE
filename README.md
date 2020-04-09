@@ -8,7 +8,7 @@ This Engine is based on OpenGL Libraries, some other libraries included i wrote 
 <b>[\~] Mac OS [Soon]</b><br/>
 
 # How To Setup
-<b>PLEASE DONOT IGNORE THIS TUTORIAL TO NOT FACE ANY TROUBLE WHEN COMPILING</b><br/>
+### PLEASE DONOT IGNORE THIS TUTORIAL TO NOT FACE ANY TROUBLE WHEN COMPILING
 In spite of the project is built with Code::Blocks IDE<br/>
 it can be imported to other IDE's but there are some steps<br/>
 that should be done to get it fully working.<br/>
@@ -33,5 +33,5 @@ Macros to be defined are:
 #define FREEGLUT_STATIC
 ```
 <br>
-# How to Use
+## How To Use
 The engine is supposed to be easy to use and understand but regardless i will try to make a manual for it.<br/>
