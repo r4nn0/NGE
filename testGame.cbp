@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="testGame" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Option show_notes="0">
+			<notes>
+				<![CDATA[#testGame Project
+1. Shader Feature (Done)
+2. Math Library from scratch (Done)
+3. Fix Collision System
+4. Fix Object Template (Improve)
+5. Basic gameplay
+6. Write some basic shader
+]]>
+			</notes>
+		</Option>
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/testGame" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/testGame" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-DGLEW_STATIC" />
+			<Add option="-DFREEGLUT_STATIC" />
+			<Add directory="include" />
+			<Add directory="Graphics/SOIL/src" />
+			<Add directory="Graphics/CAIRO/include" />
+		</Compiler>
+		<Linker>
+			<Add library="lib-mingw/libglew32s.lib" />
+			<Add library="freeglut_static" />
+			<Add library="glfw3" />
+			<Add library="soil" />
+			<Add library="cairo" />
+			<Add library="gdi32" />
+			<Add library="winmm" />
+			<Add library="opengl32" />
+			<Add directory="lib-mingw" />
+			<Add directory="Graphics/SOIL/lib" />
+			<Add directory="Graphics/CAIRO/lib/x86" />
+			<Add directory="Graphics/CAIRO/lib/x64" />
+		</Linker>
+		<Unit filename="Assets/Input.cpp" />
+		<Unit filename="Assets/Input.h" />
+		<Unit filename="Assets/Sprites/sonic.png" />
+		<Unit filename="CollisionSystem.h" />
+		<Unit filename="Engine.cpp" />
+		<Unit filename="Engine.h" />
+		<Unit filename="Graphics/Drawing.h" />
+		<Unit filename="Graphics/SOIL/lib/libSOIL.a">
+			<Option link="0" />
+		</Unit>
+		<Unit filename="Graphics/Shaders/shTest.fshader" />
+		<Unit filename="Graphics/Shaders/shTest.vshader" />
+		<Unit filename="Graphics/Sprite.cpp" />
+		<Unit filename="Graphics/Sprite.h" />
+		<Unit filename="Graphics/Texture.cpp" />
+		<Unit filename="Graphics/Texture.h" />
+		<Unit filename="Objects.cpp" />
+		<Unit filename="Objects.h" />
+		<Unit filename="gmath.cpp" />
+		<Unit filename="gmath.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="obj_player.cpp" />
+		<Unit filename="obj_player.h" />
+		<Unit filename="obj_wall.cpp" />
+		<Unit filename="obj_wall.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
