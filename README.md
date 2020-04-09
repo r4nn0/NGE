@@ -26,10 +26,20 @@ make sure to link the following libraries to your compiler<br/>
 Some Macros should be defined before including any libraries<br/>
 they could be defined either before including any library or when compiling<br/>
 The -D flag followed by the macro name is an easier way to define it so you don't worry about where to define it<br/>
-Macros to be defined are<br/>
+Macros to be defined are:<br/>
 
 <h4> &#35define GLEW_STATIC</h4>
 <h4> &#35define FREEGLUT_STATIC</h4>
 
 # How To Use
 The engine is supposed to be easy to use and understand but regardless i will try to make a manual for it.<br/>
+# Features that aren't added yet
+Some features are limited in this engine, one of them is the high resolution vector image drawing
+its not that important for 2D games but it will be added as soon as possible.
+Music and sound effects also can't be imported or played yet, but as mentioned they will be added soon 
+because sound effects add a special taste to games.
+
+# License
+The project is absolutly free to use, any feedback would be greetly appreciated<br>
+support us by subscribing to our youtube channel [System Crashers](https://youtube.com/ITGEEKS)<br>
+you can contact us on [our website](http://syscrashers.com/)
