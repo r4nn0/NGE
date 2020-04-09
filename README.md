@@ -4,8 +4,8 @@ CppgEngine is free open source project built for game developers using C++ <br/>
 This Engine is based on OpenGL Libraries, some other libraries included i wrote them my self with the help of compiler's built-in functions to make things easier <br/>
 # Supported Operating Systems
 <b>[+] Windows</b><br/>
-<b>[-] Linux [Soon]</b><br/>
-<b>[-] Mac OS [Soon]</b><br/>
+<b>[\~] Linux [Soon]</b><br/>
+<b>[\~] Mac OS [Soon]</b><br/>
 
 # How To Setup
 <b>PLEASE DONOT IGNORE THIS TUTORIAL TO NOT FACE ANY TROUBLE WHEN COMPILING</b><br/>
@@ -27,11 +27,11 @@ Some Macros should be defined before including any libraries<br/>
 they could be defined either before including any library or when compiling<br/>
 The -D flag followed by the macro name is an easier way to define it so you don't worry about where to define it<br/>
 Macros to be defined are:
-<br/>
+<br>
 ```
 #define GLEW_STATIC
 #define FREEGLUT_STATIC
 ```
-<br/>
+<br>
 # How to Use
 The engine is supposed to be easy to use and understand but regardless i will try to make a manual for it.<br/>
