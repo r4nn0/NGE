@@ -28,8 +28,8 @@ they could be defined either before including any library or when compiling<br/>
 The -D flag followed by the macro name is an easier way to define it so you don't worry about where to define it<br/>
 Macros to be defined are<br/>
 `````
-#define GLEW_STATIC
-#define FREEGLUT_STATIC
+&#35define GLEW_STATIC
+&#35define FREEGLUT_STATIC
 `````
-## How To Use
+# How To Use
 The engine is supposed to be easy to use and understand but regardless i will try to make a manual for it.<br/>
