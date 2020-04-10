@@ -61,9 +61,9 @@ double gmath::atan(double x){
 
 double gmath::pow(double base, double exp){
     double res=base;
-    int i;
+    int i=0;
     if(exp>0){i=1;while(i<exp){res*=base;i++;}}
-    else{i=0;while(i>=exp){res/=base;i--;}}
+    else{while(i>=exp){res/=base;i--;}}
     return res;
 }
 double gmath::sqrt(double n){
@@ -74,6 +74,9 @@ double gmath::sqrt(double n){
         sqt=(n/temp+temp)/2;
     }
     return sqt;
+}
+double gmath::sqr(double n){
+    return n*n;
 }
 
 double gmath::ceil(double n){

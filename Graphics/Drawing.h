@@ -5,7 +5,9 @@
 
 namespace Drawing
 {
-    void draw_set_color(GLfloat color[3]){glColor3fv(color);}
+    void draw_set_color(GLfloat color[3]){
+        glColor3fv(color);
+    }
     void draw_set_alpha(GLfloat alpha){
         GLfloat clr[4];
         glGetFloatv(GL_CURRENT_COLOR,clr);
@@ -61,9 +63,14 @@ namespace Drawing
     void draw_text(int x, int y, auto text){
         glLoadIdentity();
         glRasterPos2i(x, y);
-        for(const char* c=std::to_string(text).c_str(); *c != 0; c++){
+        std::stringstream ss;
+        ss<<text;
+        for(const char* c=ss.str().c_str(); *c != 0; c++){
             glutBitmapCharacter((void*)(0x8) , *c);
         }
+    }
+    void print(auto str){
+        std::cout << str;
     }
 };
 

@@ -37,6 +37,7 @@ namespace gmath{
 
     double pow(double, double);
     double sqrt(double);
+    double sqr(double);
 
     double ceil(double);
     double floor(double);
