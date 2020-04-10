@@ -340,10 +340,10 @@
 	<GL/glu.h>
 	<stdlib.h>
 
-1586521437 source:c:\users\hamkan1\desktop\github repositories\cppgengine\gmath.cpp
+1586521977 source:c:\users\hamkan1\desktop\github repositories\cppgengine\gmath.cpp
 	"gmath.h"
 
-1586521450 c:\users\hamkan1\desktop\github repositories\cppgengine\gmath.h
+1586521977 c:\users\hamkan1\desktop\github repositories\cppgengine\gmath.h
 	<unistd.h>
 	<chrono>
 
@@ -382,7 +382,7 @@
 1586459092 source:c:\users\hamkan1\desktop\github repositories\cppgengine\objects.cpp
 	"Objects.h"
 
-1586521523 source:c:\users\hamkan1\desktop\github repositories\cppgengine\main.cpp
+1586524016 source:c:\users\hamkan1\desktop\github repositories\cppgengine\main.cpp
 	"Engine.h"
 	"Graphics/Sprite.h"
 	"obj_player.h"
@@ -396,7 +396,7 @@
 	"Objects.h"
 	<vector>
 
-1586521607 c:\users\hamkan1\desktop\github repositories\cppgengine\graphics\drawing.h
+1586521977 c:\users\hamkan1\desktop\github repositories\cppgengine\graphics\drawing.h
 	"../gmath.h"
 	"../Engine.h"
 

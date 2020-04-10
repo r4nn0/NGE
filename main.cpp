@@ -8,7 +8,7 @@
 
 int main(){
     Engine engine;
-    engine.init("testGame", 800,600);
+    engine.init("NGE", 800,600);
     obj_player testPlayer("Assets/Sprites/sonic.png",1,1,engine.view_xport/2,engine.view_yport/2);
     testPlayer.sprite_xoffset=16;
     testPlayer.sprite_yoffset=16;
@@ -37,6 +37,7 @@ int main(){
         testPlayer.DrawEvent();
         Drawing::draw_circle(testPlayer.x,testPlayer.y,16,true);
         testWall.DrawEvent();
+
 
         Drawing::draw_line(testPlayer.bbox_left,testPlayer.bbox_up,testPlayer.bbox_right,testPlayer.bbox_down);
         Drawing::draw_line(100,100,200,100);
