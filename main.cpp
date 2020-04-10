@@ -28,7 +28,7 @@ int main(){
         engine.StepEvent();
         testPlayer.StepEvent();
         testWall.StepEvent();
-        //cout << CollisionSystem::collision_line_line(testPlayer.bbox_left,testPlayer.bbox_up,testPlayer.bbox_right,testPlayer.bbox_down,100,100,200,100)<<endl;
+        //std::cout << CollisionSystem::collision_line_line(testPlayer.bbox_left,testPlayer.bbox_up,testPlayer.bbox_right,testPlayer.bbox_down,100,100,200,100)<<std::endl;
 
         //engine.view_xview=testPlayer.x-engine.view_xport/2;
         //engine.view_yview=testPlayer.y-engine.view_yport/2;
