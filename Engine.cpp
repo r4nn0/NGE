@@ -1,13 +1,14 @@
 #include "Engine.h"
 GLFWwindow* Engine::window = NULL;
-int Engine::SCREEN_WIDTH=800;
-int Engine::SCREEN_HEIGHT=600;
+int Engine::SCREEN_WIDTH=1360;
+int Engine::SCREEN_HEIGHT=765;
 int Engine::view_xport=0;
 int Engine::view_yport=0;
 int Engine::view_width=SCREEN_WIDTH;
 int Engine::view_height=SCREEN_HEIGHT;
 int Engine::view_xview=0;
 int Engine::view_yview=0;
+ngetype::Color Engine::background_color(100,100,100);
 Engine::Engine(){
 
 }
@@ -71,7 +72,8 @@ void Engine::StepEvent(){
     glMatrixMode(GL_MODELVIEW);
 }
 void Engine::BeginDraw(){
-    glClearColor(.75,.75,.75,1);
+    glClearColor(Engine::background_color.r,Engine::background_color.g,Engine::background_color.b,1);
+    //glClearColor(.4f,.4f,.4f,1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 }

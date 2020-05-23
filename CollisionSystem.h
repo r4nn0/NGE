@@ -33,7 +33,7 @@ namespace CollisionSystem
         bool right =  collision_line_line(x1,y1,x2,y2, bbox_right,bbox_up, bbox_right,bbox_down);
         bool top =    collision_line_line(x1,y1,x2,y2, bbox_left,bbox_up, bbox_right,bbox_up);
         bool bottom = collision_line_line(x1,y1,x2,y2, bbox_left,bbox_down, bbox_right,bbox_down);
-        cout << obj.bbox_left << " " << right << " " << top << " " << bottom << " " << endl;
+        std::cout << obj.bbox_left << " " << right << " " << top << " " << bottom << " " << std::endl;
         if (left || right || top || bottom) {
             return obj;
         }

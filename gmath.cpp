@@ -58,7 +58,9 @@ double gmath::acos(double x){
 double gmath::atan(double x){
     return __builtin_atan(x)*180/GM_PI;
 }
-
+double gmath::atan2(double x, double y){
+    return __builtin_atan2l(x,y);
+}
 double gmath::pow(double base, double exp){
     double res=base;
     int i=0;
@@ -106,4 +108,19 @@ double gmath::round(double n){
     temp%=10;
     if(temp<=-5) return floor(n/10)-1;
     return floor(n/10);
+}
+double gmath::radtodeg(double radian){
+    return radian*180/GM_PI;
+}
+double gmath::point_direction(double x1, double y1, double x2, double y2){
+    return 180-gmath::radtodeg(gmath::atan2(y1-y2,x1-x2));
+}
+double gmath::point_distance(double x1, double y1, double x2, double y2){
+    return sqrt(gmath::abs(y2-y1)*gmath::abs(y2-y1)+gmath::abs(x2-x1)*gmath::abs(x2-x1));
+}
+double gmath::lengthdir_x(double dist, double angle){
+    return dist*gmath::dcos(angle);
+}
+double gmath::lengthdir_y(double dist, double angle){
+    return dist * -gmath::dsin(angle);
 }

@@ -6,13 +6,13 @@ Texture::Texture(){
 Texture::Texture(int _id){
 	sprite_index = _id;
 	if (!GetTextureParams()){
-		cout << "Error Loading Image With ID: " << sprite_index << endl;
+		std::cout << "Error Loading Image With ID: " << sprite_index << std::endl;
 	}
 }
 Texture::Texture(std::string path){
 	sprite_index = SOIL_load_OGL_texture(path.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MULTIPLY_ALPHA);
 	if (!GetTextureParams()){
-		cout << "Error Loading Image: "<< path << endl;
+		std::cout << "Error Loading Image: "<< path << std::endl;
 	}
 
 }

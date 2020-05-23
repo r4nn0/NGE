@@ -25,6 +25,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="include" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -34,6 +35,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -75,17 +77,21 @@
 		<Unit filename="Graphics/SOIL/lib/libSOIL.a">
 			<Option link="0" />
 		</Unit>
-		<Unit filename="Graphics/Shaders/shTest.fshader" />
-		<Unit filename="Graphics/Shaders/shTest.vshader" />
+		<Unit filename="Graphics/Shaders/shader.fs" />
+		<Unit filename="Graphics/Shaders/shader.vs" />
 		<Unit filename="Graphics/Sprite.cpp" />
 		<Unit filename="Graphics/Sprite.h" />
 		<Unit filename="Graphics/Texture.cpp" />
 		<Unit filename="Graphics/Texture.h" />
 		<Unit filename="Objects.cpp" />
 		<Unit filename="Objects.h" />
+		<Unit filename="bitwise.cpp" />
+		<Unit filename="bitwise.h" />
 		<Unit filename="gmath.cpp" />
 		<Unit filename="gmath.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="ngetype.cpp" />
+		<Unit filename="ngetype.h" />
 		<Unit filename="obj_player.cpp" />
 		<Unit filename="obj_player.h" />
 		<Unit filename="obj_wall.cpp" />

@@ -24,6 +24,7 @@ namespace gmath{
     int sign(double);
     int factorial( int);
     int irandom(int);
+    float frandom(float);
 
     double abs(double);
 
@@ -34,6 +35,7 @@ namespace gmath{
     double asin(double);
     double acos(double);
     double atan(double);
+    double atan2(double, double);
 
     double pow(double, double);
     double sqrt(double);
@@ -42,6 +44,13 @@ namespace gmath{
     double ceil(double);
     double floor(double);
     double round(double);
+
+    double radtodeg(double);
+    double point_direction(double, double, double, double);
+    double point_distance(double, double, double, double);
+    double lengthdir_x(double, double);
+    double lengthdir_y(double, double);
+
 }
 
 #endif // GMATH_H_INCLUDED

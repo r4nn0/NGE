@@ -6,7 +6,6 @@
 #include "GLFW/glfw3.h"
 #include "SOIL/src/SOIL.h"
 
-using namespace std;
 class Texture{
 public:
 	Texture();

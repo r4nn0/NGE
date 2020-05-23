@@ -1,5 +1,7 @@
-#ifndef DRAWING_H_INCLUDED
-#define DRAWING_H_INCLUDED
+#ifndef GAME_DRAWING
+#define GAME_DRAWING
+
+
 #include "../gmath.h"
 #include "../Engine.h"
 
@@ -72,7 +74,17 @@ namespace Drawing
     void print(auto str){
         std::cout << str;
     }
+    void draw_set_color(ngetype::Color c){
+        GLfloat color[3];
+        color[0]=c.r;
+        color[1]=c.g;
+        color[2]=c.b;
+        glColor3fv(color);
+    }
+    void draw_set_blend_mode(GLenum src, GLenum dest){
+        glBlendFunc(src, dest);
+    }
 };
 
 
-#endif // DRAWING_H_INCLUDED
+#endif // GAME_DRAWING
