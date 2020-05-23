@@ -8,7 +8,7 @@ This Engine is based on OpenGL Libraries, some other libraries included i wrote 
 <b>[\~] Mac OS [Soon]</b><br/>
 
 # How To Setup
-### PLEASE DONOT IGNORE THIS TUTORIAL TO NOT FACE ANY TROUBLE WHEN COMPILING
+### PLEASE DO NOT IGNORE THIS TUTORIAL TO NOT FACE ANY TROUBLE WHEN COMPILING
 In spite of the project being built with Code::Blocks IDE<br/>
 it can be imported to other IDE's but there are some steps<br/>
 that should be done to get it fully working.<br/>
