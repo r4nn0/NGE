@@ -9,7 +9,7 @@
 #include "ngetype.h"
 
 int main(){
-    ngetype::Color BACKGROUND_COLOR(150,0,0);
+    ngetype::Color BACKGROUND_COLOR(50,50,50);
     Engine engine;
     engine.init("NGE", 1360,765);
     obj_player testPlayer("Assets/Sprites/sonic.png",1,1,engine.view_xport/2,engine.view_yport/2);
@@ -18,6 +18,10 @@ int main(){
     obj_wall testWall("Assets/Sprites/sprWall.png",1,1,engine.view_xport/2-30,engine.view_yport/2+30);
     testWall.sprite_index.xscale=3;
 
+    ngetype::string test("abc");
+    ngetype::string test2(test);
+    test+="def";
+    std::cout << test+test2;
 
     const char* vshader=engine.LoadShaderFromFile("Graphics/Shaders/shader.vs").c_str();
     const char* fshader=engine.LoadShaderFromFile("Graphics/Shaders/shader.fs").c_str();

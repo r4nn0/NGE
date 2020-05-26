@@ -8,12 +8,9 @@
 		<Option show_notes="0">
 			<notes>
 				<![CDATA[#NGE Project
-1. Shader Feature (Done)
-2. Math Library from scratch (Done)
 3. Fix Collision System
 4. Fix Object Template (Improve)
-5. Basic gameplay
-6. Write some basic shader
+Fix Warnings
 ]]>
 			</notes>
 		</Option>

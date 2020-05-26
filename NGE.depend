@@ -89,7 +89,7 @@
 1589882100 source:c:\users\hamkan1\desktop\github repositories\cppgengine\graphics\texture.cpp
 	"Texture.h"
 
-1590191878 source:c:\users\hamkan1\desktop\github repositories\cppgengine\main.cpp
+1590499913 source:c:\users\hamkan1\desktop\github repositories\cppgengine\main.cpp
 	"Engine.h"
 	"Graphics/Sprite.h"
 	"obj_player.h"
@@ -140,8 +140,11 @@
 
 1589878648 source:c:\users\hamkan1\desktop\github repositories\cppgengine\graphics\drawing.cpp
 
-1590054304 c:\users\hamkan1\desktop\github repositories\cppgengine\ngetype.h
+1590500261 c:\users\hamkan1\desktop\github repositories\cppgengine\ngetype.h
+	<string.h>
+	<ostream>
+	<iostream>
 
-1590054243 source:c:\users\hamkan1\desktop\github repositories\cppgengine\ngetype.cpp
+1590499725 source:c:\users\hamkan1\desktop\github repositories\cppgengine\ngetype.cpp
 	"ngetype.h"
 
