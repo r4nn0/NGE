@@ -32,9 +32,10 @@ ngetype::Pixel::Pixel(float x, float y) : x(x), y(y){}
 /// //////////////////////////////////////////////// ///
 ////////////////////////////////////////////////////////
 ngetype::string::string(){}
-ngetype::string::string(char *ca){
+ngetype::string::string(const char* ca){
     strcpy(str,ca);
 }
+/// Addition Assignment Operator
 ngetype::string& ngetype::string::operator+=(const ngetype::string& str2){
     strcat(this->str, str2.str);
     return *this;
@@ -43,6 +44,7 @@ ngetype::string& ngetype::string::operator+=(const char* str2){
     strcat(this->str,str2);
     return *this;
 }
+/// Addition Operator
 ngetype::string& ngetype::string::operator+(const ngetype::string& str2){
     strcat(this->str,str2.str);
     return *this;
@@ -51,9 +53,20 @@ ngetype::string& ngetype::string::operator+(const char* str2){
     strcat(this->str,str2);
     return *this;
 }
+/// Assignment Operator
+ngetype::string& ngetype::string::operator=(const ngetype::string& str2){
+    strcpy(this->str,str2.str);
+    return *this;
+}
+ngetype::string& ngetype::string::operator=(const char* str2){
+    strcpy(this->str,str2);
+    return *this;
+}
+/// Subscript Operator
 char ngetype::string::operator[](const int index){
     return str[index];
 }
+/// Get String Length
 int ngetype::string::length(){
     return ngetype::strlen(*this);
 }
