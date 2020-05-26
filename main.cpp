@@ -18,10 +18,9 @@ int main(){
     obj_wall testWall("Assets/Sprites/sprWall.png",1,1,engine.view_xport/2-30,engine.view_yport/2+30);
     testWall.sprite_index.xscale=3;
 
-    ngetype::string test("abc");
+    ngetype::string test("asdasde");
     ngetype::string test2(test);
-    test+="def";
-    std::cout << test+test2;
+    std::cout << test.length();
 
     const char* vshader=engine.LoadShaderFromFile("Graphics/Shaders/shader.vs").c_str();
     const char* fshader=engine.LoadShaderFromFile("Graphics/Shaders/shader.fs").c_str();
@@ -45,7 +44,6 @@ int main(){
         glUseProgram(shader);
         testPlayer.DrawEvent();
         glUseProgram(0);
-
         testWall.DrawEvent();
         engine.EndDraw();
     }
