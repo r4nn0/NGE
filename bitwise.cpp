@@ -1,4 +1,5 @@
 #include "bitwise.h"
+/// Convert From base 10 to base 16, returns string
 const char* bitwise::dec_to_hex(int dec){
     std::string hex,temp;
     char hi,lo;
@@ -20,7 +21,7 @@ const char* bitwise::dec_to_hex(int dec){
     }
     return hex.c_str();
 }
-
+/// Convert From base 16 to base 10, takes string
 int bitwise::hex_to_dec(const char* hex){
     int base = 1;
     int dec = 0;
@@ -36,10 +37,7 @@ int bitwise::hex_to_dec(const char* hex){
     }
     return dec;
 }
-/*
-
-
-*/
+/// Inverts Bits in a number
 int bitwise::NOT(int x){
     int i=2;
     while(i<x)i*=2;

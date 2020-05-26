@@ -1,4 +1,5 @@
 #include "Sprite.h"
+/// Constructors
 Sprite::Sprite(){
 	xPos = 0;
 	yPos = 0;
@@ -37,7 +38,7 @@ Sprite::Sprite(std::string _imagePath, float _xPos, float _yPos,float _xScale, f
 
 void Sprite::Update(){
 }
-
+/// Renders Sprite to the screen
 void Sprite::Render(){
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture.sprite_get_index());
@@ -61,20 +62,28 @@ void Sprite::Render(){
 	glDisable(GL_TEXTURE_2D);
 
 }
-Texture Sprite::getTexture(){ return texture;}
+/// Get Sprite Texture ID
+Texture Sprite::getTexture(){
+    return texture;
+}
+/// Get Sprite Width
 int Sprite::sprite_get_width(){
     return texture.sprite_get_width();
 }
+/// Get Sprite Height
 int Sprite::sprite_get_height(){
     return texture.sprite_get_height();
 }
+/// Draws Sprite at position (x, y)
 void Sprite::sprite_set_pos(float _xPos, float _yPos){
     xPos = _xPos;
     yPos = _yPos;
 }
+/// Get x position of a sprite
 int Sprite::sprite_get_x(){
     return xPos;
 }
+/// Get y position of a sprite
 int Sprite::sprite_get_y(){
     return yPos;
 }

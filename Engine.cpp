@@ -15,6 +15,7 @@ Engine::Engine(){
 Engine::~Engine(){
 
 }
+/// Initializes Rendering Engine
 bool Engine::init(const char* window_title, int _view_xport, int _view_yport){
     int argc = 1;
     char *argv[1] = {(char*)""};
@@ -63,7 +64,7 @@ bool Engine::init(const char* window_title, int _view_xport, int _view_yport){
 
     return true;
 }
-
+/// Updates Events and Camera every frame
 void Engine::StepEvent(){
     glfwPollEvents();
     glMatrixMode(GL_PROJECTION);
@@ -71,15 +72,18 @@ void Engine::StepEvent(){
     glOrtho(view_xview,view_width+view_xview,view_height+view_yview,view_yview,-10,10);
     glMatrixMode(GL_MODELVIEW);
 }
+/// Initializes Drawing Frame Every Frame
 void Engine::BeginDraw(){
     glClearColor(Engine::background_color.r,Engine::background_color.g,Engine::background_color.b,1);
     //glClearColor(.4f,.4f,.4f,1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 }
+/// Swaps Rendered Frames with current Frames
 void Engine::EndDraw(){
     glfwSwapBuffers(window);
 }
+/// Returns Current Running window
 GLFWwindow* Engine::get_window(){
     return window;
 }
