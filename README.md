@@ -36,10 +36,9 @@ The engine is supposed to be easy to use and understand but regardless i will tr
 # Features that aren't added yet
 Some features are limited in this engine, one of them is the high resolution vector image drawing
 its not that important for 2D games but it will be added as soon as possible.
-Music and sound effects also can't be imported or played yet, but as mentioned they will be added soon 
-because sound effects add a special taste to games.
+Music and sound effects also can't be imported or played yet, but as mentioned they will be added soon or you could add your own libraries manually.
 
 # License
-The project is absolutly free to use, any feedback would be greetly appreciated<br>
-support us by subscribing to our youtube channel [System Crashers](https://youtube.com/ITGEEKS)<br>
+The project is absolutly free to use, any feedback would be greetly appreciated<br/>
+support us by subscribing to our youtube channel [System Crashers](https://youtube.com/ITGEEKS)<br/>
 you can contact us on [our website](http://syscrashers.com/)
