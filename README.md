@@ -23,7 +23,7 @@ make sure to link the following libraries to your compiler<br/>
   <li><b>winmm</b></li>
   <li><b>opengl32</b></li>
 </ul><br/>
-Some Macros should be defined before including any libraries<br/>
+Some Macros should be defined when static libraries are linked<br/>
 they could be defined either before including any library or when compiling<br/>
 The -D flag followed by the macro name is an easier way to define it so you don't worry about where to define it<br/>
 Macros to be defined are:<br/>
