@@ -1,6 +1,6 @@
 # NGE (Newbies Game Engine)
 Indiemade C++ Engine<br/>
-CppgEngine is free open source project built for game developers using C++ <br/>
+NGE is free open source project built for game developers using C++ <br/>
 This Engine is based on OpenGL Libraries, some other libraries included i wrote them my self with the help of compiler's built-in functions to make things easier <br/>
 # Supported Operating Systems
 <b>[+] Windows</b><br/>
