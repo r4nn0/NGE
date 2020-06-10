@@ -8,12 +8,12 @@
 		<Option show_notes="0">
 			<notes>
 				<![CDATA[#NGE Project
-Add new text drawing library
 
+
+Add new text drawing library
 Fix Collision System
 Fix Object Template (Improve)
-Fix Warnings
-]]>
+Let the user be able to create surfaces to draw on]]>
 			</notes>
 		</Option>
 		<Build>
@@ -57,7 +57,7 @@ Fix Warnings
 			<Add library="lib-mingw/libfreeglut_static.a" />
 			<Add library="lib-mingw/libglfw3dll.a" />
 			<Add library="Graphics/SOIL/lib/libSOIL.a" />
-			<Add library="Graphics/CAIRO/lib/x86/libcairo.lib" />
+			<Add library="lib-mingw/freetype.lib" />
 			<Add library="gdi32" />
 			<Add library="winmm" />
 			<Add library="opengl32" />

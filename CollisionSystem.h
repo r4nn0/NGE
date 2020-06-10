@@ -1,5 +1,6 @@
 #ifndef COLLISIONSYSTEM_H
 #define COLLISIONSYSTEM_H
+
 #include "gmath.h"
 #include "Objects.h"
 #include <vector>

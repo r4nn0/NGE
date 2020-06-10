@@ -70,7 +70,7 @@ double gmath::pow(double base, double exp){
 }
 double gmath::sqrt(double n){
     double temp=0,sqt=n/2;
-    if(n<0) return NAN;
+    if(n<0) return GM_NAN;
     while(sqt!=temp){
         temp=sqt;
         sqt=(n/temp+temp)/2;

@@ -69,6 +69,7 @@ void Engine::StepEvent(){
     glfwPollEvents();
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
+
     glOrtho(view_xview,view_width+view_xview,view_height+view_yview,view_yview,-10,10);
     glMatrixMode(GL_MODELVIEW);
 }
