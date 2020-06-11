@@ -53,7 +53,7 @@ Let the user be able to create surfaces to draw on]]>
 			<Add option="-m32" />
 			<Add library="lib-mingw/libglew32s.lib" />
 			<Add library="lib-mingw/libfreeglut_static.a" />
-			<Add library="lib-mingw/libglfw3dll.a" />
+			<Add library="lib-mingw/libglfw3.a" />
 			<Add library="Graphics/SOIL/lib/libSOIL.a" />
 			<Add library="lib-mingw/freetype.lib" />
 			<Add library="gdi32" />
