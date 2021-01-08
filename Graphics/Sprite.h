@@ -26,7 +26,6 @@ private:
 	Texture texture;
 	float xPos;
 	float yPos;
-
 };
 
 #endif

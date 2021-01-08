@@ -19,9 +19,9 @@ namespace Input{
     extern bool keyboard_check_pressed(int _vk);
     extern bool keyboard_check(int _vk);
     extern bool keyboard_check_released(int _vk);
+    extern int keyboard_get_pressed();
     extern bool key_pressed[];
     extern bool key_held[];
     extern bool key_released[];
 }
-
 #endif

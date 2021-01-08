@@ -19,9 +19,7 @@ int gmath::factorial(int n){
 }
 
 double gmath::abs(double Value){
-    if (Value<0)
-        return Value*-1;
-    return Value;
+    return (Value<0) ? Value*-1: Value;
 }
 
 double gmath::dsin(double angle){
@@ -58,22 +56,27 @@ double gmath::acos(double x){
 double gmath::atan(double x){
     return __builtin_atan(x)*180/GM_PI;
 }
-
+double gmath::atan2(double x, double y){
+    return __builtin_atan2l(x,y);
+}
 double gmath::pow(double base, double exp){
     double res=base;
-    int i;
+    int i=0;
     if(exp>0){i=1;while(i<exp){res*=base;i++;}}
-    else{i=0;while(i>=exp){res/=base;i--;}}
+    else{while(i>=exp){res/=base;i--;}}
     return res;
 }
 double gmath::sqrt(double n){
     double temp=0,sqt=n/2;
-    if(n<0) return NAN;
+    if(n<0) return GM_NAN;
     while(sqt!=temp){
         temp=sqt;
         sqt=(n/temp+temp)/2;
     }
     return sqt;
+}
+double gmath::sqr(double n){
+    return n*n;
 }
 
 double gmath::ceil(double n){
@@ -103,4 +106,19 @@ double gmath::round(double n){
     temp%=10;
     if(temp<=-5) return floor(n/10)-1;
     return floor(n/10);
+}
+double gmath::radtodeg(double radian){
+    return radian*180/GM_PI;
+}
+double gmath::point_direction(double x1, double y1, double x2, double y2){
+    return 180-gmath::radtodeg(gmath::atan2(y1-y2,x1-x2));
+}
+double gmath::point_distance(double x1, double y1, double x2, double y2){
+    return sqrt(gmath::abs(y2-y1)*gmath::abs(y2-y1)+gmath::abs(x2-x1)*gmath::abs(x2-x1));
+}
+double gmath::lengthdir_x(double dist, double angle){
+    return dist*gmath::dcos(angle);
+}
+double gmath::lengthdir_y(double dist, double angle){
+    return dist * -gmath::dsin(angle);
 }

@@ -1,20 +1,15 @@
 #include "Objects.h"
-int Objects::instance_id=100000;
-Objects::Objects(){id=instance_id;instance_id++;}
-Objects::Objects(float _x,float _y){x=_x;y=_y;id=instance_id;instance_id++;}
-std::ostream &operator << (std::ostream &out, Objects &obj){out<<obj.get_id();return out;}
+Objects::Objects(){}
+Objects::Objects(float _x,float _y){x=_x;y=_y;}
 Objects::Objects(std::string _imagePath,float _xScale, float _yScale,float _x,float _y){
         x=_x;
         y=_y;
-        id=instance_id;instance_id++;
         sprite_index=Sprite(_imagePath);
         sprite_index.xscale=_xScale;
         sprite_index.yscale=_yScale;
-
 }
 Objects::~Objects(){
     if(!Destroyed){
-        instance_id--;
         Destroyed=true;
     }
 }
@@ -38,10 +33,4 @@ void Objects::DestroyEvent(){
 }
 bool Objects::isDestroyed(){
     return Destroyed;
-}
-int Objects::get_id(){
-    if(!Destroyed){
-        return id;
-    }
-    else return -1;
 }

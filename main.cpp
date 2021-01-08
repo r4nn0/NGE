@@ -5,51 +5,39 @@
 #include "CollisionSystem.h"
 #include "Graphics/Drawing.h"
 #include "gmath.h"
-using namespace Drawing;
-using namespace CollisionSystem;
+#include "bitwise.h"
+#include "ngetype.h"
+
+int main (){
+    ngetype::Color BACKGROUND_COLOR(100,100,100);
+    Engine *gameEngine = new Engine;
+
+    gameEngine->init("NGE", 640,480);
 
 
+    //Drawing::Font fnt;
+    //fnt.init("C:\\WINDOWS\\FONTS\\ARIAL.TTF",71);
 
-int main(){
 
-    Engine engine;
-    engine.init("testGame", 800,600);
-    obj_player testPlayer("Assets/Sprites/sonic.png",1,1,engine.view_xport/2,engine.view_yport/2);
-    testPlayer.sprite_xoffset=16;
-    testPlayer.sprite_yoffset=16;
-    obj_wall testWall("Assets/Sprites/sprWall.png",1,1,engine.view_xport/2-30,engine.view_yport/2+30);
-    testWall.sprite_index.xscale=3;
+//
+//    const char* vshader=gameEngine.LoadShaderFromFile("Graphics/Shaders/shader.vs").c_str();
+//    const char* fshader=gameEngine.LoadShaderFromFile("Graphics/Shaders/shader.fs").c_str();
+//
+//    unsigned int shader=gameEngine.CreateShader(vshader,fshader);
 
-/*
-    const char* vshader=engine.LoadShaderFromFile("Graphics/Shaders/shTest.vshader").c_str();
-    const char* fshader=engine.LoadShaderFromFile("Graphics/Shaders/shTest.fshader").c_str();
+    while(!glfwWindowShouldClose(gameEngine->get_window())){
 
-    unsigned int shader=engine.CreateShader(vshader,fshader);
-*/
-    obj_wall cop=collision_circle(testPlayer.x,testPlayer.y,16,testWall);
-    while(!glfwWindowShouldClose(engine.get_window())){
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
             break;
-        engine.StepEvent();
-        testPlayer.StepEvent();
-        testWall.StepEvent();
-        //cout << collision_line_line(testPlayer.bbox_left,testPlayer.bbox_up,testPlayer.bbox_right,testPlayer.bbox_down,100,100,200,100)<<endl;
+        gameEngine->background_color=BACKGROUND_COLOR;
+        gameEngine->StepEvent();
 
-        //engine.view_xview=testPlayer.x-engine.view_xport/2;
-        //engine.view_yview=testPlayer.y-engine.view_yport/2;
-
-        engine.BeginDraw();
-        testPlayer.DrawEvent();
-        draw_circle(testPlayer.x,testPlayer.y,16,true);
-        testWall.DrawEvent();
-
-        draw_line(testPlayer.bbox_left,testPlayer.bbox_up,testPlayer.bbox_right,testPlayer.bbox_down);
-
-        draw_line(100,100,200,100);
-        engine.EndDraw();
+        gameEngine->BeginDraw();
+        //Render Stuff
+        gameEngine->EndDraw();
     }
-
-//  glDeleteProgram(shader);
+    //fnt.clean();
+    //glDeleteProgram(shader);
     glfwTerminate();
     return 0;
 }

@@ -2,6 +2,7 @@
 namespace Input{
     double mouse_x=0;
     double mouse_y=0;
+    int key_pressed_code=0;
     bool button[GLFW_MOUSE_BUTTON_LAST]={ 0 };
     bool button_pressed[GLFW_MOUSE_BUTTON_LAST]={ 0 };
     bool button_released[GLFW_MOUSE_BUTTON_LAST]={ 0 };
@@ -58,6 +59,7 @@ namespace Input{
             key_released[key]=true;
         }
         key_held[key] = action!=GLFW_RELEASE;
+        key_pressed_code=key;
     }
     bool keyboard_check_pressed(int _vk){
         bool x=key_pressed[_vk];
@@ -73,5 +75,8 @@ namespace Input{
         bool x=key_released[_vk];
         key_released[_vk]=false;
         return x;
+    }
+    int keyboard_get_pressed(){
+        return key_pressed_code;
     }
 }
