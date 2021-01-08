@@ -2,7 +2,7 @@
 #define GAME_TEXTURE
 
 #include <iostream>
-
+#include "../Engine.h"
 #include "GLFW/glfw3.h"
 #include "SOIL/src/SOIL.h"
 
@@ -12,13 +12,13 @@ public:
 	Texture(int _id);
 	Texture(std::string path);
 	~Texture();
-	int sprite_get_index();
-	int sprite_get_width();
-	int sprite_get_height();
+	int TextureGetID();
+	int TextureGetWidth();
+	int TextureGetHeight();
 private:
 	bool GetTextureParams();
-	int sprite_index;
-	int sprite_width;
-	int sprite_height;
+	int TextureID;
+	int TextureWidth;
+	int TextureHeight;
 };
 #endif

@@ -24,8 +24,6 @@ public:
     static int SCREEN_WIDTH;
     static int SCREEN_HEIGHT;
 
-    Engine();
-    ~Engine();
     bool init(const char* window_title, int _view_xport, int _view_yport);
 
     void StepEvent();

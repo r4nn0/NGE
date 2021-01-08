@@ -1,10 +1,11 @@
-#version 330 core
+#version 440 compatibility
 
+uniform sampler2D tex;
+in vec2 fragTexCoord;
 out vec4 FragColor;
-in vec4 vertexColor;
+vec4 base_col;
 
-
-void main(){
-
-	FragColor=vertexColor;
+void main() {
+    vec4 base_col = texture(tex, fragTexCoord);
+    FragColor= base_col;
 }

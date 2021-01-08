@@ -1,10 +1,10 @@
-#version 330 core
-in vec2 aPos;
+#version 440 compatibility
 
-out vec4 vertexColor; // specify a color output to the fragment shader
+layout(location=0)in vec4 coord;
+layout(location=1)in vec2 vertTexCoord;
+out vec2 fragTexCoord;
 
-void main()
-{
-    gl_Position = vec4(aPos,0.0, 1.0);
-    vertexColor = vec4(0.0, 1.0, 0.0, 1.0);
+void main() {
+    fragTexCoord=vertTexCoord;
+    gl_Position = coord;
 }

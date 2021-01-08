@@ -19,9 +19,7 @@ int gmath::factorial(int n){
 }
 
 double gmath::abs(double Value){
-    if (Value<0)
-        return Value*-1;
-    return Value;
+    return (Value<0) ? Value*-1: Value;
 }
 
 double gmath::dsin(double angle){

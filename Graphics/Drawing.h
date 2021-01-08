@@ -92,12 +92,13 @@ namespace Drawing
     void draw_text(int x, int y, auto text){
         glLoadIdentity();
         glRasterPos2i(x, y);
-        std::stringstream ss;
+        std::wstringstream ss;
         ss<<text;
-        for(const char* c=ss.str().c_str(); *c != 0; c++){
+        for(const wchar_t* c=ss.str().c_str(); *c != 0; c++){
             glutBitmapCharacter((void*)(0x8) , *c);
         }
     }
+
     /// Print Text To The Console Screen
     void print(auto str){
         std::cout << str;
@@ -232,7 +233,7 @@ namespace Drawing
         std::vector<GLuint> textures;
         GLuint list_base;
         void init(const char * fname, unsigned int h) {
-            textures.resize(1280);
+            textures.resize(256);
             this->h=h;
             FT_Library library;
             if (FT_Init_FreeType( &library ))
@@ -241,10 +242,10 @@ namespace Drawing
             if (FT_New_Face( library, fname, 0, &face ))
                 throw std::runtime_error("FT_New_Face failed (there is probably a problem with your font file)");
             FT_Set_Char_Size( face, h << 6, h << 6, 96, 96);
-            list_base=glGenLists(1280);
-            glGenTextures( 1280, &textures.front() );
+            list_base=glGenLists(256);
+            glGenTextures( 256, &textures.front() );
 
-            for(unsigned short int i=0;i<1280;i++) {
+            for(unsigned int i=0;i<256;i++) {
                 make_dlist(face, i, list_base, &textures.front());
             }
             FT_Done_Face(face);
@@ -252,11 +253,11 @@ namespace Drawing
         }
 
         void clean() {
-            glDeleteLists(list_base,1280);
-            glDeleteTextures(1280, &textures.front());
+            glDeleteLists(list_base,256);
+            glDeleteTextures(256, &textures.front());
         }
     }Font;
-    void print(const Font &ft_font, float x, float y, std::string const & text)  {
+    void print(const Font &ft_font, float x, float y, std::wstring text)  {
         glLoadIdentity();
         // We Want A Coordinate System Where Distance Is Measured In Window Pixels.
         pushScreenCoordinateMatrix();
@@ -266,12 +267,14 @@ namespace Drawing
         float h=ft_font.h/.63f;
 
         // Split text into lines
-        std::stringstream ss(text);
-        std::string to;
-        std::vector<std::string> lines;
-        while(std::getline(ss,to,'\n')){
+        std::wstringstream ss(text);
+        std::wstring to;
+        std::vector<std::wstring> lines;
+        std::vector<int> loaded;
+        while(std::getline(ss,to)){
             lines.push_back(to);
         }
+
 
         glPushAttrib(GL_LIST_BIT | GL_CURRENT_BIT  | GL_ENABLE_BIT | GL_TRANSFORM_BIT);
         glMatrixMode(GL_MODELVIEW);
@@ -293,12 +296,12 @@ namespace Drawing
         // Down By h. This Is Because When Each Character Is
         // Drawn It Modifies The Current Matrix So That The Next Character
         // Will Be Drawn Immediately After It.
+
         for(unsigned int i=0;i<lines.size();i++) {
             glPushMatrix();
             glLoadIdentity();
             glTranslatef(x,Engine::SCREEN_HEIGHT-y-h*i,0);
             glMultMatrixf(modelview_matrix);
-
             // The Commented Out Raster Position Stuff Can Be Useful If You Need To
             // Know The Length Of The Text That You Are Creating.
             // If You Decide To Use It Make Sure To Also Uncomment The glBitmap Command

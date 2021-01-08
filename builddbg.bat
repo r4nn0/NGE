@@ -1,0 +1,12 @@
+g++.exe -Wall -std=c++1y -m32 -g -DGLEW_STATIC -DFREEGLUT_STATIC -std=c++1y -Iinclude -IGraphics\SOIL\src -IGraphics\CAIRO\include -c "Assets\Input.cpp" -o obj\Debug\Assets\Input.o
+g++.exe -Wall -std=c++1y -m32 -g -DGLEW_STATIC -DFREEGLUT_STATIC -std=c++1y -Iinclude -IGraphics\SOIL\src -IGraphics\CAIRO\include -c "bitwise.cpp" -o obj\Debug\bitwise.o
+g++.exe -Wall -std=c++1y -m32 -g -DGLEW_STATIC -DFREEGLUT_STATIC -std=c++1y -Iinclude -IGraphics\SOIL\src -IGraphics\CAIRO\include -c "Engine.cpp" -o obj\Debug\Engine.o
+g++.exe -Wall -std=c++1y -m32 -g -DGLEW_STATIC -DFREEGLUT_STATIC -std=c++1y -Iinclude -IGraphics\SOIL\src -IGraphics\CAIRO\include -c "gmath.cpp" -o obj\Debug\gmath.o
+g++.exe -Wall -std=c++1y -m32 -g -DGLEW_STATIC -DFREEGLUT_STATIC -std=c++1y -Iinclude -IGraphics\SOIL\src -IGraphics\CAIRO\include -c "Graphics\Sprite.cpp" -o obj\Debug\Graphics\Sprite.o
+g++.exe -Wall -std=c++1y -m32 -g -DGLEW_STATIC -DFREEGLUT_STATIC -std=c++1y -Iinclude -IGraphics\SOIL\src -IGraphics\CAIRO\include -c "Graphics\Texture.cpp" -o obj\Debug\Graphics\Texture.o
+g++.exe -Wall -std=c++1y -m32 -g -DGLEW_STATIC -DFREEGLUT_STATIC -std=c++1y -Iinclude -IGraphics\SOIL\src -IGraphics\CAIRO\include -c "main.cpp" -o obj\Debug\main.o
+g++.exe -Wall -std=c++1y -m32 -g -DGLEW_STATIC -DFREEGLUT_STATIC -std=c++1y -Iinclude -IGraphics\SOIL\src -IGraphics\CAIRO\include -c "ngetype.cpp" -o obj\Debug\ngetype.o
+g++.exe -Wall -std=c++1y -m32 -g -DGLEW_STATIC -DFREEGLUT_STATIC -std=c++1y -Iinclude -IGraphics\SOIL\src -IGraphics\CAIRO\include -c "obj_player.cpp" -o obj\Debug\obj_player.o
+g++.exe -Wall -std=c++1y -m32 -g -DGLEW_STATIC -DFREEGLUT_STATIC -std=c++1y -Iinclude -IGraphics\SOIL\src -IGraphics\CAIRO\include -c "obj_wall.cpp" -o obj\Debug\obj_wall.o
+g++.exe -Wall -std=c++1y -m32 -g -DGLEW_STATIC -DFREEGLUT_STATIC -std=c++1y -Iinclude -IGraphics\SOIL\src -IGraphics\CAIRO\include -c "Objects.cpp" -o obj\Debug\Objects.o
+g++.exe -Llib-mingw -LGraphics\SOIL\lib -LGraphics\CAIRO\lib\x86 -LGraphics\CAIRO\lib\x64 -o bin\Debug\NGE.exe obj\Debug\Assets\Input.o obj\Debug\bitwise.o obj\Debug\Engine.o obj\Debug\gmath.o obj\Debug\Graphics\Sprite.o obj\Debug\Graphics\Texture.o obj\Debug\main.o obj\Debug\ngetype.o obj\Debug\obj_player.o obj\Debug\obj_wall.o obj\Debug\Objects.o  -m32  lib-mingw\ftgl_static_D.lib lib-mingw\freetype.lib lib-mingw\libfreeglut_static.a lib-mingw\libglew32s.lib lib-mingw\libglfw3.a Graphics\SOIL\lib\libSOIL.a -lgdi32 -lwinmm -lopengl32

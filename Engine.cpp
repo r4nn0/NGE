@@ -9,12 +9,7 @@ int Engine::view_height=SCREEN_HEIGHT;
 int Engine::view_xview=0;
 int Engine::view_yview=0;
 ngetype::Color Engine::background_color(100,100,100);
-Engine::Engine(){
 
-}
-Engine::~Engine(){
-
-}
 /// Initializes Rendering Engine
 bool Engine::init(const char* window_title, int _view_xport, int _view_yport){
     int argc = 1;
@@ -52,11 +47,12 @@ bool Engine::init(const char* window_title, int _view_xport, int _view_yport){
     int yPos=(mode->height - SCREEN_HEIGHT)/2;
     glfwSetWindowPos(window, xPos, yPos);
     glViewport(0,SCREEN_HEIGHT-view_yport,view_xport,view_yport);
+
+    /// CAMERA
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    /// CAMERA MOVE
     glOrtho(0,0,0,0,-10,10);
-    glDepthRange(-10,10);
+    glDepthRange(-64,63);
     glMatrixMode(GL_MODELVIEW);
     glEnable(GL_ALPHA_TEST);
     glEnable(GL_BLEND);
@@ -69,19 +65,20 @@ void Engine::StepEvent(){
     glfwPollEvents();
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-
     glOrtho(view_xview,view_width+view_xview,view_height+view_yview,view_yview,-10,10);
     glMatrixMode(GL_MODELVIEW);
+
 }
 /// Initializes Drawing Frame Every Frame
 void Engine::BeginDraw(){
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(Engine::background_color.r,Engine::background_color.g,Engine::background_color.b,1);
     //glClearColor(.4f,.4f,.4f,1);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 }
 /// Swaps Rendered Frames with current Frames
 void Engine::EndDraw(){
+
     glfwSwapBuffers(window);
 }
 /// Returns Current Running window
@@ -127,8 +124,8 @@ std::string Engine::LoadShaderFromFile(const std::string&ShaderPath){
     std::string line;
     std::stringstream ss;
     while(getline(stream,line)){
-
         ss<<line<<'\n';
     }
+    ss<<'\0';
     return ss.str();
 }

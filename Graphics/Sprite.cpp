@@ -41,7 +41,7 @@ void Sprite::Update(){
 /// Renders Sprite to the screen
 void Sprite::Render(){
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texture.sprite_get_index());
+	glBindTexture(GL_TEXTURE_2D, texture.TextureGetID());
 	glLoadIdentity();
 	// > TRANSLATE -> ROTATE -> SCALE
 	//GL Translate
@@ -53,10 +53,11 @@ void Sprite::Render(){
 	glBegin(GL_QUADS);
 
 
-    glTexCoord2f(1, 0); glVertex2f(texture.sprite_get_width(), 0);
-	glTexCoord2f(1, 1); glVertex2f(texture.sprite_get_width(), texture.sprite_get_height());
-	glTexCoord2f(0, 1); glVertex2f(0, texture.sprite_get_height());
 	glTexCoord2f(0, 0); glVertex2f(0, 0);
+    glTexCoord2f(1, 0); glVertex2f(texture.TextureGetWidth(), 0);
+	glTexCoord2f(1, 1); glVertex2f(texture.TextureGetWidth(), texture.TextureGetHeight());
+	glTexCoord2f(0, 1); glVertex2f(0, texture.TextureGetHeight());
+
 
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
@@ -68,11 +69,11 @@ Texture Sprite::getTexture(){
 }
 /// Get Sprite Width
 int Sprite::sprite_get_width(){
-    return texture.sprite_get_width();
+    return texture.TextureGetWidth();
 }
 /// Get Sprite Height
 int Sprite::sprite_get_height(){
-    return texture.sprite_get_height();
+    return texture.TextureGetHeight();
 }
 /// Draws Sprite at position (x, y)
 void Sprite::sprite_set_pos(float _xPos, float _yPos){
