@@ -1,24 +1,24 @@
 #include "Engine.h"
 GLFWwindow* Engine::window = NULL;
-int Engine::SCREEN_WIDTH=1360;
-int Engine::SCREEN_HEIGHT=765;
+int Engine::SCREEN_WIDTH=800;
+int Engine::SCREEN_HEIGHT=600;
 int Engine::view_xport=0;
 int Engine::view_yport=0;
 int Engine::view_width=SCREEN_WIDTH;
 int Engine::view_height=SCREEN_HEIGHT;
 int Engine::view_xview=0;
 int Engine::view_yview=0;
-ngetype::Color Engine::background_color(100,100,100);
+glm::vec3 Engine::background_color(100,100,100);
 
 /// Initializes Rendering Engine
 bool Engine::init(const char* window_title, int _view_xport, int _view_yport){
-    int argc = 1;
-    char *argv[1] = {(char*)""};
-    glutInit(&argc, argv);
+
+
     if(!glfwInit()){
         std::cout << "Error Initializing GLFW" << std::endl;
         return false;
     }
+
     window=glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, window_title, NULL, NULL);
     if(window==NULL){
         std::cout << "Error Creating Window" << std::endl;
@@ -34,13 +34,16 @@ bool Engine::init(const char* window_title, int _view_xport, int _view_yport){
     else
         view_yport=SCREEN_HEIGHT;
     glfwMakeContextCurrent(window);
-    glewInit();
+    if(glewInit()!=GLEW_OK){
+        std::cout << "Error Initializing GLEW" << std::endl;
+        return false;
+    }
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     glfwSwapInterval(1);
-    glfwSetKeyCallback(window,Input::keyboardCallback);
-    glfwSetCursorPosCallback(window,Input::mousePosCallback);
-    glfwSetMouseButtonCallback(window,Input::mouseButtonCallback);
+    glfwSetKeyCallback(window,keyboardCallback);
+    glfwSetCursorPosCallback(window,mousePosCallback);
+    glfwSetMouseButtonCallback(window,mouseButtonCallback);
 
     const GLFWvidmode* mode= glfwGetVideoMode(glfwGetPrimaryMonitor());
     int xPos=(mode->width - SCREEN_WIDTH)/2;
@@ -57,6 +60,12 @@ bool Engine::init(const char* window_title, int _view_xport, int _view_yport){
     glEnable(GL_ALPHA_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    left=view_xview;
+    right=view_width+view_xview;
+    bottom=view_height+view_yview;
+    top=view_yview;
+    near=-10;
+    far=10;
 
     return true;
 }
@@ -65,7 +74,8 @@ void Engine::StepEvent(){
     glfwPollEvents();
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(view_xview,view_width+view_xview,view_height+view_yview,view_yview,-10,10);
+    glOrtho(left, right, bottom, top, near, far);
+    ortho_mat=glm::ortho(left,right,bottom,top,near,far);
     glMatrixMode(GL_MODELVIEW);
 
 }
@@ -73,8 +83,7 @@ void Engine::StepEvent(){
 void Engine::BeginDraw(){
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(Engine::background_color.r,Engine::background_color.g,Engine::background_color.b,1);
-    //glClearColor(.4f,.4f,.4f,1);
+    glClearColor(background_color.r,background_color.g,background_color.b,1);
 }
 /// Swaps Rendered Frames with current Frames
 void Engine::EndDraw(){
@@ -85,7 +94,12 @@ void Engine::EndDraw(){
 GLFWwindow* Engine::get_window(){
     return window;
 }
-unsigned int Engine::CompileShader(unsigned int type, const char*source){
+const float* Engine::getOthroMatrix(){
+    return (const float*)glm::value_ptr(ortho_mat);
+}
+
+
+unsigned int Engine::CompileShader(unsigned int type, const char* source){
     unsigned int id = glCreateShader(type);
 
     glShaderSource(id, 1, &source, nullptr);
@@ -119,13 +133,16 @@ unsigned int Engine::CreateShader(const char*vertexShader, const char*fragmentSh
     glDeleteShader(fs);
     return program;
 }
-std::string Engine::LoadShaderFromFile(const std::string&ShaderPath){
-    std::ifstream stream(ShaderPath);
-    std::string line;
-    std::stringstream ss;
-    while(getline(stream,line)){
-        ss<<line<<'\n';
-    }
-    ss<<'\0';
-    return ss.str();
+std::string Engine::LoadShaderFromFile(const char* ShaderPath){
+    FILE* file = fopen(ShaderPath,"rt");
+    fseek(file,0,SEEK_END);
+    unsigned long length=ftell(file);
+    char* data=new char[length+1];
+    memset(data,0,length+1);
+    fseek(file,0,SEEK_SET);
+    fread(data,1,length,file);
+    fclose(file);
+    std::string src(data);
+    delete [] data;
+    return src;
 }

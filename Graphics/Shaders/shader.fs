@@ -1,11 +1,24 @@
-#version 440 compatibility
-
-uniform sampler2D tex;
-in vec2 fragTexCoord;
+#version 330 core
 out vec4 FragColor;
-vec4 base_col;
 
+
+
+in DATA{
+    vec4 pos;
+    vec4 color;
+    vec2 texCoords;
+    //int texCount;
+}fs_in;
+//uniform sampler2D tex[texCount];
+uniform sampler2D tex;
+
+vec4 base_color;
 void main() {
-    vec4 base_col = texture(tex, fragTexCoord);
-    FragColor= base_col;
+
+    base_color=texture2D(tex,fs_in.texCoords);
+    FragColor = fs_in.color * base_color;
 }
+
+
+
+

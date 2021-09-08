@@ -1,90 +1,31 @@
 #include "Sprite.h"
 /// Constructors
-Sprite::Sprite(){
-	xPos = 0;
-	yPos = 0;
-	xscale=1;
-	yscale=1;
-	angle = 0;
-	texture = Texture();
+Sprite::Sprite(const char* path, glm::vec3 _pos): m_Pos(_pos){
+    int _width, _height;
+    glGenTextures(1, &m_Texture);
+    glActiveTexture(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, m_Texture);
+    m_Pixels= stbi_load(path, &_width, &_height, &m_BPP, 4);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _width, _height,0,GL_RGBA, GL_UNSIGNED_BYTE, m_Pixels);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    delete m_Pixels;
+    m_BaseSize=glm::vec2(_width, _height);
+    m_Size=m_BaseSize;
+    m_Color=glm::vec4(1,1,1,1);
 }
-Sprite::Sprite(std::string _imagePath){
-    imagePath=_imagePath.c_str();
-	texture = Texture(_imagePath);
-	xPos = 0;
-	yPos = 0;
-	xscale=1;
-	yscale=1;
-	angle = 0;
-}
-Sprite::Sprite(std::string _imagePath, float _xPos, float _yPos){
-    imagePath=_imagePath.c_str();
-	texture = Texture(_imagePath);
-	xPos = _xPos;
-	yPos = _yPos;
-	xscale=1;
-	yscale=1;
-	angle = 0;
-}
-Sprite::Sprite(std::string _imagePath, float _xPos, float _yPos,float _xScale, float _yScale){
-    imagePath=_imagePath.c_str();
-    texture = Texture(_imagePath);
-	xPos = _xPos;
-	yPos = _yPos;
-	xscale=_xScale;
-	yscale=_yScale;
-	angle = 0;
-}
-
-void Sprite::Update(){
-}
-/// Renders Sprite to the screen
-void Sprite::Render(){
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texture.TextureGetID());
-	glLoadIdentity();
-	// > TRANSLATE -> ROTATE -> SCALE
-	//GL Translate
-	glTranslatef(xPos, yPos, 0);
-    glRotatef(angle,0,0,1);
-    glScalef(xscale,yscale,1);
-	//Render
-
-	glBegin(GL_QUADS);
+void Sprite::setPosition(glm::vec3 _pos) {m_Pos=_pos;}
+void Sprite::setScale(glm::vec2 _scale)  {m_Size=_scale*m_BaseSize;}
+void Sprite::setColor(glm::vec4 _color)  {m_Color=_color;}
 
 
-	glTexCoord2f(0, 0); glVertex2f(0, 0);
-    glTexCoord2f(1, 0); glVertex2f(texture.TextureGetWidth(), 0);
-	glTexCoord2f(1, 1); glVertex2f(texture.TextureGetWidth(), texture.TextureGetHeight());
-	glTexCoord2f(0, 1); glVertex2f(0, texture.TextureGetHeight());
-
-
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-
+void Sprite::Bind(){
+    glBindTexture(GL_TEXTURE_2D, m_Texture);
 }
-/// Get Sprite Texture ID
-Texture Sprite::getTexture(){
-    return texture;
-}
-/// Get Sprite Width
-int Sprite::sprite_get_width(){
-    return texture.TextureGetWidth();
-}
-/// Get Sprite Height
-int Sprite::sprite_get_height(){
-    return texture.TextureGetHeight();
-}
-/// Draws Sprite at position (x, y)
-void Sprite::sprite_set_pos(float _xPos, float _yPos){
-    xPos = _xPos;
-    yPos = _yPos;
-}
-/// Get x position of a sprite
-int Sprite::sprite_get_x(){
-    return xPos;
-}
-/// Get y position of a sprite
-int Sprite::sprite_get_y(){
-    return yPos;
+void Sprite::Unbind(){
+    glBindTexture(GL_TEXTURE_2D, 0);
 }

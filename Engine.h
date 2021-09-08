@@ -13,31 +13,35 @@
 #include <sstream>
 #include <vector>
 #include <GL/glew.h>
-#include <GL/gl.h>
 #include <GLFW/glfw3.h>
-#include <GL/glut.h>
-#include "Assets/Input.h"
+#include "Input.h"
 #include "ngetype.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include <glm/gtc/type_ptr.hpp>
 #pragma once
 class Engine{
 public:
     static int SCREEN_WIDTH;
     static int SCREEN_HEIGHT;
-
     bool init(const char* window_title, int _view_xport, int _view_yport);
 
     void StepEvent();
     void BeginDraw();
     void EndDraw();
     static int view_xport, view_yport, view_width, view_height, view_xview, view_yview;
-    static ngetype::Color background_color;
+    static glm::vec3 background_color;
     GLFWwindow* get_window();
-    static unsigned int CreateShader(const char*vertext, const char*fragment);
-    std::string LoadShaderFromFile(const std::string&ShaderPath);
+    static unsigned int CreateShader(const char*, const char*);
+    std::string LoadShaderFromFile(const char*);
+    const float* getOthroMatrix();
 
 private:
     static GLFWwindow* window;
     static unsigned int CompileShader(unsigned int type, const char*source);
+    float right, left, bottom, top, near, far;
+    glm::mat4 ortho_mat;
+
 };
 
 

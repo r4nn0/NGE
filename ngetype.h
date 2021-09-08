@@ -2,45 +2,43 @@
 #define NGETYPE_H
 #include <string.h>
 #include <iostream>
+#include <GL/glew.h>
+#include "glm/glm.hpp"
+
 namespace ngetype
 {
-    typedef struct Color{
-    public:
-        float r,g,b;
-        Color();
-        Color(int, int, int);
-        Color(float, float, float);
-        Color& operator+=(const Color&);
-    }Color;
-    typedef struct vec2{
-    public:
-        float x,y;
-        vec2();
-        vec2(float,float);
-    }vec2;
-    typedef struct string{
-        char str[0];
-    public:
-        string();
-        string(const char*);
-        char operator[](const int);
-        int length();
+    struct vboData{
 
-        string& operator+=(const string&);
-        string& operator+=(const char*);
-
-        string& operator=(const string&);
-        string& operator=(const char*);
-
-        string& operator+(const string&);
-        string& operator+(const char*);
-        /*friend std::ostream& operator<<(std::ostream& out,string& str){
-            out<<str.str;
-            return out;
-        }*/
-    }string;
-    std::ostream& operator<<(std::ostream&, const ngetype::string&);
-    int strlen(string&);
+        glm::vec3 vertex;
+        glm::vec4 color;
+        glm::vec2 texCoords;
+    };
+    class VBO{
+    private:
+        unsigned int id, componentCount;
+    public:
+        VBO(float*, int, unsigned int);
+        void bind();
+        void unbind();
+        unsigned int getComponentCount();
+    };
+    class VAO{
+    private:
+        unsigned int id;
+    public:
+        VAO();
+        void addVBO(VBO*, unsigned int );
+        void bind();
+        void unbind();
+    };
+    class IBO{
+    private:
+        unsigned int id, count;
+    public:
+        IBO(unsigned short int *, int);
+        void bind();
+        void unbind();
+        unsigned int getCount();
+    };
 };
-
 #endif // NGETYPE_H

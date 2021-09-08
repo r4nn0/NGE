@@ -1,31 +1,33 @@
 #ifndef GAME_SPRITE
 #define GAME_SPRITE
 
-#include "Texture.h"
+#include "../Engine.h"
+#include "stb_image.h"
 
 class Sprite{
 public:
+    Sprite(const char* path, glm::vec3);
 
-	Sprite();
-	Sprite(std::string imagePath);
-	Sprite(std::string imagePath, float _xPos, float _yPos);
-	Sprite(std::string imagePath, float _xPos, float _yPos,float _xScale, float _yScale);
-	void Update();
-	void Render();
-	void sprite_set_pos(float _xPos, float _yPos);
-	int sprite_get_width();
-	int sprite_get_height();
-	int sprite_get_x();
-	int sprite_get_y();
-	float angle;
-	float xscale;
-	float yscale;
-	Texture getTexture();
-	const char* imagePath;
-private:
-	Texture texture;
-	float xPos;
-	float yPos;
+    void Bind();
+    void Unbind();
+
+    void setPosition(glm::vec3);
+    void setScale(glm::vec2);
+    void setColor(glm::vec4);
+
+    unsigned int& getTexture(){return m_Texture;}
+    int& getPixels(){return m_BPP;}
+	glm::vec3& getPosition(){return m_Pos;}
+    glm::vec2& getSize(){return m_Size;}
+    glm::vec4& getColor(){return m_Color;}
+protected:
+    glm::vec3 m_Pos;
+    glm::vec2 m_Size;
+    glm::vec2 m_BaseSize;
+    glm::vec4 m_Color;
+    int m_BPP;
+    unsigned char* m_Pixels;
+	unsigned int m_Texture;
 };
 
 #endif
