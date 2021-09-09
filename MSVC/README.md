@@ -15,3 +15,5 @@
 	<li>glew32s.lib</li>
 	<li>glfw3.lib</li>
 </ul><br/>
+
+## Don't Forget to define the macro GLEW_STATIC if you want to use the static version of Glew
