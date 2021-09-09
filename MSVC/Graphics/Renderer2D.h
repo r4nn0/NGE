@@ -3,7 +3,7 @@
 
 #include "Sprite.h"
 
-#define MAX_SPRITE_COUNT 32000
+#define MAX_SPRITE_COUNT 32
 #define VERTEX_SIZE sizeof(ngetype::vboData)
 #define SPRITE_SIZE VERTEX_SIZE * 4
 #define BUFFER_SIZE SPRITE_SIZE * MAX_SPRITE_COUNT
@@ -20,6 +20,8 @@ public:
 protected:
 
 private:
+    int m_maxTextures;
+    unsigned int m_textureCount;
     ngetype::IBO* m_indexBuffer;
     GLsizei m_indexCount;
     unsigned int m_appSurface,m_VBO;

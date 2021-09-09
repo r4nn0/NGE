@@ -2,7 +2,7 @@
 
 Renderer2D::Renderer2D()
 {
-
+    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &m_maxTextures);
     glGenVertexArrays(1, &m_appSurface);
     glGenBuffers(1, &m_VBO);
     glBindVertexArray(m_appSurface);
@@ -11,9 +11,11 @@ Renderer2D::Renderer2D()
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(3);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)0);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)(sizeof(float)*3));
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)(sizeof(float)*7));
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)(sizeof(float)*9));
     glBindBuffer(GL_ARRAY_BUFFER,0);
 
     unsigned short indices[INDICES_SIZE];
@@ -47,6 +49,11 @@ void Renderer2D::renderEnd(){
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 void Renderer2D::addSprite(Sprite* spr){
+    if (m_textureCount >=(m_maxTextures-1)) {
+        renderEnd();
+        Render();
+        renderBegin();
+    }
     glm::vec3& _pos = spr->getPosition();
     glm::vec2& _size = spr->getSize();
     glm::vec4& _col = spr->getColor();
@@ -54,31 +61,39 @@ void Renderer2D::addSprite(Sprite* spr){
     m_Buff->texCoords=glm::vec2(0,0);
     m_Buff->vertex=_pos;
     m_Buff->color=_col;
+    m_Buff->texID=m_textureCount;
     m_Buff++;
 
     m_Buff->texCoords=glm::vec2(1,0);
     m_Buff->vertex=glm::vec3(_pos.x+_size.x,_pos.y,_pos.z);
     m_Buff->color=_col;
+    m_Buff->texID = m_textureCount;
     m_Buff++;
 
     m_Buff->texCoords=glm::vec2(1,1);
     m_Buff->vertex=glm::vec3(_pos.x+_size.x,_pos.y+_size.y,_pos.z);
     m_Buff->color=_col;
+    m_Buff->texID = m_textureCount;
     m_Buff++;
 
     m_Buff->texCoords=glm::vec2(0,1);
     m_Buff->vertex=glm::vec3(_pos.x,_pos.y+_size.y,_pos.z);
     m_Buff->color=_col;
+    m_Buff->texID = m_textureCount;
     m_Buff++;
+    glActiveTexture(GL_TEXTURE0 + m_textureCount);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, spr->getTexture());
     m_indexCount+=6;
+    m_textureCount++;
+    
 }
 void Renderer2D::Render(){
     glBindVertexArray(m_appSurface);
     m_indexBuffer->bind();
-
     glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_SHORT, NULL);
-
     m_indexBuffer->unbind();
     glBindVertexArray(0);
-    m_indexCount=0;
+    m_indexCount = 0;
+    m_textureCount = 0;
 }
