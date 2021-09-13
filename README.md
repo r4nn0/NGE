@@ -5,7 +5,7 @@ NGE is free open source project built for game developers using C++ <br/>
 This Engine is based on OpenGL Libraries, some other libraries included i wrote them my self with the help of compiler's built-in functions to make things easier <br/>
 # Supported Operating Systems
 <b>[+] Windows</b><br/>
-<b>[\~] Linux [Soon]</b><br/>
+<b>[+] Linux</b><br/>
 <b>[\~] Mac OS [Soon]</b><br/>
 
 # How To Setup
