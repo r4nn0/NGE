@@ -49,7 +49,7 @@ void Renderer2D::renderEnd(){
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 void Renderer2D::addSprite(Sprite* spr){
-    if (m_textureCount >=(m_maxTextures-1)) {
+    if (m_textureCount >=(unsigned int)(m_maxTextures-1)) {
         renderEnd();
         Render();
         renderBegin();

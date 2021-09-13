@@ -112,7 +112,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libfreetype.lib;ftgl_static_D.lib;opengl32.lib;shell32.lib;winmm.lib;gdi32.lib;user32.lib;glew32s.lib;glfw3.lib</AdditionalDependencies>
+      <AdditionalDependencies>libfreetype.lib;vulkan-1.lib;ftgl_static_D.lib;opengl32.lib;shell32.lib;winmm.lib;gdi32.lib;user32.lib;glew32s.lib;glfw3.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -131,7 +131,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libfreetype.lib;ftgl_static.lib;opengl32.lib;shell32.lib;winmm.lib;gdi32.lib;user32.lib;glew32s.lib;glfw3.lib</AdditionalDependencies>
+      <AdditionalDependencies>libfreetype.lib;vulkan-1.lib;ftgl_static.lib;opengl32.lib;shell32.lib;winmm.lib;gdi32.lib;user32.lib;glew32s.lib;glfw3.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
