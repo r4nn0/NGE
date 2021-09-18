@@ -8,26 +8,24 @@ class Sprite{
 public:
     Sprite(const char* path, glm::vec3);
 
-    void Bind();
-    void Unbind();
-
-    void setPosition(glm::vec3);
+    inline void setPosition(glm::vec3);
     void setScale(glm::vec2);
-    void setColor(glm::vec4);
+    void setUV(std::vector<glm::vec2>);
+    inline void setColor(glm::vec4);
 
-    unsigned int& getTexture(){return m_Texture;}
-    int& getPixels(){return m_BPP;}
-	glm::vec3& getPosition(){return m_Pos;}
-    glm::vec2& getSize(){return m_Size;}
-    glm::vec4& getColor(){return m_Color;}
+    inline unsigned char* getPixels(){return m_Pixels;}
+	inline glm::vec3& getPosition(){return m_Pos;}
+    inline glm::vec2& getSize(){return m_Size;}
+    inline glm::vec4& getColor(){return m_Color;}
+    inline std::vector<glm::vec2>& getUV(){return m_UV;}
+    
 protected:
     glm::vec3 m_Pos;
     glm::vec2 m_Size;
     glm::vec2 m_BaseSize;
     glm::vec4 m_Color;
-    int m_BPP;
+    std::vector<glm::vec2> m_UV;
     unsigned char* m_Pixels;
-	unsigned int m_Texture;
 };
 
 #endif

@@ -2,6 +2,7 @@
 
 Renderer2D::Renderer2D()
 {
+    dcpf = 0;
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &m_maxTextures);
     glGenVertexArrays(1, &m_appSurface);
     glGenBuffers(1, &m_VBO);
@@ -49,41 +50,38 @@ void Renderer2D::renderEnd(){
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 void Renderer2D::addSprite(Sprite* spr){
-    if (m_textureCount >=(unsigned int)(m_maxTextures-1)) {
-        renderEnd();
-        Render();
-        renderBegin();
-    }
+
     glm::vec3& _pos = spr->getPosition();
     glm::vec2& _size = spr->getSize();
     glm::vec4& _col = spr->getColor();
-
-    m_Buff->texCoords=glm::vec2(0,0);
+    std::vector<glm::vec2> uvs = spr->getUV();
+    //m_Buff->texCoords = glm::vec2(0, 0);
+    m_Buff->texCoords = uvs[0];
     m_Buff->vertex=_pos;
     m_Buff->color=_col;
     m_Buff->texID=m_textureCount;
     m_Buff++;
 
-    m_Buff->texCoords=glm::vec2(1,0);
+    //m_Buff->texCoords = glm::vec2(1, 0);
+    m_Buff->texCoords = uvs[1];
     m_Buff->vertex=glm::vec3(_pos.x+_size.x,_pos.y,_pos.z);
     m_Buff->color=_col;
     m_Buff->texID = m_textureCount;
     m_Buff++;
 
-    m_Buff->texCoords=glm::vec2(1,1);
+    //m_Buff->texCoords = glm::vec2(1, 1);
+    m_Buff->texCoords = uvs[2];
     m_Buff->vertex=glm::vec3(_pos.x+_size.x,_pos.y+_size.y,_pos.z);
     m_Buff->color=_col;
     m_Buff->texID = m_textureCount;
     m_Buff++;
 
-    m_Buff->texCoords=glm::vec2(0,1);
+    //m_Buff->texCoords = glm::vec2(0, 1);
+    m_Buff->texCoords = uvs[3];
     m_Buff->vertex=glm::vec3(_pos.x,_pos.y+_size.y,_pos.z);
     m_Buff->color=_col;
     m_Buff->texID = m_textureCount;
     m_Buff++;
-    glActiveTexture(GL_TEXTURE0 + m_textureCount);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, spr->getTexture());
     m_indexCount+=6;
     m_textureCount++;
     
@@ -96,4 +94,5 @@ void Renderer2D::Render(){
     glBindVertexArray(0);
     m_indexCount = 0;
     m_textureCount = 0;
+    dcpf++;
 }

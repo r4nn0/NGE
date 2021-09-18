@@ -42,11 +42,7 @@ its not that important for 2D games but it will be added as soon as possible.
 Music and sound effects can't be imported and played yet, but as mentioned they will be added soon or you could add your own libraries manually.
 # Newly Added Features
 I have added a new rendering feature that allows you to render a huge amount of sprites without
-worrying about your fps, it's called batch rendering. if you are going to render multiple textures
-you might have to either generate a texture atlas or use multiple renderers and have each renderer
-handle as many textures as your gpu supports. the Texture Atlas method is harder but much more effecient
-compared to the other method. You can use the second method, check if the renderer is rendering within the view;
-if not then skip rendering, this will give better perfomance but still the texture atlas method is more recommended
+worrying about your fps, it's called batch rendering. Now you can render as many sprites as you want (with their textures) without worrying about the fps
 # License
 The project is absolutly free to use, any feedback would be greetly appreciated<br/>
 support us by subscribing to our youtube channel [GrodRiket Security](https://youtube.com/ITGEEKS)<br/>

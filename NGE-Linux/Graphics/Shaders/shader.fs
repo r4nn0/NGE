@@ -1,4 +1,5 @@
 #version 330 core
+
 out vec4 FragColor;
 
 in DATA{
@@ -8,12 +9,13 @@ in DATA{
     float texID;
 }fs_in;
 
-uniform sampler2D textures[32];
-
+uniform sampler2D texture;
 vec4 base_color;
+
+
 void main() {
     int i=int(fs_in.texID);
-    base_color=texture2D(textures[i],fs_in.texCoords);
+    base_color=texture2D(texture, fs_in.texCoords);
     FragColor = fs_in.color * base_color;
 }
 

@@ -35,3 +35,4 @@ void ngetype::IBO::bind(){glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);}
 void ngetype::IBO::unbind(){glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);}
 unsigned int ngetype::IBO::getCount(){return count;}
 
+
