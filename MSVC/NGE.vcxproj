@@ -27,6 +27,7 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ngetype.cpp" />
+    <ClCompile Include="Graphics\TexturePage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h" />
@@ -36,6 +37,7 @@
     <ClInclude Include="Graphics\stb_image.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="ngetype.h" />
+    <ClInclude Include="Graphics\TexturePage.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -91,9 +93,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -112,7 +118,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libfreetype.lib;vulkan-1.lib;ftgl_static_D.lib;opengl32.lib;shell32.lib;winmm.lib;gdi32.lib;user32.lib;glew32s.lib;glfw3.lib</AdditionalDependencies>
+      <AdditionalDependencies>libfreetype.lib;opengl32.lib;shell32.lib;winmm.lib;gdi32.lib;user32.lib;glew32s.lib;glfw3.lib;libfreetype.lib;ftgl_static_D.lib;opengl32.lib;shell32.lib;winmm.lib;gdi32.lib;user32.lib;glew32s.lib;glfw3.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -131,7 +137,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libfreetype.lib;vulkan-1.lib;ftgl_static.lib;opengl32.lib;shell32.lib;winmm.lib;gdi32.lib;user32.lib;glew32s.lib;glfw3.lib</AdditionalDependencies>
+      <AdditionalDependencies>libfreetype.lib;opengl32.lib;shell32.lib;winmm.lib;gdi32.lib;user32.lib;glew32s.lib;glfw3.lib;ftgl_static.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

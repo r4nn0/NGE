@@ -35,9 +35,12 @@ public:
     static unsigned int CreateShader(const char*, const char*);
     std::string LoadShaderFromFile(const char*);
     const float* getOthroMatrix();
+    
+    
 
 private:
     static GLFWwindow* window;
+    static GLFWwindow* window2;
     static unsigned int CompileShader(unsigned int type, const char*source);
     float right, left, bottom, top, near, far;
     glm::mat4 ortho_mat;

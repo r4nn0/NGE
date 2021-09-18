@@ -1,5 +1,6 @@
 #include "Engine.h"
 GLFWwindow* Engine::window = NULL;
+GLFWwindow* Engine::window2 = NULL;
 int Engine::SCREEN_WIDTH=800;
 int Engine::SCREEN_HEIGHT=600;
 int Engine::view_xport=0;
@@ -19,11 +20,16 @@ bool Engine::init(const char* window_title, int _view_xport, int _view_yport){
         return false;
     }
 
+
     window=glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, window_title, NULL, NULL);
+    
+    
     if(window==NULL){
         std::cout << "Error Creating Window" << std::endl;
         return false;
     }
+    
+
 
     if (_view_xport>=SCREEN_WIDTH)
         view_xport=_view_xport;
@@ -40,7 +46,7 @@ bool Engine::init(const char* window_title, int _view_xport, int _view_yport){
     }
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
     glfwSetKeyCallback(window,keyboardCallback);
     glfwSetCursorPosCallback(window,mousePosCallback);
     glfwSetMouseButtonCallback(window,mouseButtonCallback);
@@ -57,7 +63,7 @@ bool Engine::init(const char* window_title, int _view_xport, int _view_yport){
     glOrtho(0,0,0,0,-10,10);
     glDepthRange(-64,63);
     glMatrixMode(GL_MODELVIEW);
-    glEnable(GL_ALPHA_TEST);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     left=view_xview;
