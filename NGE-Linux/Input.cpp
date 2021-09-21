@@ -1,16 +1,17 @@
 #include "Input.h"
-static double mouse_x=0;
-static double mouse_y=0;
-int key_pressed_code=0;
-bool button[GLFW_MOUSE_BUTTON_LAST]={ 0 };
-bool button_pressed[GLFW_MOUSE_BUTTON_LAST]={ 0 };
-bool button_released[GLFW_MOUSE_BUTTON_LAST]={ 0 };
-double mouse_get_x(){return mouse_x;}
-double mouse_get_y(){return mouse_y;}
+
+double mouse_x=0;
+double mouse_y=0;
+
+static bool button[GLFW_MOUSE_BUTTON_LAST]={ 0 };
+static bool button_pressed[GLFW_MOUSE_BUTTON_LAST]={ 0 };
+static bool button_released[GLFW_MOUSE_BUTTON_LAST]={ 0 };
+
 void mousePosCallback(GLFWwindow* window, double _x, double _y){
     mouse_x=_x;
     mouse_y=_y;
 }
+
 void mouseButtonCallback(GLFWwindow* window, int _button, int action, int mods){
     if(_button<0)
         return;
@@ -25,7 +26,6 @@ void mouseButtonCallback(GLFWwindow* window, int _button, int action, int mods){
     button[_button] = action!=GLFW_RELEASE;
 
 }
-
 
 bool mouse_check_button(int _button){
     bool x = button[_button];
@@ -43,9 +43,10 @@ bool mouse_check_button_released(int _button){
     return x;
 }
 /* Keyboard Input */
-bool key_pressed[GLFW_KEY_LAST]={0};
-bool key_held[GLFW_KEY_LAST]={0};
-bool key_released[GLFW_KEY_LAST]={0};
+static int key_pressed_code=0;
+static bool key_pressed[GLFW_KEY_LAST]={0};
+static bool key_held[GLFW_KEY_LAST]={0};
+static bool key_released[GLFW_KEY_LAST]={0};
 
 void keyboardCallback(GLFWwindow* window,int key, int scancode, int action, int mods){
     if (key<0)
