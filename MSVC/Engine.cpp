@@ -20,17 +20,12 @@ bool Engine::init(const char* window_title, int _view_xport, int _view_yport){
         return false;
     }
 
-
     window=glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, window_title, NULL, NULL);
-    
     
     if(window==NULL){
         std::cout << "Error Creating Window" << std::endl;
         return false;
     }
-    
-
-
     if (_view_xport>=SCREEN_WIDTH)
         view_xport=_view_xport;
     else
@@ -47,9 +42,11 @@ bool Engine::init(const char* window_title, int _view_xport, int _view_yport){
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     glfwSwapInterval(0);
+	
     glfwSetKeyCallback(window,keyboardCallback);
     glfwSetCursorPosCallback(window,mousePosCallback);
     glfwSetMouseButtonCallback(window,mouseButtonCallback);
+	glfwSetJoystickCallback(joystickCallback);
 
     const GLFWvidmode* mode= glfwGetVideoMode(glfwGetPrimaryMonitor());
     int xPos=(mode->width - SCREEN_WIDTH)/2;
@@ -140,8 +137,7 @@ unsigned int Engine::CreateShader(const char*vertexShader, const char*fragmentSh
     return program;
 }
 std::string Engine::LoadShaderFromFile(const char* ShaderPath){
-    FILE* file;
-    fopen_s(&file,ShaderPath,"rt");
+    FILE* file=fopen(ShaderPath,"rt");
     fseek(file,0,SEEK_END);
     unsigned long length=ftell(file);
     char* data=new char[length+1];

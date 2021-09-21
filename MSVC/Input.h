@@ -1,18 +1,27 @@
 #ifndef INPUT_H_INCLUDED
 #define INPUT_H_INCLUDED
+#include <iostream>
 #include <GLFW/glfw3.h>
 
-extern void mousePosCallback(GLFWwindow* window, double _x, double _y);
-extern void mouseButtonCallback(GLFWwindow* window, int _button, int action, int mods);
+/// Mouse Functions
 extern double mouse_x;
 extern double mouse_y;
-extern bool mouse_check_button_pressed(int _button);
-extern bool mouse_check_button(int _button);
-extern bool mouse_check_button_released(int _button);
-extern void keyboardCallback(GLFWwindow* window,int key, int scancode, int action, int mods);
-extern bool keyboard_check_pressed(int _vk);
-extern bool keyboard_check(int _vk);
-extern bool keyboard_check_released(int _vk);
+extern void mousePosCallback(GLFWwindow*, double, double);
+extern void mouseButtonCallback(GLFWwindow*, int, int, int);
+extern bool mouse_check_button_pressed(int);
+extern bool mouse_check_button(int);
+extern bool mouse_check_button_released(int);
+/// Keyboard Functions
+extern void keyboardCallback(GLFWwindow*, int, int, int, int);
+extern bool keyboard_check_pressed(int);
+extern bool keyboard_check(int);
+extern bool keyboard_check_released(int);
 extern int keyboard_get_pressed();
-	
+/// Joystick Functions
+extern void joystickCallback(int, int);
+extern bool gamepad_is_connected(int);
+extern bool gamepad_check_pressed(int, int);
+extern bool gamepad_check(int, int);
+extern bool gamepad_check_released(int, int);
+extern float gamepad_axis_value(int, int);
 #endif
