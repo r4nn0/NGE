@@ -31,38 +31,38 @@ void TexturePage::ImageResizeCanvas(int new_width, int new_height, int channel_n
     m_Height = new_height;
 }
 void TexturePage::ImageAdd(Sprite* sprite) {
-    unsigned char* data = sprite->getPixels();
-    int width = sprite->getSize().x;
-    int height = sprite->getSize().y;
-    std::vector<glm::vec2> uvs;
-    float x1= ((float)m_xOffset)/m_Width,
-          y1= ((float)m_yOffset)/m_Height,
-          x2=x1+ ((float)width) /m_Width,
-          y2=y1+ ((float)height) /m_Height;
-
-    uvs.push_back(glm::vec2(x1, y1)); // 0, 0
-    uvs.push_back(glm::vec2(x2, y1)); // 1, 0
-    uvs.push_back(glm::vec2(x2, y2)); // 1, 1
-    uvs.push_back(glm::vec2(x1, y2)); // 0, 1
-    sprite->setUV(uvs);
-    if (m_xOffset >= m_Width || m_yOffset >= m_Height) return;
-    for (int x = 0;x < width;x++) {
-        for (int y = 0;y < height;y++) {
-            m_TexturePage[(x+ m_xOffset + m_Width * (y+ m_yOffset)) * m_ChannelNum + 0] = data[(x + width * y) * m_ChannelNum + 0];
-            m_TexturePage[(x+ m_xOffset + m_Width * (y+ m_yOffset)) * m_ChannelNum + 1] = data[(x + width * y) * m_ChannelNum + 1];
-            m_TexturePage[(x+ m_xOffset + m_Width * (y+ m_yOffset)) * m_ChannelNum + 2] = data[(x + width * y) * m_ChannelNum + 2];
-            m_TexturePage[(x+ m_xOffset + m_Width * (y+ m_yOffset)) * m_ChannelNum + 3] = data[(x + width * y) * m_ChannelNum + 3];
-        }
-    }
-    m_xOffset += width;
-    m_yOffset += 0;
-    Bind(m_Slot);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_TexturePage);
-    
+	if(sprite->hasTexture()){
+		unsigned char* data = sprite->getPixels();
+		int width = sprite->getBaseSize().x;
+		int height = sprite->getBaseSize().y;
+		std::vector<glm::vec2> uvs;
+		float x1= (float)m_xOffset/m_Width,
+			  y1= (float)m_yOffset/m_Height,
+			  x2=x1+(float) width /m_Width,
+			  y2=y1+ (float)height /m_Height;
+		uvs.push_back(glm::vec2(x1, y1)); // 0, 0
+		uvs.push_back(glm::vec2(x2, y1)); // 1, 0
+		uvs.push_back(glm::vec2(x2, y2)); // 1, 1
+		uvs.push_back(glm::vec2(x1, y2)); // 0, 1
+		sprite->setUV(uvs);
+		if (m_xOffset >= m_Width || m_yOffset >= m_Height) return;
+		for (int x = 0;x < width;x++) {
+			for (int y = 0;y < height;y++) {
+				m_TexturePage[(x+ m_xOffset + m_Width * (y+ m_yOffset)) * m_ChannelNum + 0] = data[(x + width * y) * m_ChannelNum + 0];
+				m_TexturePage[(x+ m_xOffset + m_Width * (y+ m_yOffset)) * m_ChannelNum + 1] = data[(x + width * y) * m_ChannelNum + 1];
+				m_TexturePage[(x+ m_xOffset + m_Width * (y+ m_yOffset)) * m_ChannelNum + 2] = data[(x + width * y) * m_ChannelNum + 2];
+				m_TexturePage[(x+ m_xOffset + m_Width * (y+ m_yOffset)) * m_ChannelNum + 3] = data[(x + width * y) * m_ChannelNum + 3];
+			}
+		}
+		m_xOffset += width;
+		m_yOffset += 0;
+		Bind(m_Slot);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_TexturePage);
+	}
 }
 void TexturePage::Bind(int slot = 0) {
     m_Slot = slot;

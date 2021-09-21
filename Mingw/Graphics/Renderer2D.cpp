@@ -50,7 +50,9 @@ void Renderer2D::renderEnd(){
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 void Renderer2D::addSprite(Sprite* spr){
-
+	float texID =m_textureCount;
+	if(!spr->hasTexture())
+		texID=-1;
     glm::vec3& _pos = spr->getPosition();
     glm::vec2& _size = spr->getSize();
     glm::vec4& _col = spr->getColor();
@@ -59,28 +61,28 @@ void Renderer2D::addSprite(Sprite* spr){
     m_Buff->texCoords = uvs[0];
     m_Buff->vertex=_pos;
     m_Buff->color=_col;
-    m_Buff->texID=m_textureCount;
+    m_Buff->texID=texID;
     m_Buff++;
 
     //m_Buff->texCoords = glm::vec2(1, 0);
     m_Buff->texCoords = uvs[1];
     m_Buff->vertex=glm::vec3(_pos.x+_size.x,_pos.y,_pos.z);
     m_Buff->color=_col;
-    m_Buff->texID = m_textureCount;
+    m_Buff->texID = texID;
     m_Buff++;
 
     //m_Buff->texCoords = glm::vec2(1, 1);
     m_Buff->texCoords = uvs[2];
     m_Buff->vertex=glm::vec3(_pos.x+_size.x,_pos.y+_size.y,_pos.z);
     m_Buff->color=_col;
-    m_Buff->texID = m_textureCount;
+    m_Buff->texID = texID;
     m_Buff++;
 
     //m_Buff->texCoords = glm::vec2(0, 1);
     m_Buff->texCoords = uvs[3];
     m_Buff->vertex=glm::vec3(_pos.x,_pos.y+_size.y,_pos.z);
     m_Buff->color=_col;
-    m_Buff->texID = m_textureCount;
+    m_Buff->texID = texID;
     m_Buff++;
     m_indexCount+=6;
     m_textureCount++;

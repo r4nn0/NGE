@@ -137,7 +137,8 @@ unsigned int Engine::CreateShader(const char*vertexShader, const char*fragmentSh
     return program;
 }
 std::string Engine::LoadShaderFromFile(const char* ShaderPath){
-    FILE* file=fopen(ShaderPath,"rt");
+    FILE* file;
+    fopen_s(&file,ShaderPath,"rt");
     fseek(file,0,SEEK_END);
     unsigned long length=ftell(file);
     char* data=new char[length+1];
