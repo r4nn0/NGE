@@ -11,7 +11,6 @@
 int main (){
     glm::vec3 BACKGROUND_COLOR(100.0/255,100.0/255,100.0/255);
     Engine *gameEngine = new Engine;
-
     gameEngine->init("NGE", 640,480);
     FTGLBitmapFont font("C:/Windows/Fonts/arial.ttf");
 
@@ -53,7 +52,7 @@ int main (){
         gameEngine->BeginDraw();
 
         font.FaceSize(16);
-        font.Render(fpsString.c_str(),-1,FTPoint(0,600-font.FaceSize(),0));
+        font.Render(fpsString.c_str(),-1,FTPoint(32,600-font.FaceSize(),0));
 
         
         glUseProgram(shader);
