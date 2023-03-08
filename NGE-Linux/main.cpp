@@ -13,7 +13,8 @@ int main (){
     Engine *gameEngine = new Engine;
 
     gameEngine->init("NGE", 640,480);
-    FTGLBitmapFont font("C:/Windows/Fonts/arial.ttf");
+    //If the app crashes try using a font that is located in the same directory as the app
+    FTGLBitmapFont font("/usr/local/share/fonts/arial.ttf");
 
 	Renderer2D renderer;
 

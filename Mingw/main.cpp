@@ -13,11 +13,11 @@ int main (){
     Engine *gameEngine = new Engine;
 
     gameEngine->init("NGE", 640,480);
+    //If the app crashes try using a font that is located in the same directory as the app
     FTGLBitmapFont font("C:/Windows/Fonts/arial.ttf");
-
 	Renderer2D renderer;
 
-    TexturePage tp;
+    //TexturePage tp;
     //After Creating the tp you need to resize it so you can load sprites to it
     //ex: tp.ImageResizeCanvas(100/*width*/, 100/*height*/,4/*number of channels*/ );
     //Now you need to create a sprite and pass it to the tp
@@ -39,7 +39,6 @@ int main (){
     while(!glfwWindowShouldClose(gameEngine->get_window())){
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
             break;
-       
         double currTime = glfwGetTime();
         FPS++;
         if ( currTime - prevTime >= 1.0 ){
@@ -54,12 +53,11 @@ int main (){
 
         font.FaceSize(16);
         font.Render(fpsString.c_str(),-1,FTPoint(0,600-font.FaceSize(),0));
-
         
         glUseProgram(shader);
         glUniformMatrix4fv(glGetUniformLocation(shader, "proj_matrix"),1,GL_FALSE,gameEngine->getOthroMatrix());
         glUniform1i(glGetUniformLocation(shader, "texture"), 0);
-        
+
         renderer.renderBegin();
         //renderer.addSprite(&spr);
         //Here you can render sprites depending on MAX_SPRITE_COUNT macro in Renderer2D.h
