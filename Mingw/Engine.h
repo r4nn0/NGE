@@ -5,7 +5,7 @@
 #define MB_LEFT GLFW_MOUSE_BUTTON_1
 #define MB_RIGHT GLFW_MOUSE_BUTTON_2
 #define MB_MIDDLE GLFW_MOUSE_BUTTON_3
-/*--------------------------------------*/
+--------------------------------------*/
 
 #include <iostream>
 #include <string>

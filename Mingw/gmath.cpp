@@ -4,10 +4,11 @@ int gmath::sign(double n){
 }
 int gmath::irandom(int maxValue){
     std::chrono::time_point<std::chrono::system_clock> ms = std::chrono::system_clock::now();
+    static int seed=ms.time_since_epoch().count();
     int retVal;
-    retVal=(ms.time_since_epoch().count()%(maxValue*1000+1))/1000;
-    usleep(1);
-    if((ms.time_since_epoch().count()%(maxValue*1000+1)/1000)%2)
+    retVal=(seed%(maxValue*1000+1))/1000;
+    seed*=seed;
+    if(retVal%2)
         return -retVal;
     return retVal;
 }

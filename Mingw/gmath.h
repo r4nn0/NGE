@@ -29,8 +29,6 @@
 /// NAN
 #define GM_NAN __builtin_nan("")
 
-
-#include <unistd.h>
 #include <chrono>
 namespace gmath{
 
