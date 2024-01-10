@@ -86,7 +86,6 @@ void Renderer2D::addSprite(Sprite* spr){
     m_Buff++;
     m_indexCount+=6;
     m_textureCount++;
-    
 }
 void Renderer2D::Render(){
     glBindVertexArray(m_appSurface);

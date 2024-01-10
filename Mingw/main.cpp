@@ -48,14 +48,7 @@ int main (){
         }
         
         gameEngine.setBackgroundColor(BACKGROUND_COLOR);
-        if(mouse_check_button(MB_LEFT)){
-            gameEngine.setBackgroundColor(glm::vec3(0));
-        }
-        if(mouse_check_button_pressed(MB_LEFT)){
-            GLint vp [4];
-            glGetIntegerv (GL_VIEWPORT, vp);
-            std::cout << vp[2] << '\n' << vp[3] << std::endl;
-        }
+        
         gameEngine.StepEvent();
         gameEngine.BeginDraw();
         
