@@ -9,10 +9,10 @@
 
 
 int main (){
-    glm::vec3 BACKGROUND_COLOR(100.0/255,100.0/255,100.0/255);
-    Engine *gameEngine = new Engine;
+    glm::vec3 BACKGROUND_COLOR(100.0/255.0);
+    Engine gameEngine;
 
-    gameEngine->init("NGE", 640,480);
+    gameEngine.init("NGE", 1024,768);
     //If the app crashes try using a font that is located in the same directory as the app
     FTGLBitmapFont font("C:/Windows/Fonts/arial.ttf");
 	Renderer2D renderer;
@@ -27,16 +27,16 @@ int main (){
     //If you haven't bound any other texture you don't need to worry about the last step
     //Scroll down to pass the sprite to the renderer
     
-    std::string vshader=gameEngine->LoadShaderFromFile("./Graphics/Shaders/shader.vs"),
-                fshader=gameEngine->LoadShaderFromFile("./Graphics/Shaders/shader.fs");
-    unsigned int shader=gameEngine->CreateShader(vshader.c_str(),fshader.c_str());
+    std::string vshader=gameEngine.LoadShaderFromFile("./Graphics/Shaders/shader.vs"),
+                fshader=gameEngine.LoadShaderFromFile("./Graphics/Shaders/shader.fs");
+    unsigned int shader=gameEngine.CreateShader(vshader.c_str(),fshader.c_str());
 
 
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
     std::string fpsString = "0";
     
-    while(!glfwWindowShouldClose(gameEngine->get_window())){
+    while(!glfwWindowShouldClose(gameEngine.get_window())){
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
             break;
         double currTime = glfwGetTime();
@@ -47,17 +47,25 @@ int main (){
             prevTime=currTime;
         }
         
-        gameEngine->background_color=BACKGROUND_COLOR;
-        gameEngine->StepEvent();
-        gameEngine->BeginDraw();
-
+        gameEngine.setBackgroundColor(BACKGROUND_COLOR);
+        if(mouse_check_button(MB_LEFT)){
+            gameEngine.setBackgroundColor(glm::vec3(0));
+        }
+        if(mouse_check_button_pressed(MB_LEFT)){
+            GLint vp [4];
+            glGetIntegerv (GL_VIEWPORT, vp);
+            std::cout << vp[2] << '\n' << vp[3] << std::endl;
+        }
+        gameEngine.StepEvent();
+        gameEngine.BeginDraw();
+        
         font.FaceSize(16);
         font.Render(fpsString.c_str(),-1,FTPoint(0,600-font.FaceSize(),0));
         
         glUseProgram(shader);
-        glUniformMatrix4fv(glGetUniformLocation(shader, "proj_matrix"),1,GL_FALSE,gameEngine->getOthroMatrix());
+        glUniformMatrix4fv(glGetUniformLocation(shader, "proj_matrix"),1,GL_FALSE,gameEngine.getOthroMatrix());
         glUniform1i(glGetUniformLocation(shader, "texture"), 0);
-
+        
         renderer.renderBegin();
         //renderer.addSprite(&spr);
         //Here you can render sprites depending on MAX_SPRITE_COUNT macro in Renderer2D.h
@@ -69,7 +77,7 @@ int main (){
 
         glUseProgram(0);
 
-        gameEngine->EndDraw();
+        gameEngine.EndDraw();
         renderer.dcpf = 0;
     }
     

@@ -1,39 +1,27 @@
 #include "Engine.h"
-GLFWwindow* Engine::window = NULL;
-GLFWwindow* Engine::window2 = NULL;
-int Engine::SCREEN_WIDTH=800;
-int Engine::SCREEN_HEIGHT=600;
-int Engine::view_xport=0;
-int Engine::view_yport=0;
-int Engine::view_width=SCREEN_WIDTH;
-int Engine::view_height=SCREEN_HEIGHT;
-int Engine::view_xview=0;
-int Engine::view_yview=0;
-glm::vec3 Engine::background_color(100,100,100);
-
+Engine::Engine() : window_width(800), window_height(600),
+                   view_xport(0), view_yport(0),
+                   view_xview(0), view_yview(0),
+                   background_color(100,100,100){}
 /// Initializes Rendering Engine
-bool Engine::init(const char* window_title, int _view_xport, int _view_yport){
-
-
+bool Engine::init(const char* window_title, int _view_wport, int _view_hport){
     if(!glfwInit()){
         std::cout << "Error Initializing GLFW" << std::endl;
         return false;
     }
 
-    window=glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, window_title, NULL, NULL);
+    window=glfwCreateWindow(window_width, window_height, window_title, NULL, NULL);
     
     if(window==NULL){
         std::cout << "Error Creating Window" << std::endl;
         return false;
     }
-    if (_view_xport>=SCREEN_WIDTH)
-        view_xport=_view_xport;
-    else
-        view_xport=SCREEN_WIDTH;
-    if (_view_yport>=SCREEN_HEIGHT)
-        view_yport=_view_yport;
-    else
-        view_yport=SCREEN_HEIGHT;
+    view_width=window_width;
+    view_height=window_height;
+    
+    view_wport = (_view_wport>=window_width) ? window_width : _view_wport;
+    view_hport = (_view_hport>=window_height) ? window_height : _view_hport;
+    
     glfwMakeContextCurrent(window);
     if(glewInit()!=GLEW_OK){
         std::cout << "Error Initializing GLEW" << std::endl;
@@ -41,7 +29,7 @@ bool Engine::init(const char* window_title, int _view_xport, int _view_yport){
     }
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
-    glfwSwapInterval(0);
+    glfwSwapInterval(1);
 	
     glfwSetKeyCallback(window,keyboardCallback);
     glfwSetCursorPosCallback(window,mousePosCallback);
@@ -49,10 +37,10 @@ bool Engine::init(const char* window_title, int _view_xport, int _view_yport){
 	glfwSetJoystickCallback(joystickCallback);
 
     const GLFWvidmode* mode= glfwGetVideoMode(glfwGetPrimaryMonitor());
-    int xPos=(mode->width - SCREEN_WIDTH)/2;
-    int yPos=(mode->height - SCREEN_HEIGHT)/2;
+    int xPos=(mode->width - window_width)/2;
+    int yPos=(mode->height - window_height)/2;
     glfwSetWindowPos(window, xPos, yPos);
-    glViewport(0,SCREEN_HEIGHT-view_yport,view_xport,view_yport);
+    glViewport(view_xport,view_yport,view_wport,view_hport);
 
     /// CAMERA
     glMatrixMode(GL_PROJECTION);
@@ -84,13 +72,12 @@ void Engine::StepEvent(){
 }
 /// Initializes Drawing Frame Every Frame
 void Engine::BeginDraw(){
-
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(background_color.r,background_color.g,background_color.b,1);
 }
 /// Swaps Rendered Frames with current Frames
 void Engine::EndDraw(){
-
     glfwSwapBuffers(window);
 }
 /// Returns Current Running window
@@ -100,7 +87,24 @@ GLFWwindow* Engine::get_window(){
 const float* Engine::getOthroMatrix(){
     return (const float*)glm::value_ptr(ortho_mat);
 }
-
+void Engine::setBackgroundColor(glm::vec3 bg){
+    background_color=bg;
+}
+glm::vec2 Engine::getWindowSize(){
+    return glm::vec2(window_width, window_height);
+}
+int Engine::getViewWidth(){
+    return view_width;
+}
+int Engine::getViewHeight(){
+    return view_height;
+}
+int Engine::getViewX(){
+    return view_xview;
+}
+int Engine::getViewY(){
+    return view_yview;
+}
 
 unsigned int Engine::CompileShader(unsigned int type, const char* source){
     unsigned int id = glCreateShader(type);
@@ -112,7 +116,8 @@ unsigned int Engine::CompileShader(unsigned int type, const char* source){
     if(!result){
         int length;
         glGetShaderiv(id,GL_INFO_LOG_LENGTH,&length);
-        char *errMessage=(char*)malloc(length*sizeof(char));
+        //char *errMessage=(char*)malloc(length*sizeof(char));
+        char errMessage[length];
         glGetShaderInfoLog(id, length,&length, errMessage);
         std::cout << "Couldn't Load " << (type==GL_VERTEX_SHADER?"Vertex":"Fragment")<<"Shader"<< std::endl;
         std::cout << errMessage << std::endl;

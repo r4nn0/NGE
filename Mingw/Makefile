@@ -4,7 +4,7 @@ Libdirs		:= "lib"
 Libs		:= "ftgl" "freetype" "glew32" "glfw3" "gdi32" "winmm" "opengl32"
 Macros		:= "GLEW_STATIC"
 OutFolder	:= "bin"
-CmdDbg		:= g++ -Wall -g $(srcFiles) -o $(OutFolder)/NGE-dbg.exe\
+CmdDbg		:= g++ -std=c++1y -Wall -g $(srcFiles) -o $(OutFolder)/NGE-dbg.exe\
 				$(patsubst %, -D%, $(Macros))\
 				$(patsubst %, -I%, $(Includedirs))\
 				$(patsubst %, -L%, $(Libdirs))\
