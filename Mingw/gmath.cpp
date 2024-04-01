@@ -1,5 +1,6 @@
 #include "gmath.h"
 int gmath::sign(double n){
+    if(n==0) return 0;
     return (n<0) ? -1:1;
 }
 int gmath::irandom(int maxValue){

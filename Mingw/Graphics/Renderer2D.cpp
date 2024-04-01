@@ -2,7 +2,7 @@
 
 Renderer2D::Renderer2D()
 {
-    dcpf = 0;
+    dcpf = 0; // Draw calls per frame
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &m_maxTextures);
     glGenVertexArrays(1, &m_appSurface);
     glGenBuffers(1, &m_VBO);
