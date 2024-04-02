@@ -7,7 +7,6 @@
 #include "FTGL/ftgl.h"
 #include "Graphics/TexturePage.h"
 
-
 int main (){
     glm::vec3 BACKGROUND_COLOR(100.0/255.0);
     Engine gameEngine;
@@ -58,8 +57,9 @@ int main (){
         glUseProgram(shader);
         glUniformMatrix4fv(glGetUniformLocation(shader, "proj_matrix"),1,GL_FALSE,gameEngine.getOthroMatrix());
         glUniform1i(glGetUniformLocation(shader, "texture"), 0);
-        
+
         renderer.renderBegin();
+        //renderer.addSprite(&spr);
         //renderer.addSprite(&spr);
         //Here you can render sprites depending on MAX_SPRITE_COUNT macro in Renderer2D.h
         //changing the number won't affect the performance but it won't render anything
