@@ -30,7 +30,7 @@ bool Engine::init(const char* window_title, int _view_wport, int _view_hport){
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     //  VSYNC
-    glfwSwapInterval(0);
+    glfwSwapInterval(1);
 	
     glfwSetKeyCallback(window,keyboardCallback);
     glfwSetCursorPosCallback(window,mousePosCallback);

@@ -67,7 +67,6 @@ int main (){
         renderer.renderEnd();
         renderer.Render();
 
-
         glUseProgram(0);
 
         gameEngine.EndDraw();
