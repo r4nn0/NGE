@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "Engine.h"
 #include "Graphics/Sprite.h"
 #include "Graphics/stb_image.h"
@@ -6,6 +7,82 @@
 #include "Graphics/Renderer2D.h"
 #include "FTGL/ftgl.h"
 #include "Graphics/TexturePage.h"
+std::wstring ar_alphabet = {
+    0xfe8f, 0xfe95, 0xfe99, 0xfe9d,
+    0xfea1, 0xfea5, 0xfeb1, 0xfeb5,
+    0xfeb9, 0xfebd, 0xfec1, 0xfec5,
+    0xfec9, 0xfecd, 0xfed1, 0xfed5,
+    0xfed9, 0xfedd, 0xfee1, 0xfee5,
+    0xfee9, 0xfef1, 0xfe8d, 0xfea9,
+    0xfeab, 0xfead, 0xfeaf, 0xfeed,
+    0xfe93, 0xfeef
+};
+std::wstring  ar_has_mi = {
+    1576, 1578, 1579, 1580,
+    1581, 1582, 1587, 1588,
+    1589, 1590, 1591, 1592,
+    1593, 1594, 1601, 1602,
+    1603, 1604, 1605, 1606,
+    1607, 1610
+};
+std::wstring  ar_has_no_mi = {
+    1575, 1583, 1584,
+    1585, 1586, 1608,
+    1577, 1609
+};
+
+std::wstring  has_mi = {
+    0xfe8f, 0xfe95, 0xfe99, 0xfe9d,
+    0xfea1, 0xfea5, 0xfeb1, 0xfeb5,
+    0xfeb9, 0xfebd, 0xfec1, 0xfec5,
+    0xfec9, 0xfecd, 0xfed1, 0xfed5,
+    0xfed9, 0xfedd, 0xfee1, 0xfee5,
+    0xfee9, 0xfef1
+};
+std::wstring  has_no_mi = {
+    0xfe8d, 0xfea9, 0xfeab,
+    0xfead, 0xfeaf, 0xfeed,
+    0xfe93, 0xfeef
+};
+
+std::wstring ar_fix(std::wstring str){
+    for(size_t i = 0; i<str.size();i++){
+        
+        size_t pos = ar_has_mi.find(str[i]);
+        if(pos!=std::wstring::npos) {
+            str[i]=has_mi[pos];
+            continue;
+        }
+        pos = ar_has_no_mi.find(str[i]);
+        if(pos!=std::wstring::npos) str[i]=has_no_mi[pos];
+    }
+    std::wstring out = str;
+    
+    bool cp_has_mi=false;
+    for(size_t i = 0; i<str.size();i++){
+        wchar_t c = str[i];
+        wchar_t cn = str[(i<str.size()) ? i+1:i];
+        bool c_has_mi = (has_mi.find(c)!=std::wstring::npos) ? true:false;
+        bool cn_is_alphabet = (ar_alphabet.find(cn)!=std::wstring::npos) ? true:false;
+        if(c_has_mi){
+            if(!cp_has_mi && cn_is_alphabet) c+=2;
+            else if(cp_has_mi && cn_is_alphabet) c+=3;
+            else if(cp_has_mi) c+=1;
+            cp_has_mi=true;
+            out[i]=c;
+            continue;
+        }
+        bool c_has_no_mi = (has_no_mi.find(c)!=std::wstring::npos) ? true:false;
+        if(cp_has_mi && c_has_no_mi) c++;
+        cp_has_mi=false;
+        out[i]=c;
+    }
+    std::wstring temp=out;
+    for(size_t j=0;j<out.size();j++){
+        out[j]=temp[out.size()-1-j];
+    }
+    return out;
+}
 
 int main (){
     glm::vec3 BACKGROUND_COLOR(100.0/255.0);
@@ -29,7 +106,7 @@ int main (){
     std::string vshader=gameEngine.LoadShaderFromFile("./Graphics/Shaders/shader.vs"),
                 fshader=gameEngine.LoadShaderFromFile("./Graphics/Shaders/shader.fs");
     unsigned int shader=gameEngine.CreateShader(vshader.c_str(),fshader.c_str());
-
+    
 
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
@@ -53,7 +130,13 @@ int main (){
         
         font.FaceSize(16);
         font.Render(fpsString.c_str(),-1,FTPoint(0,600-font.FaceSize(),0));
-        
+        font.FaceSize(64);
+        //font.Render(L"ﺎﺒﺣﺮﻣ", -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
+        //const wchar_t* t= ar_fix(L"ابحرم").c_str();
+
+        //const wchar_t a[6] = {0xfe8e,0xfe92,0xfea3,0xfeae,0xfee3,0};
+
+        font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
         glUseProgram(shader);
         glUniformMatrix4fv(glGetUniformLocation(shader, "proj_matrix"),1,GL_FALSE,gameEngine.getOthroMatrix());
         glUniform1i(glGetUniformLocation(shader, "texture"), 0);
