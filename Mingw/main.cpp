@@ -130,10 +130,10 @@ int main (){
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
     std::string fpsString = "0";
-    long long max=-10, min=10;
+    long long max=0, min=5;
     while(!glfwWindowShouldClose(gameEngine.get_window())){
         if (keyboard_check_pressed(GLFW_KEY_SPACE))
-            std::cout << gmath::irandom(min,max)<<std::endl;
+            std::cout << gmath::drandom(min,max)<<std::endl;
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
             break;
         double currTime = glfwGetTime();

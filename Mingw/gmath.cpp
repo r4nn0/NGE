@@ -10,9 +10,23 @@ int gmath::sign(double n){
     if(n==0) return 0;
     return (n<0) ? -1:1;
 }
+/**
+ * @brief Determines which if the parameters has the lowest value
+ * 
+ * @param a first value
+ * @param b second value
+ * @return double lowest value
+ */
 double gmath::min(double a, double b){
     return (a<b) ? a:b;
 }
+/**
+ * @brief Determines which if the parameters has the highest value
+ * 
+ * @param a first value
+ * @param b second value
+ * @return double highest value
+ */
 double gmath::max(double a, double b){
     return (a>b) ? a:b;
 }
@@ -33,8 +47,34 @@ long long gmath::irandom(long long r1, long long r2){
     retVal= (seed%range) + min(r1,r2);
     return retVal;
 }
+/**
+ * @brief Generates a random number in range (Including minimum and maximum number in the range) with decimals
+ * 
+ * @param r1 first value in the range
+ * @param r2 last value in the range 
+ * @return double return the generated random number
+ */
 double gmath::drandom(double r1, double r2){
-
+    static double seed=std::chrono::system_clock::now().time_since_epoch().count();
+    double retVal;
+    unsigned long long uPtr = (unsigned long long)seed;
+    uPtr ^= (uPtr)<<26;
+    uPtr ^= (uPtr)>>34;
+    uPtr ^= (uPtr)<<10;
+    seed = ((double)uPtr);
+    double range = abs(r1-r2)+1;
+    retVal= dmod(seed, range) + min(r1,r2);
+    return retVal;
+}
+/**
+ * @brief Calculates the remainder of a double divided by another
+ * 
+ * @param val Value to divide
+ * @param div divisor
+ * @return double remainder of the division (val%div)
+ */
+double gmath::dmod(double val, double div){
+    return __builtin_fmod(val, div);
 }
 /**
  * @brief Calculates factorial of the number passed in as parameter

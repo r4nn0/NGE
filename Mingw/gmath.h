@@ -33,6 +33,7 @@
 namespace gmath{
 
     int sign(double);
+    double abs(double);
     double min(double, double);
     double max(double, double);
 
@@ -40,7 +41,8 @@ namespace gmath{
     long long irandom(long long, long long);
     double drandom(double, double);
 
-    double abs(double);
+    
+    double dmod(double, double);
 
     double dsin(double);
     double dcos(double);
