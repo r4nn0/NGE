@@ -7,6 +7,23 @@
 #include "Graphics/Renderer2D.h"
 #include "FTGL/ftgl.h"
 #include "Graphics/TexturePage.h"
+
+/*! \mainpage NGE (NewbiesGameEngine)
+ *
+ * \section intro_sec Introduction
+ *
+ * This engine is designed for beginners in programming to learn game development in C++
+ *
+ * \section install_sec Installation
+ *
+ * \subsection prereq Preperations: 
+ * + Make sure you are using Mingw 6.3.0 or later version\n 
+ * otherwise you will have to recompile the libraries that are included in the project
+ *
+ * \subsection comp Compiling:
+ * + Open a terminal window in the same folder and run "make" or "make run"\n
+ * Note: Check out the makefile to know if you want to compile a debug or a release version.
+ */
 std::wstring ar_alphabet = {
     0xfe8f, 0xfe95, 0xfe99, 0xfe9d,
     0xfea1, 0xfea5, 0xfeb1, 0xfeb5,
@@ -87,13 +104,15 @@ std::wstring ar_fix(std::wstring str){
 int main (){
     glm::vec3 BACKGROUND_COLOR(100.0/255.0);
     Engine gameEngine;
-
-    gameEngine.init("NGE", 1024,768);
+    
+    gameEngine.init("NGE", 1000,500);
+    
     //If the app crashes try using a font that is located in the same directory as the app
     FTGLBitmapFont font("C:/Windows/Fonts/arial.ttf");
+    
 	Renderer2D renderer;
 
-    //TexturePage tp;
+    
     //After Creating the tp you need to resize it so you can load sprites to it
     //ex: tp.ImageResizeCanvas(100/*width*/, 100/*height*/,4/*number of channels*/ );
     //Now you need to create a sprite and pass it to the tp
@@ -111,8 +130,10 @@ int main (){
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
     std::string fpsString = "0";
-    
+    long long max=-10, min=10;
     while(!glfwWindowShouldClose(gameEngine.get_window())){
+        if (keyboard_check_pressed(GLFW_KEY_SPACE))
+            std::cout << gmath::irandom(min,max)<<std::endl;
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
             break;
         double currTime = glfwGetTime();
@@ -127,9 +148,11 @@ int main (){
         
         gameEngine.StepEvent();
         gameEngine.BeginDraw();
+
+        
         
         font.FaceSize(16);
-        font.Render(fpsString.c_str(),-1,FTPoint(0,600-font.FaceSize(),0));
+        font.Render(fpsString.c_str(),-1,FTPoint(0,gameEngine.getViewHeight()-font.FaceSize(),0));
         font.FaceSize(64);
         //font.Render(L"ﺎﺒﺣﺮﻣ", -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
         //const wchar_t* t= ar_fix(L"ابحرم").c_str();
@@ -142,7 +165,6 @@ int main (){
         glUniform1i(glGetUniformLocation(shader, "texture"), 0);
 
         renderer.renderBegin();
-        //renderer.addSprite(&spr);
         //renderer.addSprite(&spr);
         //Here you can render sprites depending on MAX_SPRITE_COUNT macro in Renderer2D.h
         //changing the number won't affect the performance but it won't render anything

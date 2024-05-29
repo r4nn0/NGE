@@ -2,7 +2,7 @@
 class TexturePage
 {
 private:
-	int m_Width, m_Height, m_xOffset, m_yOffset, m_ChannelNum, m_Slot;
+	int m_xOffset, m_yOffset, m_Width, m_Height, m_ChannelNum, m_Slot;
 	unsigned char* m_TexturePage;
 	unsigned int m_Texture;
 public:

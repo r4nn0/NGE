@@ -1,8 +1,10 @@
 #include "Renderer2D.h"
 
-Renderer2D::Renderer2D()
-{
-    dcpf = 0; // Draw calls per frame
+/**
+ * @brief Initialize batch renderer to pass correct values to shaders
+ * 
+ */
+Renderer2D::Renderer2D() : dcpf(0) {
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &m_maxTextures);
     glGenVertexArrays(1, &m_appSurface);
     glGenBuffers(1, &m_VBO);
@@ -34,21 +36,36 @@ Renderer2D::Renderer2D()
     glBindVertexArray(0);
 
 }
-
+/**
+ * @brief Frees the buffers in memory
+ * 
+ */
 Renderer2D::~Renderer2D()
 {
     delete m_indexBuffer;
     glDeleteBuffers(1,&m_VBO);
 }
-
+/**
+ * @brief Initializes rendering, necessary before adding sprites
+ * 
+ */
 void Renderer2D::renderBegin(){
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
     m_Buff = (ngetype::vboData*) glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 }
+/**
+ * @brief Ends rendering so that the engine knows it is ready to render
+ * 
+ */
 void Renderer2D::renderEnd(){
     glUnmapBuffer(GL_ARRAY_BUFFER);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
+/**
+ * @brief Add a sprite to the rendering screen
+ * 
+ * @param spr the object of the sprite to add
+ */
 void Renderer2D::addSprite(Sprite* spr){
 	float texID =m_textureCount;
 	if(!spr->hasTexture())
@@ -87,6 +104,10 @@ void Renderer2D::addSprite(Sprite* spr){
     m_indexCount+=6;
     m_textureCount++;
 }
+/**
+ * @brief Start rendering objects added to the renderer
+ * 
+ */
 void Renderer2D::Render(){
     glBindVertexArray(m_appSurface);
     m_indexBuffer->bind();

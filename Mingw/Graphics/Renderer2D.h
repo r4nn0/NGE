@@ -17,6 +17,10 @@ public:
     void addSprite(Sprite*);
     void Render();
     void renderEnd();
+    /**
+     * @brief A variable that counts drawcalls per frame
+     * 
+     */
     unsigned int dcpf;
 protected:
 

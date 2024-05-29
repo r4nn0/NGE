@@ -11,8 +11,9 @@ public:
     void setPosition(glm::vec3);
     void setScale(glm::vec2);
     void setUV(std::vector<glm::vec2>);
-    inline void setColor(glm::vec4);
+    void setColor(glm::vec4);
 
+    
     inline unsigned char* getPixels(){return m_Pixels;}
 	inline glm::vec3& getPosition(){return m_Pos;}
     inline glm::vec2& getSize(){return m_Size;}

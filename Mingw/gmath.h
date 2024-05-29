@@ -33,9 +33,12 @@
 namespace gmath{
 
     int sign(double);
+    double min(double, double);
+    double max(double, double);
+
     int factorial( int);
-    int irandom(int);
-    float frandom(float);
+    long long irandom(long long, long long);
+    double drandom(double, double);
 
     double abs(double);
 
