@@ -1,5 +1,4 @@
 #include "gmath.h"
-#include <iostream>
 /**
  * @brief Return the sign value of a number
  * 
@@ -54,17 +53,10 @@ long long gmath::irandom(long long r1, long long r2){
  * @param r2 last value in the range 
  * @return double return the generated random number
  */
-double gmath::drandom(double r1, double r2){
-    static double seed=std::chrono::system_clock::now().time_since_epoch().count();
-    double retVal;
-    unsigned long long uPtr = (unsigned long long)seed;
-    uPtr ^= (uPtr)<<26;
-    uPtr ^= (uPtr)>>34;
-    uPtr ^= (uPtr)<<10;
-    seed = ((double)uPtr);
-    double range = abs(r1-r2)+1;
-    retVal= dmod(seed, range) + min(r1,r2);
-    return retVal;
+double gmath::drandom(double a, double b){
+    return gmath::min(gmath::max(a,b),
+                      (double)gmath::irandom(a,b)+
+                      (double)gmath::irandom(0,gmath::pow(10,15))/gmath::pow(10,15));
 }
 /**
  * @brief Calculates the remainder of a double divided by another

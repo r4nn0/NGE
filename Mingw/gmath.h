@@ -40,10 +40,10 @@ namespace gmath{
     int factorial( int);
     long long irandom(long long, long long);
     double drandom(double, double);
-
     
     double dmod(double, double);
-
+    
+    
     double dsin(double);
     double dcos(double);
     double dtan(double);

@@ -100,7 +100,6 @@ std::wstring ar_fix(std::wstring str){
     }
     return out;
 }
-
 int main (){
     glm::vec3 BACKGROUND_COLOR(100.0/255.0);
     Engine gameEngine;
@@ -111,7 +110,10 @@ int main (){
     FTGLBitmapFont font("C:/Windows/Fonts/arial.ttf");
     
 	Renderer2D renderer;
-
+    TexturePage tp;
+    tp.ImageResizeCanvas(100,100,4);
+    Sprite spr(glm::vec3(0,0,0),glm::vec2(32,32));
+    tp.ImageAdd(&spr);
     
     //After Creating the tp you need to resize it so you can load sprites to it
     //ex: tp.ImageResizeCanvas(100/*width*/, 100/*height*/,4/*number of channels*/ );
@@ -130,10 +132,7 @@ int main (){
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
     std::string fpsString = "0";
-    long long max=0, min=5;
     while(!glfwWindowShouldClose(gameEngine.get_window())){
-        if (keyboard_check_pressed(GLFW_KEY_SPACE))
-            std::cout << gmath::drandom(min,max)<<std::endl;
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
             break;
         double currTime = glfwGetTime();
@@ -142,10 +141,11 @@ int main (){
             fpsString=std::to_string(FPS);
             FPS=0;
             prevTime=currTime;
+            std::cout << gmath::drandom(1000,9999) <<std::endl;
+            spr.setPosition(glm::vec3(gmath::irandom(0,1000-32),gmath::irandom(0,500-32),0));
         }
         
         gameEngine.setBackgroundColor(BACKGROUND_COLOR);
-        
         gameEngine.StepEvent();
         gameEngine.BeginDraw();
 
@@ -165,6 +165,7 @@ int main (){
         glUniform1i(glGetUniformLocation(shader, "texture"), 0);
 
         renderer.renderBegin();
+        renderer.addSprite(&spr);
         //renderer.addSprite(&spr);
         //Here you can render sprites depending on MAX_SPRITE_COUNT macro in Renderer2D.h
         //changing the number won't affect the performance but it won't render anything
