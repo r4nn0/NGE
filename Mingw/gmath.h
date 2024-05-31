@@ -1,5 +1,7 @@
 #ifndef GMATH_H_INCLUDED
 #define GMATH_H_INCLUDED
+
+
 /// PI
 #define GM_PI 3.14159265358979323846
 /// PI/2
@@ -30,6 +32,7 @@
 #define GM_NAN __builtin_nan("")
 
 #include <chrono>
+
 namespace gmath{
 
     int sign(double);
@@ -40,7 +43,6 @@ namespace gmath{
     int factorial( int);
     long long irandom(long long, long long);
     double drandom(double, double);
-    
     double dmod(double, double);
     
     
@@ -68,4 +70,5 @@ namespace gmath{
     double lengthdir_y(double, double);
 
 }
+
 #endif // GMATH_H_INCLUDED
