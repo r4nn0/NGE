@@ -8,6 +8,10 @@
 Sprite::Sprite(const char* path, glm::vec3 _pos): m_Pos(_pos){
     int _width, _height, _bpp;
     m_Pixels= stbi_load(path, &_width, &_height, &_bpp, 4);
+    if(m_Pixels==nullptr){
+        std::cout << "Error loading sprite from file" << std::endl;
+        //return;
+    }
 	m_hasTexture=true;
     m_BaseSize=glm::vec2(_width, _height);
     m_Size=m_BaseSize;
