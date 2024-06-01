@@ -3,14 +3,15 @@ class TexturePage
 {
 private:
 	int m_xOffset, m_yOffset, m_Width, m_Height, m_ChannelNum, m_Slot;
+	std::vector<int> m_yOffsetRow;
 	unsigned char* m_TexturePage;
 	unsigned int m_Texture;
 public:
-	TexturePage();
+	TexturePage(int=0);
 	void ImageResizeCanvas(int, int, int);
 	void ImageAdd(Sprite*);
-	void Bind(int);
+	void Bind();
 	void Unbind();
-	glm::vec2 getOffset();
+	int GetTextureSlot();
 };
 

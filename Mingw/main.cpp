@@ -1,11 +1,6 @@
 #include <algorithm>
-#include "Engine.h"
-#include "Graphics/Sprite.h"
-#include "Graphics/stb_image.h"
-#include "gmath.h"
-#include "ngetype.h"
-#include "Graphics/Renderer2D.h"
 #include "FTGL/ftgl.h"
+#include "Graphics/Renderer2D.h"
 #include "Graphics/TexturePage.h"
 
 /*! \mainpage NGE (NewbiesGameEngine)
@@ -110,10 +105,8 @@ int main (){
     FTGLBitmapFont font("C:/Windows/Fonts/arial.ttf");
     
 	Renderer2D renderer;
+    // Create a texture page 
     TexturePage tp;
-    tp.ImageResizeCanvas(100,100,4);
-    Sprite spr(glm::vec3(0,0,0),glm::vec2(32,32));
-    tp.ImageAdd(&spr);
     
     //After Creating the tp you need to resize it so you can load sprites to it
     //ex: tp.ImageResizeCanvas(100/*width*/, 100/*height*/,4/*number of channels*/ );
@@ -121,7 +114,6 @@ int main (){
     //ex: Sprite spr("C:/Path/To/Sprite.png", glm::vec3(0,0,0)/*Position: where it should be rendered*/);
     //tp.ImageAdd(&spr);
     //Don't forget to bind the texture in the tp (tp.Bind(0/*Texture Slot, Range from 0 to 32*/);)
-    //If you haven't bound any other texture you don't need to worry about the last step
     //Scroll down to pass the sprite to the renderer
     
     std::string vshader=gameEngine.LoadShaderFromFile("./Graphics/Shaders/shader.vs"),
@@ -141,8 +133,7 @@ int main (){
             fpsString=std::to_string(FPS);
             FPS=0;
             prevTime=currTime;
-            std::cout << gmath::drandom(1000,9999) <<std::endl;
-            spr.setPosition(glm::vec3(gmath::irandom(0,1000-32),gmath::irandom(0,500-32),0));
+            //spr.setPosition(glm::vec3(gmath::irandom(0,1000-32),gmath::irandom(0,500-32),0));
         }
         
         gameEngine.setBackgroundColor(BACKGROUND_COLOR);
@@ -153,28 +144,33 @@ int main (){
         
         font.FaceSize(16);
         font.Render(fpsString.c_str(),-1,FTPoint(0,gameEngine.getViewHeight()-font.FaceSize(),0));
-        font.FaceSize(64);
+        font.FaceSize(80);
         //font.Render(L"ﺎﺒﺣﺮﻣ", -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
         //const wchar_t* t= ar_fix(L"ابحرم").c_str();
 
         //const wchar_t a[6] = {0xfe8e,0xfe92,0xfea3,0xfeae,0xfee3,0};
-
-        font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
-        glUseProgram(shader);
-        glUniformMatrix4fv(glGetUniformLocation(shader, "proj_matrix"),1,GL_FALSE,gameEngine.getOthroMatrix());
-        glUniform1i(glGetUniformLocation(shader, "texture"), 0);
+        const wchar_t* ar = ar_fix(L"مرحبا").c_str();
+        
+        font.Render(ar, -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
+        
 
         renderer.renderBegin();
-        renderer.addSprite(&spr);
+        
         //renderer.addSprite(&spr);
         //Here you can render sprites depending on MAX_SPRITE_COUNT macro in Renderer2D.h
         //changing the number won't affect the performance but it won't render anything
         //if you render more sprites than MAX_SPRITE_COUNT and it might crash
         renderer.renderEnd();
+
+        glUseProgram(shader);
+        glUniformMatrix4fv(glGetUniformLocation(shader, "proj_matrix"),1,GL_FALSE,gameEngine.getOthroMatrix());
+        glUniform1i(glGetUniformLocation(shader, "texture"), tp.GetTextureSlot());
+        /*Bind the texture page so that the shader can access it*/
+        tp.Bind();
         renderer.Render();
-
+        tp.Unbind();
         glUseProgram(0);
-
+        
         gameEngine.EndDraw();
         renderer.dcpf = 0;
     }
