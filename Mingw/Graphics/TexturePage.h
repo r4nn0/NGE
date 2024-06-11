@@ -8,7 +8,8 @@ private:
 	unsigned int m_Texture;
 public:
 	TexturePage(int=0);
-	void ImageResizeCanvas(int, int, int);
+	TexturePage(int, int, int=4, int=0);
+	void ImageResizeCanvas(int, int, int=4);
 	void ImageAdd(Sprite*);
 	void Bind();
 	void Unbind();

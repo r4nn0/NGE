@@ -107,7 +107,9 @@ int main (){
 	Renderer2D renderer;
     // Create a texture page 
     TexturePage tp;
-    
+    tp.ImageResizeCanvas(200,200);
+    Sprite spr("sprite.png", glm::vec3(32,32,0));
+    tp.ImageAdd(&spr);
     //After Creating the tp you need to resize it so you can load sprites to it
     //ex: tp.ImageResizeCanvas(100/*width*/, 100/*height*/,4/*number of channels*/ );
     //Now you need to create a sprite and pass it to the tp
@@ -156,7 +158,7 @@ int main (){
 
         renderer.renderBegin();
         
-        //renderer.addSprite(&spr);
+        renderer.addSprite(&spr);
         //Here you can render sprites depending on MAX_SPRITE_COUNT macro in Renderer2D.h
         //changing the number won't affect the performance but it won't render anything
         //if you render more sprites than MAX_SPRITE_COUNT and it might crash

@@ -2,10 +2,25 @@
 /**
  * @brief Initialize the texture page where the sprites should be saved
  * 
+ * @param slot texture slot to save in between 0 and 31 (default = 0)
  */
 TexturePage::TexturePage(int slot) : m_xOffset(0), m_yOffset(0),
                              m_Width(0), m_Height(0), m_ChannelNum(4), m_Slot(slot){
-	m_TexturePage = (unsigned char*)malloc(4);
+	m_TexturePage = (unsigned char*)malloc(1);
+    glGenTextures(1, &m_Texture);
+}
+/**
+ * @brief Overloaded constructor to initialize the texture page where the sprites should be saved
+ * 
+ *
+ * @param width Width of the texture page to generate
+ * @param height Height of the texture page to generate
+ * @param channel_num number of channels of the texture page (default = 4)
+ * @param slot texture slot to save in between 0 and 31 (default = 0)
+ */
+TexturePage::TexturePage(int _width, int _height, int _channel_num, int _slot): m_xOffset(0), m_yOffset(0),
+                             m_Width(_width), m_Height(_height), m_ChannelNum(_channel_num), m_Slot(_slot){
+	m_TexturePage = (unsigned char*)malloc(m_Width*m_Height*m_ChannelNum);
     glGenTextures(1, &m_Texture);
 }
 /**
@@ -15,7 +30,7 @@ TexturePage::TexturePage(int slot) : m_xOffset(0), m_yOffset(0),
  * @param new_height Height of the texture page
  * @param channel_num Number of channels (4 is default)
  */
-void TexturePage::ImageResizeCanvas(int new_width, int new_height, int channel_num=4) {
+void TexturePage::ImageResizeCanvas(int new_width, int new_height, int channel_num) {
     m_TexturePage = (unsigned char*)realloc(m_TexturePage, new_width * new_height * channel_num);
     m_ChannelNum = channel_num;
     for (int x = m_Width;x < new_width;x++) {
@@ -84,7 +99,6 @@ void TexturePage::ImageAdd(Sprite* sprite) {
 /**
  * @brief Bind the texture to one of slots in memory (usually between 0 and 31)
  * 
- * @param slot the slot in which the texture will be saved in (Default 0)
  */
 void TexturePage::Bind() {
     glActiveTexture(GL_TEXTURE0+m_Slot);
