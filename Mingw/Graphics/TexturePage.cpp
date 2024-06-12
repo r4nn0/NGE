@@ -77,6 +77,7 @@ void TexturePage::ImageAdd(Sprite* sprite) {
 		uvs.push_back(glm::vec2(x2, y2)); // 1, 1
 		uvs.push_back(glm::vec2(x1, y2)); // 0, 1
 		sprite->setUV(uvs);
+		sprite->setTextureSlot(m_Slot);
 		for (int x = 0;x < width;x++) {
 			for (int y = 0;y < height;y++) {
 				m_TexturePage[(x+ m_xOffset + m_Width * (y+ m_yOffset)) * m_ChannelNum + 0] = data[(x + width * y) * m_ChannelNum + 0];

@@ -66,4 +66,11 @@ void Sprite::setScale(glm::vec2 _scale)  {m_Size=_scale*m_BaseSize;}
  * @param _color Color in RGBA format
  */
 void Sprite::setColor(glm::vec4 _color)  {m_Color=_color;}
-
+/**
+ * @brief Set the slot number of the texture where the sprite is saved\n
+ *
+ * @param slot number of the slot (range from 0 to 31)
+ */
+void Sprite::setTextureSlot(int slot){
+    m_texSlot=slot;
+}

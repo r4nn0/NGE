@@ -2,7 +2,8 @@
 class TexturePage
 {
 private:
-	int m_xOffset, m_yOffset, m_Width, m_Height, m_ChannelNum, m_Slot;
+	int m_xOffset, m_yOffset, m_Width, m_Height, m_ChannelNum;
+	const int m_Slot;
 	std::vector<int> m_yOffsetRow;
 	unsigned char* m_TexturePage;
 	unsigned int m_Texture;

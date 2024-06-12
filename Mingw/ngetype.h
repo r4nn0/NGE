@@ -11,7 +11,7 @@ namespace ngetype
         glm::vec3 vertex;
         glm::vec4 color;
         glm::vec2 texCoords;
-        float texID;
+        float textureSlot;
     };
     class IBO{
     private:

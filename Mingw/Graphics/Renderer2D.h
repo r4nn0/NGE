@@ -28,7 +28,6 @@ private:
     
     std::vector<Sprite*> m_Sprites;
     int m_maxTextures;
-    unsigned int m_textureCount;
     ngetype::IBO* m_indexBuffer;
     GLsizei m_indexCount;
     unsigned int m_appSurface,m_VBO;
