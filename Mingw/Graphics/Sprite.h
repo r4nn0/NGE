@@ -3,7 +3,7 @@
 
 #include "../Engine.h"
 #include "stb_image.h"
-
+#include <functional>
 class Sprite{
 public:
     Sprite(const char* path, glm::vec3);
@@ -34,5 +34,23 @@ protected:
 	bool m_hasTexture;
     unsigned char* m_Pixels;
 };
+class TexturePage{
+private:
+	int m_xOffset, m_yOffset ,m_Width, m_Height, m_ChannelNum;
+	const int m_Slot;
+	unsigned char* m_TexturePage;
+	unsigned int m_Texture;
+    std::vector<std::reference_wrapper<Sprite>> SpritesTotal;
+public:
+	TexturePage(int=0);
+	TexturePage(int, int, int=4, int=0);
+	void ImageResizeCanvas(int, int, int=4);
+	void ImageAdd(Sprite&);
+	void Bind();
+	void Unbind();
+	int GetTextureSlot();
+    glm::vec2 GetAtlasSize();
+};
 
+extern TexturePage MainTextureAtlas;
 #endif

@@ -87,7 +87,7 @@ void Engine::StepEvent(){
  */
 void Engine::BeginDraw(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(background_color.r,background_color.g,background_color.b,1);
+    glClearColor(100/255.0,100/255.0,100/255.0,1);
 }
 /**
  * @brief Swaps rendered frames with current frames (Updates rendered screen)

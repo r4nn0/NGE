@@ -1,4 +1,5 @@
 #include "Sprite.h"
+TexturePage MainTextureAtlas;
 /**
  * @brief Create a new sprite from an image
  * 
@@ -20,6 +21,10 @@ Sprite::Sprite(const char* path, glm::vec3 _pos): m_Pos(_pos){
     m_UV.push_back(glm::vec2(1, 0));
     m_UV.push_back(glm::vec2(1, 1));
     m_UV.push_back(glm::vec2(0, 1));
+    glm::vec2 AtlasSize=MainTextureAtlas.GetAtlasSize();
+    if(AtlasSize.x<m_BaseSize.x) AtlasSize.x=m_BaseSize.x;
+    MainTextureAtlas.ImageResizeCanvas(AtlasSize.x, AtlasSize.y+m_BaseSize.y);
+    MainTextureAtlas.ImageAdd(*this);
 }
 /**
  * @brief Create a sprite without texture
@@ -36,6 +41,10 @@ Sprite::Sprite(glm::vec3 _pos, glm::vec2 _size): m_Pos(_pos){
     m_UV.push_back(glm::vec2(1, 0));
     m_UV.push_back(glm::vec2(1, 1));
     m_UV.push_back(glm::vec2(0, 1));
+    glm::vec2 AtlasSize=MainTextureAtlas.GetAtlasSize();
+    if(AtlasSize.y<m_BaseSize.y) AtlasSize.y=m_BaseSize.y;
+    MainTextureAtlas.ImageResizeCanvas(AtlasSize.x+m_BaseSize.x, AtlasSize.y);
+    MainTextureAtlas.ImageAdd(*this);
 }
 /**
  * @brief Sets the UV Coordinates of the sprite for the texture page
@@ -73,4 +82,125 @@ void Sprite::setColor(glm::vec4 _color)  {m_Color=_color;}
  */
 void Sprite::setTextureSlot(int slot){
     m_texSlot=slot;
+}
+/**
+ * @brief Initialize the texture page where the sprites should be saved
+ * 
+ * @param slot texture slot to save in between 0 and 31 (default = 0)
+ */
+TexturePage::TexturePage(int slot) :m_xOffset(0),m_yOffset(0), m_Width(0), m_Height(0), m_ChannelNum(4), m_Slot(slot){
+	m_TexturePage = (unsigned char*)malloc(1);
+    glGenTextures(1, &m_Texture);
+}
+/**
+ * @brief Overloaded constructor to initialize the texture page where the sprites should be saved
+ * 
+ *
+ * @param width Width of the texture page to generate
+ * @param height Height of the texture page to generate
+ * @param channel_num number of channels of the texture page (default = 4)
+ * @param slot texture slot to save in between 0 and 31 (default = 0)
+ */
+TexturePage::TexturePage(int _width, int _height, int _channel_num, int _slot): m_xOffset(0),m_yOffset(0),m_Width(_width), m_Height(_height), m_ChannelNum(_channel_num), m_Slot(_slot){
+	m_TexturePage = (unsigned char*)malloc(m_Width*m_Height*m_ChannelNum);
+    glGenTextures(1, &m_Texture);
+}
+/**
+ * @brief Resize the texture page so that it can take more sprites
+ * 
+ * @param new_width Width of the texture page
+ * @param new_height Height of the texture page
+ * @param channel_num Number of channels (4 is default)
+ */
+void TexturePage::ImageResizeCanvas(int new_width, int new_height, int channel_num) {
+    m_TexturePage = (unsigned char*)realloc(m_TexturePage,new_width*new_height*channel_num);
+    
+    for (Sprite &spr:SpritesTotal){
+        float x1= 0,
+			  y1= (float)spr.m_UV[0].y*m_Height/new_height,
+			  x2= (float) spr.getBaseSize().x / new_width,
+			  y2=y1+ (float) spr.getBaseSize().y / new_height;
+        spr.m_UV[0]=glm::vec2(x1,y1);
+        spr.m_UV[1]=glm::vec2(x2,y1);
+        spr.m_UV[2]=glm::vec2(x2,y2);
+        spr.m_UV[3]=glm::vec2(x1,y2);
+    }
+    m_ChannelNum = channel_num;
+    m_Width = new_width;
+    m_Height = new_height;
+}
+/**
+ * @brief Add a sprite to the texture page
+ * 
+ * @param sprite The sprite object to be added to the texture page
+ */
+void TexturePage::ImageAdd(Sprite& sprite) {
+	if(sprite.hasTexture()){
+		unsigned char* data = sprite.m_Pixels;
+		int width = sprite.m_BaseSize.x;
+		int height = sprite.m_BaseSize.y;
+        
+        if(SpritesTotal.size()!=0)
+            m_xOffset=width-width;
+		float x1=0,
+              y1= (float)m_yOffset/m_Height,
+			  x2= (float) width /m_Width,
+			  y2=y1+(float) height /m_Height;
+		sprite.m_UV[0]=glm::vec2(x1, y1); // 0, 0
+		sprite.m_UV[1]=glm::vec2(x2, y1); // 1, 0
+		sprite.m_UV[2]=glm::vec2(x2, y2); // 1, 1
+		sprite.m_UV[3]=glm::vec2(x1, y2); // 0, 1
+		
+		sprite.setTextureSlot(m_Slot);
+        
+		for (int x = 0;x < width;x++) {
+			for (int y = 0;y < height;y++) {
+				m_TexturePage[(x+ m_Width * (y+m_yOffset)) * m_ChannelNum + 0] = data[(x + width * y) * m_ChannelNum + 0];
+				m_TexturePage[(x+ m_Width * (y+m_yOffset)) * m_ChannelNum + 1] = data[(x + width * y) * m_ChannelNum + 1];
+				m_TexturePage[(x+ m_Width * (y+m_yOffset)) * m_ChannelNum + 2] = data[(x + width * y) * m_ChannelNum + 2];
+				m_TexturePage[(x+ m_Width * (y+m_yOffset)) * m_ChannelNum + 3] = data[(x + width * y) * m_ChannelNum + 3];
+			}
+		}
+        m_yOffset+=height;
+		Bind();
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_TexturePage);
+		Unbind();
+	}
+    SpritesTotal.push_back(sprite);
+}
+/**
+ * @brief Bind the texture to one of slots in memory (usually between 0 and 31)
+ * 
+ */
+void TexturePage::Bind() {
+    glActiveTexture(GL_TEXTURE0+m_Slot);
+    glBindTexture(GL_TEXTURE_2D, m_Texture);
+}
+/**
+ * @brief Unbind the texture after loading the sprite
+ * 
+ */
+void TexturePage::Unbind() {
+    glActiveTexture(GL_TEXTURE0 + m_Slot);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+/**
+ * @brief Return the value of the current texture page slot
+ * 
+ * @return int slot of the current texture page
+*/
+int TexturePage::GetTextureSlot(){
+	return m_Slot;
+}
+/**
+ * @brief Return the value of the current texture page size
+ * 
+ * @return glm::vec2 size of the current texture page
+*/
+glm::vec2 TexturePage::GetAtlasSize(){
+    return glm::vec2(m_Width, m_Height);
 }

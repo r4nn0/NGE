@@ -19,7 +19,7 @@ void main() {
         FragColor = fs_in.color * base_color;
 	}
 	else
-		FragColor=fs_in.color;
+		FragColor = fs_in.color;
 }
 
 

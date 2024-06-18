@@ -7,10 +7,10 @@
 #define MB_MIDDLE GLFW_MOUSE_BUTTON_3
 /*--------------------------------------*/
 
-#include <iostream>
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
