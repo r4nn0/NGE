@@ -3,6 +3,7 @@
 #include "Graphics/Renderer2D.h"
 #include <windows.h>
 #include "ngestd.h"
+#include "TestPlayer.h"
 /*! \mainpage NGE (NewbiesGameEngine)
  *
  * \section intro_sec Introduction
@@ -28,11 +29,8 @@ int main (){
     FTGLPixmapFont font("C:/Windows/Fonts/arial.ttf");
     
 	Renderer2D renderer;
-
-    Sprite spr("sprite.png", glm::vec3(32,32,0));
-    Sprite wll("wall.png", glm::vec3(200,32,0));
-    Sprite wll2("wall.png", glm::vec3(200,32,0));
-    Sprite wll3("wall.png", glm::vec3(200,32,0));
+    //Sprite spr("sprite.png",glm::vec2(32,32));
+    TestPlayer testObject("sprite.png");
     
     
     std::string vshader=gameEngine.LoadShaderFromFile("./Graphics/Shaders/shader.vs"),
@@ -59,13 +57,12 @@ int main (){
             fpsString=std::to_string(FPS);
             FPS=0;
             prevTime=currTime;
-            //spr.setPosition(glm::vec3(gmath::irandom(0,1000-32),gmath::irandom(0,500-32),0));
         }
         
         gameEngine.setBackgroundColor(BACKGROUND_COLOR);
         gameEngine.StepEvent();
 
-
+        testObject.Update();
 
         gameEngine.BeginDraw();
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
@@ -76,9 +73,7 @@ int main (){
         
         font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
         
-        
-        SpritesToRender.push_back(spr);
-        SpritesToRender.push_back(wll2);
+        testObject.Render();
         
 
 

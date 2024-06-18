@@ -3,7 +3,6 @@
 out vec4 FragColor;
 
 in DATA{
-    vec4 pos;
     vec4 color;
     vec2 texCoords;
     float textureSlot;

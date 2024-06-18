@@ -8,7 +8,7 @@
 namespace ngetype
 {
     struct vboData{
-        glm::vec3 vertex;
+        glm::vec2 vertex;
         glm::vec4 color;
         glm::vec2 texCoords;
         float textureSlot;

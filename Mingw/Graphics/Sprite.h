@@ -6,15 +6,16 @@
 #include <functional>
 class Sprite{
 public:
-    Sprite(const char* path, glm::vec3);
-	Sprite(glm::vec3, glm::vec2);
-    void setPosition(glm::vec3);
+    Sprite(const char* path, glm::vec2);
+	Sprite(glm::vec2, glm::vec2);
+    void DeleteSprite();
+    void setPosition(glm::vec2);
     void setScale(glm::vec2);
     void setColor(glm::vec4);
     
     inline int getTextureSlot(){return m_texSlot;}
     inline unsigned char* getPixels(){return m_Pixels;}
-	inline glm::vec3& getPosition(){return m_Pos;}
+	inline glm::vec2& getPosition(){return m_Pos;}
     inline glm::vec2& getSize(){return m_Size;}
     inline glm::vec2& getBaseSize(){return m_BaseSize;}
     inline glm::vec4& getColor(){return m_Color;}
@@ -25,7 +26,7 @@ public:
 protected:
     void setUV(std::vector<glm::vec2>);
     void setTextureSlot(int);
-    glm::vec3 m_Pos;
+    glm::vec2 m_Pos;
     glm::vec2 m_Size;
     glm::vec2 m_BaseSize;
     glm::vec4 m_Color;

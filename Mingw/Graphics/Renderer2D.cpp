@@ -15,10 +15,10 @@ Renderer2D::Renderer2D() : dcpf(0) {
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
     glEnableVertexAttribArray(3);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)0); // vec4 pos
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)(sizeof(float)*3)); // vec4 col
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)(sizeof(float)*7)); // vec2 texcoord
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)(sizeof(float)*9)); // float textureSlot
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)0); // vec4 pos
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)(sizeof(float)*2)); // vec4 col
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)(sizeof(float)*6)); // vec2 texcoord
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)(sizeof(float)*8)); // float textureSlot
     glBindBuffer(GL_ARRAY_BUFFER,0);
 
     unsigned short indices[INDICES_SIZE];
@@ -57,7 +57,7 @@ void Renderer2D::Render(){
         float textureSlot =spr.getTextureSlot();
         if(!spr.hasTexture())
             textureSlot=-1;
-        glm::vec3& _pos = spr.getPosition();
+        glm::vec2& _pos = spr.getPosition();
         glm::vec2& _size = spr.getSize();
         glm::vec4& _col = spr.getColor();
         std::vector<glm::vec2> uvs = spr.getUV();
@@ -71,21 +71,21 @@ void Renderer2D::Render(){
 
         //m_Buff->texCoords = glm::vec2(1, 0);
         m_Buff->texCoords = uvs[1];
-        m_Buff->vertex=glm::vec3(_pos.x+_size.x,_pos.y,_pos.z);
+        m_Buff->vertex=glm::vec2(_pos.x+_size.x,_pos.y);
         m_Buff->color=_col;
         m_Buff->textureSlot = textureSlot;
         m_Buff++;
 
         //m_Buff->texCoords = glm::vec2(1, 1);
         m_Buff->texCoords = uvs[2];
-        m_Buff->vertex=glm::vec3(_pos.x+_size.x,_pos.y+_size.y,_pos.z);
+        m_Buff->vertex=glm::vec2(_pos.x+_size.x,_pos.y+_size.y);
         m_Buff->color=_col;
         m_Buff->textureSlot = textureSlot;
         m_Buff++;
 
         //m_Buff->texCoords = glm::vec2(0, 1);
         m_Buff->texCoords = uvs[3];
-        m_Buff->vertex=glm::vec3(_pos.x,_pos.y+_size.y,_pos.z);
+        m_Buff->vertex=glm::vec2(_pos.x,_pos.y+_size.y);
         m_Buff->color=_col;
         m_Buff->textureSlot = textureSlot;
         m_Buff++;

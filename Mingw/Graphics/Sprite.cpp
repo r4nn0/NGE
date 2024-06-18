@@ -6,7 +6,7 @@ TexturePage MainTextureAtlas;
  * @param path Path to image
  * @param _pos position where to render the sprite
  */
-Sprite::Sprite(const char* path, glm::vec3 _pos): m_Pos(_pos){
+Sprite::Sprite(const char* path, glm::vec2 _pos): m_Pos(_pos){
     int _width, _height, _bpp;
     m_Pixels= stbi_load(path, &_width, &_height, &_bpp, 4);
     if(m_Pixels==nullptr){
@@ -32,7 +32,7 @@ Sprite::Sprite(const char* path, glm::vec3 _pos): m_Pos(_pos){
  * @param _pos position where to render the sprite
  * @param _size size of the sprite
  */
-Sprite::Sprite(glm::vec3 _pos, glm::vec2 _size): m_Pos(_pos){
+Sprite::Sprite(glm::vec2 _pos, glm::vec2 _size): m_Pos(_pos){
 	m_hasTexture=false;
 	m_BaseSize=_size;
 	m_Size=m_BaseSize;
@@ -45,6 +45,14 @@ Sprite::Sprite(glm::vec3 _pos, glm::vec2 _size): m_Pos(_pos){
     if(AtlasSize.y<m_BaseSize.y) AtlasSize.y=m_BaseSize.y;
     MainTextureAtlas.ImageResizeCanvas(AtlasSize.x+m_BaseSize.x, AtlasSize.y);
     MainTextureAtlas.ImageAdd(*this);
+}
+/**
+ * @brief Free memory from Sprite
+ * 
+ */
+void Sprite::DeleteSprite(){
+    if(m_Pixels!=nullptr)
+        delete m_Pixels;
 }
 /**
  * @brief Sets the UV Coordinates of the sprite for the texture page
@@ -62,7 +70,7 @@ void Sprite::setUV(std::vector<glm::vec2> new_uv) {
  * 
  * @param _pos position where the sprite should be rendered
  */
-void Sprite::setPosition (glm::vec3 _pos) {m_Pos=_pos;}
+void Sprite::setPosition (glm::vec2 _pos) {m_Pos=_pos;}
 /**
  * @brief Scales the sprite
  * 
