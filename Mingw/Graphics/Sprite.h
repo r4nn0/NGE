@@ -3,6 +3,7 @@
 
 #include "../Engine.h"
 #include "stb_image.h"
+#include <map>
 #include <functional>
 class Sprite{
 public:
@@ -23,17 +24,19 @@ public:
     inline bool& hasTexture(){return m_hasTexture;}
 
     friend class TexturePage;
+    bool operator==(const Sprite&) const;
 protected:
-    void setUV(std::vector<glm::vec2>);
-    void setTextureSlot(int);
+    std::string m_Name;
     glm::vec2 m_Pos;
-    glm::vec2 m_Size;
     glm::vec2 m_BaseSize;
+    glm::vec2 m_Size;
     glm::vec4 m_Color;
-    std::vector<glm::vec2> m_UV;
-    int m_texSlot;
-	bool m_hasTexture;
+    bool m_hasTexture;
     unsigned char* m_Pixels;
+    int m_texSlot;
+    std::vector<glm::vec2> m_UV;
+    
+	
 };
 class TexturePage{
 private:
@@ -41,7 +44,6 @@ private:
 	const int m_Slot;
 	unsigned char* m_TexturePage;
 	unsigned int m_Texture;
-    std::vector<std::reference_wrapper<Sprite>> SpritesTotal;
 public:
 	TexturePage(int=0);
 	TexturePage(int, int, int=4, int=0);
@@ -52,6 +54,6 @@ public:
 	int GetTextureSlot();
     glm::vec2 GetAtlasSize();
 };
-
+extern std::map<std::string, Sprite*> SpritesTotal;
 extern TexturePage MainTextureAtlas;
 #endif

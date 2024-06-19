@@ -1,7 +1,6 @@
 #include "TestPlayer.h"
-TestPlayer::TestPlayer():Object2D::Object2D(){}
 TestPlayer::TestPlayer(const char* path):Object2D::Object2D(path){}
-
+TestPlayer::TestPlayer():Object2D::Object2D(){}
 
 void TestPlayer::Update(){
     int hsp=0, vsp=0;

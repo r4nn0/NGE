@@ -2,8 +2,9 @@
 #define NGESTD_HEADER
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include "Graphics/Sprite.h"
-extern std::vector<Sprite> SpritesToRender;
+extern std::vector<std::reference_wrapper<Sprite>> SpritesToRender;
 static const std::wstring ar_alphabet = {
     0xfe8f, 0xfe95, 0xfe99, 0xfe9d,
     0xfea1, 0xfea5, 0xfeb1, 0xfeb5,
@@ -43,4 +44,11 @@ static const std::wstring  has_no_mi = {
 };
 
 std::wstring ar_fix(std::wstring);
+namespace ngestd{
+    void DrawSetColor(glm::vec3);
+    void DrawPoint(float, float);
+    void DrawRectangle(float, float, float, float, bool);
+    glm::vec3 DrawGetColor();
+};
+
 #endif

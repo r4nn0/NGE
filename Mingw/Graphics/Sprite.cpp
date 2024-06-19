@@ -1,4 +1,5 @@
 #include "Sprite.h"
+std::map<std::string, Sprite*> SpritesTotal;
 TexturePage MainTextureAtlas;
 /**
  * @brief Create a new sprite from an image
@@ -6,12 +7,15 @@ TexturePage MainTextureAtlas;
  * @param path Path to image
  * @param _pos position where to render the sprite
  */
-Sprite::Sprite(const char* path, glm::vec2 _pos): m_Pos(_pos){
+Sprite::Sprite(const char* path, glm::vec2 _pos): m_Name(path), m_Pos(_pos),
+                                                  m_BaseSize(0), m_Size(0),
+                                                  m_Color(1), m_hasTexture(true), m_Pixels(nullptr), m_texSlot(-1){
     int _width, _height, _bpp;
     m_Pixels= stbi_load(path, &_width, &_height, &_bpp, 4);
     if(m_Pixels==nullptr){
         std::cout << "Error loading sprite from file" << std::endl;
-        //return;
+        Sprite(_pos, glm::vec2(1));
+        return;
     }
 	m_hasTexture=true;
     m_BaseSize=glm::vec2(_width, _height);
@@ -32,11 +36,10 @@ Sprite::Sprite(const char* path, glm::vec2 _pos): m_Pos(_pos){
  * @param _pos position where to render the sprite
  * @param _size size of the sprite
  */
-Sprite::Sprite(glm::vec2 _pos, glm::vec2 _size): m_Pos(_pos){
-	m_hasTexture=false;
-	m_BaseSize=_size;
-	m_Size=m_BaseSize;
-    m_Color=glm::vec4(1,1,1,1);
+Sprite::Sprite(glm::vec2 _pos, glm::vec2 _size): m_Name("noSprite"), m_Pos(_pos),
+                                                 m_BaseSize(_size), m_Size(_size),
+                                                 m_Color(1), m_hasTexture(false), m_Pixels(nullptr), m_texSlot(-1){
+    m_Name+=std::to_string(SpritesTotal.size());
 	m_UV.push_back(glm::vec2(0, 0));
     m_UV.push_back(glm::vec2(1, 0));
     m_UV.push_back(glm::vec2(1, 1));
@@ -51,19 +54,8 @@ Sprite::Sprite(glm::vec2 _pos, glm::vec2 _size): m_Pos(_pos){
  * 
  */
 void Sprite::DeleteSprite(){
-    if(m_Pixels!=nullptr)
+    if(m_hasTexture)
         delete m_Pixels;
-}
-/**
- * @brief Sets the UV Coordinates of the sprite for the texture page
- * 
- * @param new_uv Texture coordinates
- */
-void Sprite::setUV(std::vector<glm::vec2> new_uv) {
-    m_UV[0] = new_uv[0];
-    m_UV[1] = new_uv[1];
-    m_UV[2] = new_uv[2];
-    m_UV[3] = new_uv[3];
 }
 /**
  * @brief Set poisition of the sprite
@@ -83,14 +75,11 @@ void Sprite::setScale(glm::vec2 _scale)  {m_Size=_scale*m_BaseSize;}
  * @param _color Color in RGBA format
  */
 void Sprite::setColor(glm::vec4 _color)  {m_Color=_color;}
-/**
- * @brief Set the slot number of the texture where the sprite is saved\n
- *
- * @param slot number of the slot (range from 0 to 31)
- */
-void Sprite::setTextureSlot(int slot){
-    m_texSlot=slot;
+bool Sprite::operator==(const Sprite& spr2) const{
+    return m_Pos==spr2.m_Pos && m_Size==spr2.m_Size
+        && m_UV==spr2.m_UV && m_Color==spr2.m_Color && m_texSlot==spr2.m_texSlot;
 }
+
 /**
  * @brief Initialize the texture page where the sprites should be saved
  * 
@@ -122,16 +111,17 @@ TexturePage::TexturePage(int _width, int _height, int _channel_num, int _slot): 
  */
 void TexturePage::ImageResizeCanvas(int new_width, int new_height, int channel_num) {
     m_TexturePage = (unsigned char*)realloc(m_TexturePage,new_width*new_height*channel_num);
-    
-    for (Sprite &spr:SpritesTotal){
+    std::map<std::string, Sprite*>::iterator it;
+    for (it=SpritesTotal.begin();it!=SpritesTotal.end();it++){
+        Sprite* spr = it->second;
         float x1= 0,
-			  y1= (float)spr.m_UV[0].y*m_Height/new_height,
-			  x2= (float) spr.getBaseSize().x / new_width,
-			  y2=y1+ (float) spr.getBaseSize().y / new_height;
-        spr.m_UV[0]=glm::vec2(x1,y1);
-        spr.m_UV[1]=glm::vec2(x2,y1);
-        spr.m_UV[2]=glm::vec2(x2,y2);
-        spr.m_UV[3]=glm::vec2(x1,y2);
+			  y1= (float)spr->m_UV[0].y*m_Height/new_height,
+			  x2= (float) spr->getBaseSize().x / new_width,
+			  y2=y1+ (float) spr->getBaseSize().y / new_height;
+        spr->m_UV[0]=glm::vec2(x1,y1);
+        spr->m_UV[1]=glm::vec2(x2,y1);
+        spr->m_UV[2]=glm::vec2(x2,y2);
+        spr->m_UV[3]=glm::vec2(x1,y2);
     }
     m_ChannelNum = channel_num;
     m_Width = new_width;
@@ -159,7 +149,7 @@ void TexturePage::ImageAdd(Sprite& sprite) {
 		sprite.m_UV[2]=glm::vec2(x2, y2); // 1, 1
 		sprite.m_UV[3]=glm::vec2(x1, y2); // 0, 1
 		
-		sprite.setTextureSlot(m_Slot);
+		sprite.m_texSlot=m_Slot;
         
 		for (int x = 0;x < width;x++) {
 			for (int y = 0;y < height;y++) {
@@ -178,7 +168,7 @@ void TexturePage::ImageAdd(Sprite& sprite) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_TexturePage);
 		Unbind();
 	}
-    SpritesTotal.push_back(sprite);
+    SpritesTotal.insert({sprite.m_Name, &sprite});
 }
 /**
  * @brief Bind the texture to one of slots in memory (usually between 0 and 31)

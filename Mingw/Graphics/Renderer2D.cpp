@@ -15,7 +15,7 @@ Renderer2D::Renderer2D() : dcpf(0) {
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
     glEnableVertexAttribArray(3);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)0); // vec4 pos
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)0); // vec2 pos
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)(sizeof(float)*2)); // vec4 col
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)(sizeof(float)*6)); // vec2 texcoord
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)(sizeof(float)*8)); // float textureSlot
@@ -34,16 +34,17 @@ Renderer2D::Renderer2D() : dcpf(0) {
     }
     m_indexBuffer = new ngetype::IBO(indices,INDICES_SIZE);
     glBindVertexArray(0);
-
+    m_Shader=Engine::CreateShader(Engine::LoadShaderFromFile("./Graphics/Shaders/shader.vs").c_str(),
+                                  Engine::LoadShaderFromFile("./Graphics/Shaders/shader.fs").c_str());
 }
 /**
  * @brief Frees the buffers in memory
  * 
  */
-Renderer2D::~Renderer2D()
-{
+Renderer2D::~Renderer2D() {
     delete m_indexBuffer;
     glDeleteBuffers(1,&m_VBO);
+    glDeleteProgram(m_Shader);
 }
 
 /**
@@ -51,6 +52,7 @@ Renderer2D::~Renderer2D()
  * 
  */
 void Renderer2D::Render(){
+    
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
     m_Buff = (ngetype::vboData*) glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
     for(Sprite& spr:SpritesToRender){
@@ -94,7 +96,10 @@ void Renderer2D::Render(){
     glUnmapBuffer(GL_ARRAY_BUFFER);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     SpritesToRender.clear();
-
+    
+    glUseProgram(m_Shader);
+    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "proj_matrix"),1,GL_FALSE,Engine::getOthroMatrix());
+    glUniform1i(glGetUniformLocation(m_Shader, "texture[0]"), MainTextureAtlas.GetTextureSlot());
     MainTextureAtlas.Bind();
     glBindVertexArray(m_appSurface);
     m_indexBuffer->bind();
@@ -104,4 +109,5 @@ void Renderer2D::Render(){
     m_indexCount = 0;
     dcpf++;
     MainTextureAtlas.Unbind();
+    glUseProgram(0);
 }

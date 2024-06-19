@@ -1,5 +1,5 @@
 #include "ngestd.h"
-std::vector<Sprite> SpritesToRender;
+std::vector<std::reference_wrapper<Sprite>> SpritesToRender;
 std::wstring ar_fix(std::wstring str){
     for(size_t i = 0; i<str.size();i++){
         
@@ -37,4 +37,27 @@ std::wstring ar_fix(std::wstring str){
         out[j]=temp[out.size()-1-j];
     }
     return out;
+}
+void ngestd::DrawPoint(float x, float y){
+    glBegin(GL_POINTS);
+    glVertex2f(x,y);
+    glEnd();
+}
+void ngestd::DrawRectangle(float x1, float y1, float x2, float y2, bool outline){
+    glBegin(GL_QUADS);
+    if(outline)
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(x1,y1);
+    glVertex2f(x2,y1);
+    glVertex2f(x2,y2);
+    glVertex2f(x1,y2);
+    glEnd();
+}
+void ngestd::DrawSetColor(glm::vec3 col){
+    glColor3f(col.x,col.y,col.z);
+}
+glm::vec3 ngestd::DrawGetColor(){
+    float col[3];
+    glGetFloatv(GL_CURRENT_COLOR,col);
+    return glm::make_vec3(col);
 }

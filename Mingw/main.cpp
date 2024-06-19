@@ -32,18 +32,6 @@ int main (){
     //Sprite spr("sprite.png",glm::vec2(32,32));
     TestPlayer testObject("sprite.png");
     
-    
-    std::string vshader=gameEngine.LoadShaderFromFile("./Graphics/Shaders/shader.vs"),
-                fshader=gameEngine.LoadShaderFromFile("./Graphics/Shaders/shader.fs");
-                /*
-    std::string fntvshader=gameEngine.LoadShaderFromFile("./Graphics/Shaders/fsh.vs"),
-                fntfshader=gameEngine.LoadShaderFromFile("./Graphics/Shaders/fsh.fs");
-    unsigned int fntshader=gameEngine.CreateShader(fntvshader.c_str(),fntfshader.c_str());
-    */
-    unsigned int shader=gameEngine.CreateShader(vshader.c_str(),fshader.c_str());
-    
-    
-
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
     std::string fpsString = "0";
@@ -61,9 +49,7 @@ int main (){
         
         gameEngine.setBackgroundColor(BACKGROUND_COLOR);
         gameEngine.StepEvent();
-
         testObject.Update();
-
         gameEngine.BeginDraw();
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
         
@@ -72,16 +58,11 @@ int main (){
         font.FaceSize(100);
         
         font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
-        
         testObject.Render();
         
-
-
-        glUseProgram(shader);
-        glUniformMatrix4fv(glGetUniformLocation(shader, "proj_matrix"),1,GL_FALSE,gameEngine.getOthroMatrix());
-        glUniform1i(glGetUniformLocation(shader, "texture[0]"), MainTextureAtlas.GetTextureSlot());
+        
         renderer.Render();
-        glUseProgram(0);
+        
         
         gameEngine.EndDraw();
         renderer.dcpf = 0;
@@ -91,7 +72,6 @@ int main (){
         //std::cout << ms_int.count() << std::endl;
     }
     
-    glDeleteProgram(shader);
     glfwTerminate();
     return 0;
 }

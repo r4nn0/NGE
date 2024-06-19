@@ -1,7 +1,10 @@
 #include "Engine.h"
+glm::mat4 Engine::ortho_mat=glm::mat4(0.f);
 Engine::Engine() : window_width(800), window_height(600),
                    view_xport(0), view_yport(0),
                    view_xview(0), view_yview(0),
+                   view_wport(0), view_hport(0),
+                   view_width(0),view_height(0),
                    background_color(100,100,100){}
 /**
  * @brief Initialize the engine by creating a rendering window

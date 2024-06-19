@@ -2,6 +2,7 @@
 #define RENDERER2D_H
 
 #include "../ngestd.h"
+
 #define MAX_SPRITE_COUNT 32000
 #define VERTEX_SIZE sizeof(ngetype::vboData)
 #define SPRITE_SIZE VERTEX_SIZE * 4
@@ -22,11 +23,10 @@ public:
 protected:
 
 private:
-    std::vector<Sprite*> m_Sprites;
     int m_maxTextures;
     ngetype::IBO* m_indexBuffer;
     GLsizei m_indexCount;
-    unsigned int m_appSurface,m_VBO;
+    unsigned int m_appSurface,m_VBO, m_Shader;
     ngetype::vboData* m_Buff;
 };
 

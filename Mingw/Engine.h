@@ -31,8 +31,8 @@ public:
     
     GLFWwindow* get_window();
     static unsigned int CreateShader(const char*, const char*);
-    std::string LoadShaderFromFile(const char*);
-    const float* getOthroMatrix();
+    static std::string LoadShaderFromFile(const char*);
+    static const float* getOthroMatrix();
     Engine();
     void setBackgroundColor(glm::vec3);
     glm::vec2 getWindowSize();
@@ -51,7 +51,7 @@ private:
     GLFWwindow* window;
     static unsigned int CompileShader(unsigned int type, const char*source);
     float right, left, bottom, top, near, far;
-    glm::mat4 ortho_mat;
+    static glm::mat4 ortho_mat;
     glm::vec3 background_color;
 };
 

@@ -4,8 +4,8 @@
 
 class TestPlayer : public Object2D{
 public:
-    TestPlayer();
     TestPlayer(const char*);
+    TestPlayer();
     void Update();
 }; 
 
