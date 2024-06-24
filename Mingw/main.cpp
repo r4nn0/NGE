@@ -50,16 +50,19 @@ int main (){
         gameEngine.setBackgroundColor(BACKGROUND_COLOR);
         gameEngine.StepEvent();
         testObject.Update();
+
+
+
         gameEngine.BeginDraw();
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
         
         font.FaceSize(16);
         font.Render(fpsString.c_str(),-1,FTPoint(0,gameEngine.getViewHeight()-font.FaceSize(),0));
         font.FaceSize(100);
-        
         font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
-        testObject.Render();
+
         
+        testObject.Render();
         
         renderer.Render();
         

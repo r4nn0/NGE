@@ -77,7 +77,7 @@ void Sprite::setScale(glm::vec2 _scale)  {m_Size=_scale*m_BaseSize;}
 void Sprite::setColor(glm::vec4 _color)  {m_Color=_color;}
 bool Sprite::operator==(const Sprite& spr2) const{
     return m_Pos==spr2.m_Pos && m_Size==spr2.m_Size
-        && m_UV==spr2.m_UV && m_Color==spr2.m_Color && m_texSlot==spr2.m_texSlot;
+        && m_UV==spr2.m_UV && m_texSlot==spr2.m_texSlot;
 }
 
 /**
