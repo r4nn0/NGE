@@ -1,0 +1,3 @@
+https://id3lib.sourceforge.net/id3/mp3frame.html
+https://www.codeproject.com/Articles/8295/MPEG-Audio-Frame-Header#Bitrate
+http://mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
