@@ -19,19 +19,20 @@ int main(int argc, char* argv[]){
     int i=0;
     std::vector<char*> dataTotal;
     char* data = (char*)malloc(1);
-    int sizeTot=0;
+    unsigned sizeTot=0;
     while(argc){
         i++;
         if(!strcmp(argv[i], "-o")){
             outName=argv[i+1];
             i+=2;
         }
-        std::ifstream in(argv[i], std::ios::binary | std::ios::out);
+        std::ifstream in(argv[i], std::ios::binary | std::ios::in);
         in.seekg(0, std::ios::end);
         unsigned int size=in.tellg();
+        in.seekg(0, std::ios::beg);
         sizeTot+=size;
+        std::cout << sizeTot << std::endl;
         data = (char*)realloc(data, sizeTot);
-        
         in.read(&data[sizeTot-size], size);
         in.close();
         argc--;
