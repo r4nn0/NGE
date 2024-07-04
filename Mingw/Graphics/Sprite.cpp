@@ -29,6 +29,7 @@ Sprite::Sprite(const char* path, glm::vec2 _pos): m_Name(path), m_Pos(_pos),
     if(AtlasSize.x<m_BaseSize.x) AtlasSize.x=m_BaseSize.x;
     MainTextureAtlas.ImageResizeCanvas(AtlasSize.x, AtlasSize.y+m_BaseSize.y);
     MainTextureAtlas.ImageAdd(*this);
+    stbi_image_free(m_Pixels);
 }
 /**
  * @brief Create a sprite without texture

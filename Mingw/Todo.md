@@ -73,3 +73,18 @@ pid_t pid,p;
     }
 }
 </p>
+<p>
+    Animation file would consist of a header info 
+        1byte = size of animation name in bytes
+        n bytes = animation name
+        1byte = how many frames
+        3bytes = frame_header[BEG]
+        n bytes = frame
+        3bytes = frame_footer[END]
+    frames would be saved to an unsigned char* frames[frame_count];
+    then would be loaded using stbi_load_from_memory which then is passed to textureatlas
+    Change Sprite class to load frames ngesprite files instead of png
+    Name of spirte is determined depending on the header in the ngesprite file.
+
+    All pngs will be parsed into ngesprite files using the tool, and will automatically be loaded when running the app
+</p>
