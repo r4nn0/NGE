@@ -30,7 +30,7 @@ int main (){
     
 	Renderer2D renderer;
     //Sprite spr("sprite.png",glm::vec2(32,32));
-    TestPlayer testObject("sprite.png");
+    TestPlayer testObject("sprite.ngesprite");
     
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;

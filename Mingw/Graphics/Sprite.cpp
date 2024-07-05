@@ -1,7 +1,7 @@
 #include "Sprite.h"
 std::map<std::string, Sprite*> SpritesTotal;
 TexturePage MainTextureAtlas;
-std::vector<char*> Sprite::LoadNGESprite(const char* path){
+std::vector<unsigned char*> Sprite::LoadNGESprite(const char* path){
     std::ifstream in(path, std::ios::binary);
     
     in.seekg(0, std::ios::end);
@@ -11,6 +11,7 @@ std::vector<char*> Sprite::LoadNGESprite(const char* path){
     t_Data.resize(size);
     in.read(&t_Data[0], size);
     in.close();
+    
     unsigned long long cursor =0;
     /*-------------Read the name of the sprite--------------*/
     unsigned t_NameLength = t_Data[cursor];
@@ -23,38 +24,50 @@ std::vector<char*> Sprite::LoadNGESprite(const char* path){
     m_Frames=t_Data[cursor];
     cursor++;
     /*------------------Load Image to memory-----------------*/
-    char t_Size[8];
-    char t_Head[3];
-    char t_Tail[3];
+    unsigned char t_Size[8];
+    unsigned char t_Head[4];
+    unsigned char t_Tail[4];
 
     int i=0;
-    std::vector<char*> t_Pixels;
+    std::vector<unsigned char*> t_Pixels;
     while(i<m_Frames){
+        
         std::memcpy(t_Size, &t_Data[cursor], 8);
         cursor+=8;
         std::memcpy(t_Head, &t_Data[cursor], 3);
+        t_Head[3]='\0';
         cursor+=3;
-        if(strcmp(t_Head, "BEG")){
+        if(strcmp((const char*)t_Head, "BEG")){
             std::cout << "Error loading frame! File is corrupted." << std::endl;
-            return;
+            exit(1);
         }
         unsigned long long t_FrameSize=0;
-        for(int j=7;j>=0;j--){
-            t_FrameSize=t_Size[j]<<(8*j);
+        for(int j=0;j<8;j++){
+            
+            t_FrameSize|=t_Size[j];
+            std::cout << t_FrameSize << std::endl;
+            t_FrameSize<<=8;
+            
         }
-
-        std::string t_Sprite(t_Data.begin()+cursor, t_Data.begin()+t_FrameSize);
+        t_FrameSize=4775;
+        std::cout << t_FrameSize << std::endl;
+        std::string t_Sprite(t_Data.begin()+cursor, t_Data.begin()+cursor+t_FrameSize);
+        
         cursor+= t_FrameSize;
         std::memcpy(t_Tail, &t_Data[cursor], 3);
         cursor+=3;
-        if(strcmp(t_Tail, "END")){
+        t_Tail[3]='\0';
+        std::cout << t_Tail << std::endl;
+        if(strcmp((const char*)t_Tail, "END")){
             std::cout << "Error loading frame! File is corrupted." << std::endl;
-            return;
+            exit(1);
         }
         int _width, _height, _bpp;
+        
         m_Pixels = stbi_load_from_memory((unsigned char*)t_Sprite.c_str(), t_Sprite.length(), &_width, &_height, &_bpp, 4);
-        m_Width=(m_Width>_width)? m_Width:_width;
-        m_Height=(m_Height>_height)? m_Height:_height;
+        
+        m_Widest=(m_Widest>_width)? m_Widest:_width;
+        m_Heighest=(m_Heighest>_height)? m_Heighest:_height;
         m_HeightCombined+=_height;
         m_BaseSize.push_back(glm::vec2(_width, _height));
         t_Pixels.push_back(m_Pixels);
@@ -66,12 +79,9 @@ std::vector<char*> Sprite::LoadNGESprite(const char* path){
         m_UV.push_back(UV);
         i++;
     }
-    m_Size=glm::vec2(m_Width, m_Height);
-    return t_Pixels;
-}
-Sprite::Sprite(const char* path): m_Pos(glm::vec2(0)), m_BaseSize(0), m_Size(0),
-                                  m_Color(1), m_hasTexture(true), m_Pixels(nullptr), m_texSlot(-1){
     
+    m_Size=glm::vec2(m_Widest, m_Heighest);
+    return t_Pixels;
 }
 /**
  * @brief Create a new sprite from an image
@@ -82,7 +92,7 @@ Sprite::Sprite(const char* path): m_Pos(glm::vec2(0)), m_BaseSize(0), m_Size(0),
 Sprite::Sprite(const char* path, glm::vec2 _pos): m_Name(path), m_Pos(_pos),
                                                   m_BaseSize(0), m_Size(0),
                                                   m_Color(1), m_hasTexture(true), m_Pixels(nullptr), m_texSlot(-1),m_FrameIndex(0), m_Widest(0), m_HeightCombined(0){
-    std::vector<char*> t_Pixels=LoadNGESprite(path);
+    std::vector<unsigned char*> t_Pixels=LoadNGESprite(path);
     /*
     int _width, _height, _bpp;
     m_Pixels= stbi_load(path, &_width, &_height, &_bpp, 4);
@@ -102,7 +112,8 @@ Sprite::Sprite(const char* path, glm::vec2 _pos): m_Name(path), m_Pos(_pos),
         MainTextureAtlas.ImageAdd(t_Pixels[i], m_UV[i], m_BaseSize[i], m_texSlot);
     }
     //MainTextureAtlas.ImageAdd(*this);
-    std::vector<char*>().swap(t_Pixels);
+    std::vector<unsigned char*>().swap(t_Pixels);
+    SpritesTotal.insert({m_Name, this});
 }
 /**
  * @brief Create a sprite without texture
@@ -110,27 +121,19 @@ Sprite::Sprite(const char* path, glm::vec2 _pos): m_Name(path), m_Pos(_pos),
  * @param _pos position where to render the sprite
  * @param _size size of the sprite
  */
-Sprite::Sprite(glm::vec2 _pos, glm::vec2 _size): m_Name("noSprite"), m_Pos(_pos),
-                                                 m_BaseSize(_size), m_Size(_size),
+Sprite::Sprite(glm::vec2 _pos, glm::vec2 _size): m_Name("noSprite"), m_Pos(_pos), m_Size(_size),
                                                  m_Color(1), m_hasTexture(false), m_Pixels(nullptr), m_texSlot(-1){
     m_Name+=std::to_string(SpritesTotal.size());
-	m_UV.push_back(glm::vec2(0, 0));
-    m_UV.push_back(glm::vec2(1, 0));
-    m_UV.push_back(glm::vec2(1, 1));
-    m_UV.push_back(glm::vec2(0, 1));
-    glm::vec2 AtlasSize=MainTextureAtlas.GetAtlasSize();
-    if(AtlasSize.y<m_BaseSize.y) AtlasSize.y=m_BaseSize.y;
-    MainTextureAtlas.ImageResizeCanvas(AtlasSize.x+m_BaseSize.x, AtlasSize.y);
-    MainTextureAtlas.ImageAdd(*this);
+    m_BaseSize.push_back(_size);
+    std::vector<glm::vec2> t_UV;
+	m_UV.push_back(t_UV);
+    m_UV[0].push_back(glm::vec2(0, 0));
+    m_UV[0].push_back(glm::vec2(1, 0));
+    m_UV[0].push_back(glm::vec2(1, 1));
+    m_UV[0].push_back(glm::vec2(0, 1));
+    SpritesTotal.insert({m_Name, this});
 }
-/**
- * @brief Free memory from Sprite
- * 
- */
-void Sprite::DeleteSprite(){
-    if(m_hasTexture)
-        delete m_Pixels;
-}
+
 /**
  * @brief Set poisition of the sprite
  * 
@@ -142,7 +145,7 @@ void Sprite::setPosition (glm::vec2 _pos) {m_Pos=_pos;}
  * 
  * @param _scale scale in vec2, where (1,1) is the base scale
  */
-void Sprite::setScale(glm::vec2 _scale)  {m_Size=_scale*m_BaseSize;}
+void Sprite::setScale(glm::vec2 _scale)  {m_Size=_scale*m_BaseSize[m_FrameIndex];}
 /**
  * @brief Set the color in which the sprite will be rendered
  * 
@@ -151,7 +154,7 @@ void Sprite::setScale(glm::vec2 _scale)  {m_Size=_scale*m_BaseSize;}
 void Sprite::setColor(glm::vec4 _color)  {m_Color=_color;}
 bool Sprite::operator==(const Sprite& spr2) const{
     return m_Pos==spr2.m_Pos && m_Size==spr2.m_Size
-        && m_UV==spr2.m_UV && m_texSlot==spr2.m_texSlot;
+        && m_UV[m_FrameIndex]==spr2.m_UV[spr2.m_FrameIndex] && m_texSlot==spr2.m_texSlot;
 }
 
 /**
@@ -204,8 +207,8 @@ void TexturePage::ImageResizeCanvas(int new_width, int new_height, int channel_n
     m_Height = new_height;
 }
 void TexturePage::ImageAdd(unsigned char* data, std::vector<glm::vec2>& UV, glm::vec2 base_size, int &tex_slot){
-    int width = sprite.m_BaseSize.x;
-	int height = sprite.m_BaseSize.y;
+    int width = base_size.x;
+	int height = base_size.y;
     
     float x1=0,
     y1= (float)m_yOffset/m_Height,
@@ -239,7 +242,7 @@ void TexturePage::ImageAdd(unsigned char* data, std::vector<glm::vec2>& UV, glm:
  * @brief Add a sprite to the texture page
  * 
  * @param sprite The sprite object to be added to the texture page
- */
+ 
 void TexturePage::ImageAdd(Sprite& sprite) {
 	if(sprite.hasTexture()){
 		unsigned char* data = sprite.m_Pixels;
@@ -276,6 +279,7 @@ void TexturePage::ImageAdd(Sprite& sprite) {
 	}
     SpritesTotal.insert({sprite.m_Name, &sprite});
 }
+*/
 /**
  * @brief Bind the texture to one of slots in memory (usually between 0 and 31)
  * 

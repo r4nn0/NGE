@@ -16,7 +16,6 @@ Object2D::Object2D() : position(glm::vec2(0)),
     frames.push_back(sprite);
 }
 Object2D::~Object2D(){
-    sprite.DeleteSprite();
 }
 void Object2D::Update(){
     sprite.setPosition(position);
