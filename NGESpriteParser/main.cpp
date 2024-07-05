@@ -18,29 +18,31 @@ int main(int argc, char* argv[]){
     std::string outData="";
     int i=0;
     int count=0;
-    std::vector<std::vector<char>> dataTotal;
-    unsigned sizeTot=0;
+    std::vector<std::string> dataTotal;
+    std::vector<unsigned long long> sizes;
     while(argc){
         i++;
-        std::cout << argv[i] << std::endl;
         if(!strcmp(argv[i], "-o")){
             outName=argv[i+1];
             i+=2;
             argc-=2;
             continue;
         }
-        std::ifstream in(argv[i], std::ios::binary);
+        std::FILE* in = std::fopen(argv[i], "rb");
+        std::fseek(in, 0, SEEK_END);
+        unsigned long long size=std::ftell(in);
+        std::fseek(in, 0, SEEK_SET);
         std::vector<char> data;
-        in.seekg(0, std::ios::end);
-        unsigned long long size=in.tellg();
-        in.seekg(0, std::ios::beg);
-
         data.resize(size);
-        in.read(&data[0], size);
-        in.close();
-        dataTotal.push_back(data);
+        std::fread(&data[0], sizeof(char), size, in);
+        std::fclose(in);
+        
+        dataTotal.push_back(std::string(data.begin(), data.end()));
+        std::cout << size << std::endl;
+        sizes.push_back(size);
         argc--;
         count++;
+        data.clear();
     }
     if(outName=="") {
         outName=argv[1];
@@ -51,10 +53,11 @@ int main(int argc, char* argv[]){
     outData+=(char)count;
     outName+=".ngesprite";
     for(int frames=0;frames<dataTotal.size();frames++){
-        outData+="BEG";
-        for(int temp=0;temp<dataTotal[frames].size();temp++){
-            outData+=dataTotal[frames][temp];
+        for(int i=sizeof(unsigned long long)-1;i>=0;i--){
+            outData+=(char)((sizes[frames]>>i*8)&0xff);
         }
+        outData+="BEG";
+        outData+=dataTotal[frames];
         outData+="END";
     }   
     std::ofstream out(outName, std::ios::out | std::ios::binary);
