@@ -166,6 +166,7 @@ void LoadSpritesToMemroy(){
         for(unsigned char* p: pixels){
             MainTextureAtlas.ImageAdd(p, spr, t_Frame);
             t_Frame++;
+            delete p;
         }
         sprIT++;
         
