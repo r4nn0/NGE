@@ -68,6 +68,8 @@ std::vector<unsigned char*> LoadNGESprite(const char* path, Sprite* spr){
 
     unsigned i=0;
     std::vector<unsigned char*> t_Pixels;
+    spr->m_BaseSize.clear();
+    spr->m_UV.clear();
     while(i<spr->m_Frames){
         
         std::memcpy(t_Size, &t_Data[cursor], 8);

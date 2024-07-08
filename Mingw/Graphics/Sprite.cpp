@@ -29,7 +29,7 @@ Sprite::Sprite(const char* path, glm::vec2 _pos): m_Name(path),m_Frames(0),m_Fra
  * @param _size size of the sprite
  */
 Sprite::Sprite(glm::vec2 _pos, glm::vec2 _size): m_Name("noSprite"),m_Frames(0),m_FrameIndex(0), m_Pos(_pos), m_Size(_size),
-                                                 m_Color(1), m_hasTexture(false),m_Widest(0), m_Heighest(0), m_texSlot(-1),m_WidthCombined(0), m_HeightCombined(0){
+                                                 m_Color(1), m_hasTexture(false), m_texSlot(-1), m_Widest(0), m_Heighest(0),m_WidthCombined(0), m_HeightCombined(0){
     m_Name+=std::to_string(SpritesTotal.size());
     m_BaseSize.push_back(_size);
     std::vector<glm::vec2> t_UV;
@@ -125,12 +125,17 @@ void TexturePage::ImageAdd(unsigned char* data, Sprite* spr, int t_Frame){
     y1= (float)m_yOffset/m_Height,
     x2= (float) width /m_Width,
     y2=y1+(float) height /m_Height;
-    std::vector<glm::vec2> UV;
-    UV.push_back(glm::vec2(x1,y1));
-    UV.push_back(glm::vec2(x2,y1));
-    UV.push_back(glm::vec2(x2,y2));
-    UV.push_back(glm::vec2(x1,y2));
-    spr->m_UV.push_back(UV);
+    /*
+    UV.push_back(glm::vec2(0,0));
+    UV.push_back(glm::vec2(1,0));
+    UV.push_back(glm::vec2(1,1));
+    UV.push_back(glm::vec2(0,1));
+    */
+    spr->m_UV[t_Frame][0]=glm::vec2(x1,y1);
+    spr->m_UV[t_Frame][1]=glm::vec2(x2,y1);
+    spr->m_UV[t_Frame][2]=glm::vec2(x2,y2);
+    spr->m_UV[t_Frame][3]=glm::vec2(x1,y2);
+    //std::cout << x1 << " " << y1 << " " << x2 << " " << y2 << std::endl;
     spr->m_texSlot=m_Slot;
     
     for (int x = 0;x < width;x++) {
