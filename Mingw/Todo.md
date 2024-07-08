@@ -88,3 +88,4 @@ pid_t pid,p;
 
     All pngs will be parsed into ngesprite files using the tool, and will automatically be loaded when running the app
 </p>
+### Add collision boxes

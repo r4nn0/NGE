@@ -7,7 +7,7 @@ TexturePage MainTextureAtlas;
  * @param path Path to image
  * @param _pos position where to render the sprite
  */
-Sprite::Sprite(const char* path, glm::vec2 _pos): m_Name(path),m_Frames(0),m_FrameIndex(0), m_Pos(_pos),
+Sprite::Sprite(const char* path, glm::vec2 _pos): m_Name(path),m_Frames(1),m_FrameIndex(0), m_Pos(_pos),
                                                   m_BaseSize(0), m_Size(0),
                                                   m_Color(1), m_hasTexture(false),m_texSlot(-1), m_Widest(0), m_Heighest(0), m_WidthCombined(0), m_HeightCombined(0){
 
@@ -28,7 +28,7 @@ Sprite::Sprite(const char* path, glm::vec2 _pos): m_Name(path),m_Frames(0),m_Fra
  * @param _pos position where to render the sprite
  * @param _size size of the sprite
  */
-Sprite::Sprite(glm::vec2 _pos, glm::vec2 _size): m_Name("noSprite"),m_Frames(0),m_FrameIndex(0), m_Pos(_pos), m_Size(_size),
+Sprite::Sprite(glm::vec2 _pos, glm::vec2 _size): m_Name("noSprite"),m_Frames(1),m_FrameIndex(0), m_Pos(_pos), m_Size(_size),
                                                  m_Color(1), m_hasTexture(false), m_texSlot(-1), m_Widest(0), m_Heighest(0),m_WidthCombined(0), m_HeightCombined(0){
     m_Name+=std::to_string(SpritesTotal.size());
     m_BaseSize.push_back(_size);

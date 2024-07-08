@@ -33,7 +33,7 @@ int main (){
     
 	Renderer2D renderer;
     //Sprite spr("sprite.png",glm::vec2(32,32));
-    TestPlayer testObject("sonic_walk");
+    TestPlayer testObject("sonic_idle");
     
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
@@ -54,12 +54,11 @@ int main (){
         gameEngine.StepEvent();
         
         testObject.Update();
-        
 
         gameEngine.BeginDraw();
         
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
-        
+        // ngestd::DrawRectangle(testObject.bbox.left, testObject.bbox.top, testObject.bbox.right, testObject.bbox.bottom, true);
         font.FaceSize(16);
         font.Render(fpsString.c_str(),-1,FTPoint(0,gameEngine.getViewHeight()-font.FaceSize(),0));
         font.FaceSize(100);
