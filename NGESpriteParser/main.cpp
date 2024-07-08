@@ -24,7 +24,7 @@ int main(int argc, char* argv[]){
         i++;
         if(!strcmp(argv[i], "-o")){
             outName=argv[i+1];
-            i+=2;
+            i++;
             argc-=2;
             continue;
         }
@@ -53,7 +53,7 @@ int main(int argc, char* argv[]){
     outData+=(char)count;
     outName+=".ngesprite";
     for(int frames=0;frames<dataTotal.size();frames++){
-        for(int i=sizeof(unsigned long long)-1;i>=0;i--){
+        for(int i=0;i<sizeof(unsigned long long);i++){
             outData+=(char)((sizes[frames]>>i*8)&0xff);
         }
         outData+="BEG";

@@ -25,12 +25,15 @@ int main (){
     Engine gameEngine;
     
     gameEngine.init("NGE", 1000,500);
+    LoadSpritesToMemroy();
+    
+    
     //If the app crashes try using a font that is located in the same directory as the app
     FTGLPixmapFont font("C:/Windows/Fonts/arial.ttf");
     
 	Renderer2D renderer;
     //Sprite spr("sprite.png",glm::vec2(32,32));
-    TestPlayer testObject("sprite.ngesprite");
+    TestPlayer testObject("sonic_walk");
     
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
@@ -49,11 +52,12 @@ int main (){
         
         gameEngine.setBackgroundColor(BACKGROUND_COLOR);
         gameEngine.StepEvent();
+        
         testObject.Update();
-
-
+        
 
         gameEngine.BeginDraw();
+        
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
         
         font.FaceSize(16);

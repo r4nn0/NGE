@@ -8,4 +8,10 @@ void TestPlayer::Update(){
     vsp=(keyboard_check(GLFW_KEY_DOWN)-keyboard_check(GLFW_KEY_UP))*3;
     position+=glm::vec2(hsp,vsp);
     Object2D::Update();
+    anim_speed=0.01;
+    frame_index+=anim_speed;
+    
+    if(keyboard_check_pressed(GLFW_KEY_SPACE))
+        sprite=SpritesTotal.find("sonic_idle")->second;
+    //sprite.setFrameIndex(frame_index);
 }

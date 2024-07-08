@@ -57,12 +57,14 @@ void Renderer2D::Render(){
     m_Buff = (ngetype::vboData*) glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
     for(Sprite& spr:SpritesToRender){
         float textureSlot =spr.getTextureSlot();
+        
         if(!spr.hasTexture())
             textureSlot=-1;
         glm::vec2& _pos = spr.getPosition();
         glm::vec2& _size = spr.getSize();
         glm::vec4& _col = spr.getColor();
         std::vector<glm::vec2> uvs = spr.getUV();
+        
 
         //m_Buff->texCoords = glm::vec2(0, 0);
         m_Buff->texCoords = uvs[0];

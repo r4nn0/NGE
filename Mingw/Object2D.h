@@ -13,10 +13,9 @@ public:
     glm::vec2 position;
     glm::vec2 scale;
     glm::vec4 color;
-    int frame_index, anim_speed;
-    std::vector<std::reference_wrapper<Sprite>> frames;
+    float frame_index, anim_speed;
 protected:
-    Sprite sprite;
+    Sprite* sprite;
 };
 
 #endif
