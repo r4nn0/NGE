@@ -3,9 +3,9 @@ srcFiles	+= $(wildcard Graphics/*.cpp)
 objFiles	:= $(srcFiles:.cpp=.o)
 Includedirs	:= include
 Libdirs		:= lib
-Libs		:= ftgl freetype glew32 glfw3 gdi32 winmm opengl32
+Libs		:= ftgl freetype glew32 glfw3 OpenAL32 gdi32 winmm opengl32
 LinkLibs	:= -static #dynamic to use dynamic versions of libraries
-Macros		:= GLEW_STATIC
+Macros		:= GLEW_STATIC AL_LIBTYPE_STATIC
 OutFolder	:= bin
 ObjDBG	 	:= obj-dbg
 ObjREL	 	:= obj-rel
