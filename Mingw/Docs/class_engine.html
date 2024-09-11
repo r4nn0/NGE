@@ -111,12 +111,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a01c1552ff6ddc107b22d1e59b67ba343" id="r_a01c1552ff6ddc107b22d1e59b67ba343"><td class="memItemLeft" align="right" valign="top">GLFWwindow *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a01c1552ff6ddc107b22d1e59b67ba343">get_window</a> ()</td></tr>
 <tr class="memdesc:a01c1552ff6ddc107b22d1e59b67ba343"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current GLFW window.  <br /></td></tr>
 <tr class="separator:a01c1552ff6ddc107b22d1e59b67ba343"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8422654260a9e2cfea9fda54f5e474a9" id="r_a8422654260a9e2cfea9fda54f5e474a9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8422654260a9e2cfea9fda54f5e474a9">LoadShaderFromFile</a> (const char *)</td></tr>
-<tr class="memdesc:a8422654260a9e2cfea9fda54f5e474a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads a shader from file and saves it as text.  <br /></td></tr>
-<tr class="separator:a8422654260a9e2cfea9fda54f5e474a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7478fcae269fe0de2fafb856205fe750" id="r_a7478fcae269fe0de2fafb856205fe750"><td class="memItemLeft" align="right" valign="top">const float *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7478fcae269fe0de2fafb856205fe750">getOthroMatrix</a> ()</td></tr>
-<tr class="memdesc:a7478fcae269fe0de2fafb856205fe750"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current view matrix.  <br /></td></tr>
-<tr class="separator:a7478fcae269fe0de2fafb856205fe750"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c98683b0a3aa28d8ab72a8bcd0d52f2" id="r_a8c98683b0a3aa28d8ab72a8bcd0d52f2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8c98683b0a3aa28d8ab72a8bcd0d52f2">Engine</a> ()</td></tr>
 <tr class="separator:a8c98683b0a3aa28d8ab72a8bcd0d52f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61eabdb5bcc91a908c45a03c36d5c748" id="r_a61eabdb5bcc91a908c45a03c36d5c748"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a61eabdb5bcc91a908c45a03c36d5c748">setBackgroundColor</a> (glm::vec3)</td></tr>
@@ -143,6 +137,12 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a5d5b1511c5d1b3310fcab162c28bed34" id="r_a5d5b1511c5d1b3310fcab162c28bed34"><td class="memItemLeft" align="right" valign="top">static unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5d5b1511c5d1b3310fcab162c28bed34">CreateShader</a> (const char *, const char *)</td></tr>
 <tr class="memdesc:a5d5b1511c5d1b3310fcab162c28bed34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a full shader from text (Used after LoadShaderFromFile)  <br /></td></tr>
 <tr class="separator:a5d5b1511c5d1b3310fcab162c28bed34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8422654260a9e2cfea9fda54f5e474a9" id="r_a8422654260a9e2cfea9fda54f5e474a9"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8422654260a9e2cfea9fda54f5e474a9">LoadShaderFromFile</a> (const char *)</td></tr>
+<tr class="memdesc:a8422654260a9e2cfea9fda54f5e474a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads a shader from file and saves it as text.  <br /></td></tr>
+<tr class="separator:a8422654260a9e2cfea9fda54f5e474a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7478fcae269fe0de2fafb856205fe750" id="r_a7478fcae269fe0de2fafb856205fe750"><td class="memItemLeft" align="right" valign="top">static const float *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7478fcae269fe0de2fafb856205fe750">getOthroMatrix</a> ()</td></tr>
+<tr class="memdesc:a7478fcae269fe0de2fafb856205fe750"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current view matrix.  <br /></td></tr>
+<tr class="separator:a7478fcae269fe0de2fafb856205fe750"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a8c98683b0a3aa28d8ab72a8bcd0d52f2" name="a8c98683b0a3aa28d8ab72a8bcd0d52f2"></a>
@@ -265,6 +265,9 @@ Static Public Member Functions</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">const float * Engine::getOthroMatrix </td>
@@ -273,6 +276,11 @@ Static Public Member Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Get current view matrix. </p>
@@ -425,6 +433,9 @@ false returns 0 and displays an error </dd></dl>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">std::string Engine::LoadShaderFromFile </td>
@@ -433,6 +444,11 @@ false returns 0 and displays an error </dd></dl>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Loads a shader from file and saves it as text. </p>

@@ -1,16 +1,10 @@
 var searchData=
 [
-  ['setbackgroundcolor_0',['setBackgroundColor',['../class_engine.html#a61eabdb5bcc91a908c45a03c36d5c748',1,'Engine']]],
-  ['setcolor_1',['setColor',['../class_sprite.html#af25b416640acfe3aeee1a09266441114',1,'Sprite']]],
-  ['setposition_2',['setPosition',['../class_sprite.html#a674a0a2e23e92fe0fb2939168897f541',1,'Sprite']]],
-  ['setscale_3',['setScale',['../class_sprite.html#a346adb54147387fdd17c0c317e629432',1,'Sprite']]],
-  ['setuv_4',['setUV',['../class_sprite.html#a87a70d72a969ecc1180e10ff0ceedc4d',1,'Sprite']]],
-  ['sign_5',['sign',['../namespacegmath.html#a5fe870c7470a2a9f6a08f8c7cc92708c',1,'gmath']]],
-  ['sprite_6',['Sprite',['../class_sprite.html',1,'Sprite'],['../class_sprite.html#a86236bab244cf14ac42db1b300e462e8',1,'Sprite::Sprite(const char *path, glm::vec3)'],['../class_sprite.html#aa088b2c560fca2695099dfc06c21f2c0',1,'Sprite::Sprite(glm::vec3, glm::vec2)']]],
-  ['sprite_2ecpp_7',['Sprite.cpp',['../_sprite_8cpp.html',1,'']]],
-  ['sprite_2eh_8',['Sprite.h',['../_sprite_8h.html',1,'']]],
-  ['sprite_5fsize_9',['SPRITE_SIZE',['../_renderer2_d_8h.html#ae3611cd7caad34521610ef1f7c116772',1,'Renderer2D.h']]],
-  ['sqr_10',['sqr',['../namespacegmath.html#a03bd549ebf741608c5b246a9a7c41aac',1,'gmath']]],
-  ['sqrt_11',['sqrt',['../namespacegmath.html#adbdf95604a6ae5debb04f0215878bf24',1,'gmath']]],
-  ['stepevent_12',['StepEvent',['../class_engine.html#a6b4fc4520eeb898d1d410ff10174c7b3',1,'Engine']]]
+  ['radtodeg_0',['radtodeg',['../namespacegmath.html#ab2cc63f3baa541de909f96ad003dda3f',1,'gmath']]],
+  ['render_1',['Render',['../class_object2_d.html#a7d49d739d60058fd0490f962f4a3b676',1,'Object2D::Render()'],['../class_renderer2_d.html#aad8a25d28ba1b2afbc4814de2892628a',1,'Renderer2D::Render()']]],
+  ['renderer2d_2',['Renderer2D',['../class_renderer2_d.html',1,'Renderer2D'],['../class_renderer2_d.html#a46c1e65c8966d977cc5c7eeb95b10bae',1,'Renderer2D::Renderer2D()']]],
+  ['renderer2d_2ecpp_3',['Renderer2D.cpp',['../_renderer2_d_8cpp.html',1,'']]],
+  ['renderer2d_2eh_4',['Renderer2D.h',['../_renderer2_d_8h.html',1,'']]],
+  ['right_5',['right',['../struct_collision_box.html#a4c529839720a23f7b1283b22907dc902',1,'CollisionBox']]],
+  ['round_6',['round',['../namespacegmath.html#a4f3014113b291109d4949ac92f606958',1,'gmath']]]
 ];

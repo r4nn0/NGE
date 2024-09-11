@@ -91,7 +91,7 @@ $(function(){ initResizable(false); });
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="_texture_page_8h_source.html">TexturePage.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="_sprite_8h_source.html">Sprite.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -104,9 +104,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4892ad37681ed4bf9627a5cd3b6dae5e" id="r_a4892ad37681ed4bf9627a5cd3b6dae5e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4892ad37681ed4bf9627a5cd3b6dae5e">ImageResizeCanvas</a> (int, int, int=4)</td></tr>
 <tr class="memdesc:a4892ad37681ed4bf9627a5cd3b6dae5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize the texture page so that it can take more sprites.  <br /></td></tr>
 <tr class="separator:a4892ad37681ed4bf9627a5cd3b6dae5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab77c55218903f5c5e2d26ea24041a0da" id="r_ab77c55218903f5c5e2d26ea24041a0da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab77c55218903f5c5e2d26ea24041a0da">ImageAdd</a> (<a class="el" href="class_sprite.html">Sprite</a> *)</td></tr>
-<tr class="memdesc:ab77c55218903f5c5e2d26ea24041a0da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a sprite to the texture page.  <br /></td></tr>
-<tr class="separator:ab77c55218903f5c5e2d26ea24041a0da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafb1cfdbe62e0462fc4cb4a07b035672" id="r_aafb1cfdbe62e0462fc4cb4a07b035672"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aafb1cfdbe62e0462fc4cb4a07b035672">ImageAdd</a> (unsigned char *, <a class="el" href="class_sprite.html">Sprite</a> *, int)</td></tr>
+<tr class="memdesc:aafb1cfdbe62e0462fc4cb4a07b035672"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add image to texture page.  <br /></td></tr>
+<tr class="separator:aafb1cfdbe62e0462fc4cb4a07b035672"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acae7353dc036103ab8e3f5b618a7fb13" id="r_acae7353dc036103ab8e3f5b618a7fb13"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acae7353dc036103ab8e3f5b618a7fb13">Bind</a> ()</td></tr>
 <tr class="memdesc:acae7353dc036103ab8e3f5b618a7fb13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind the texture to one of slots in memory (usually between 0 and 31)  <br /></td></tr>
 <tr class="separator:acae7353dc036103ab8e3f5b618a7fb13"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -116,6 +116,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5b0bb8cb9b1645cbf5526c7856192b70" id="r_a5b0bb8cb9b1645cbf5526c7856192b70"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b0bb8cb9b1645cbf5526c7856192b70">GetTextureSlot</a> ()</td></tr>
 <tr class="memdesc:a5b0bb8cb9b1645cbf5526c7856192b70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the value of the current texture page slot.  <br /></td></tr>
 <tr class="separator:a5b0bb8cb9b1645cbf5526c7856192b70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6fd4c26636ee8fa2abd0db0c922e27e" id="r_ad6fd4c26636ee8fa2abd0db0c922e27e"><td class="memItemLeft" align="right" valign="top">glm::vec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad6fd4c26636ee8fa2abd0db0c922e27e">GetAtlasSize</a> ()</td></tr>
+<tr class="memdesc:ad6fd4c26636ee8fa2abd0db0c922e27e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the value of the current texture page size.  <br /></td></tr>
+<tr class="separator:ad6fd4c26636ee8fa2abd0db0c922e27e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="abaa0565c2922c6165e4755b4929fb106" name="abaa0565c2922c6165e4755b4929fb106"></a>
@@ -202,6 +205,30 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Bind the texture to one of slots in memory (usually between 0 and 31) </p>
+<p>void TexturePage::ImageAdd(Sprite&amp; sprite) { if(sprite.hasTexture()){ unsigned char* data = sprite.m_Pixels; int width = sprite.m_BaseSize.x; int height = sprite.m_BaseSize.y;</p>
+<p>float x1=0, y1= (float)m_yOffset/m_Height, x2= (float) width /m_Width, y2=y1+(float) height /m_Height; sprite.m_UV[0]=glm::vec2(x1, y1); // 0, 0 sprite.m_UV[1]=glm::vec2(x2, y1); // 1, 0 sprite.m_UV[2]=glm::vec2(x2, y2); // 1, 1 sprite.m_UV[3]=glm::vec2(x1, y2); // 0, 1</p>
+<p>sprite.m_texSlot=m_Slot;</p>
+<p>for (int x = 0;x &lt; width;x++) { for (int y = 0;y &lt; height;y++) { m_TexturePage[(x+ m_Width * (y+m_yOffset)) * m_ChannelNum + 0] = data[(x + width * y) * m_ChannelNum + 0]; m_TexturePage[(x+ m_Width * (y+m_yOffset)) * m_ChannelNum + 1] = data[(x + width * y) * m_ChannelNum + 1]; m_TexturePage[(x+ m_Width * (y+m_yOffset)) * m_ChannelNum + 2] = data[(x + width * y) * m_ChannelNum + 2]; m_TexturePage[(x+ m_Width * (y+m_yOffset)) * m_ChannelNum + 3] = data[(x + width * y) * m_ChannelNum + 3]; } } m_yOffset+=height; <a class="el" href="#acae7353dc036103ab8e3f5b618a7fb13" title="Bind the texture to one of slots in memory (usually between 0 and 31)">Bind()</a>; glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_TexturePage); <a class="el" href="#a2ab29ee2cf3c070676d34c1cce98e721" title="Unbind the texture after loading the sprite.">Unbind()</a>; } SpritesTotal.insert({sprite.m_Name, &amp;sprite}); }  </p>
+
+</div>
+</div>
+<a id="ad6fd4c26636ee8fa2abd0db0c922e27e" name="ad6fd4c26636ee8fa2abd0db0c922e27e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6fd4c26636ee8fa2abd0db0c922e27e">&#9670;&#160;</a></span>GetAtlasSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec2 TexturePage::GetAtlasSize </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the value of the current texture page size. </p>
+<dl class="section return"><dt>Returns</dt><dd>glm::vec2 size of the current texture page </dd></dl>
 
 </div>
 </div>
@@ -225,8 +252,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ab77c55218903f5c5e2d26ea24041a0da" name="ab77c55218903f5c5e2d26ea24041a0da"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab77c55218903f5c5e2d26ea24041a0da">&#9670;&#160;</a></span>ImageAdd()</h2>
+<a id="aafb1cfdbe62e0462fc4cb4a07b035672" name="aafb1cfdbe62e0462fc4cb4a07b035672"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafb1cfdbe62e0462fc4cb4a07b035672">&#9670;&#160;</a></span>ImageAdd()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -234,16 +261,27 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void TexturePage::ImageAdd </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_sprite.html">Sprite</a> *</td>          <td class="paramname"><span class="paramname"><em>sprite</em></span></td><td>)</td>
+          <td class="paramtype">unsigned char *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="class_sprite.html">Sprite</a> *</td>          <td class="paramname"><span class="paramname"><em>spr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>t_Frame</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Add a sprite to the texture page. </p>
+<p>Add image to texture page. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">sprite</td><td>The sprite object to be added to the texture page </td></tr>
+    <tr><td class="paramname">data</td><td>pixels data </td></tr>
+    <tr><td class="paramname">spr</td><td>The sprite object </td></tr>
+    <tr><td class="paramname">t_Frame</td><td>Frame index of the sprite (for animations) </td></tr>
   </table>
   </dd>
 </dl>
@@ -306,8 +344,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>Graphics/<a class="el" href="_texture_page_8h_source.html">TexturePage.h</a></li>
-<li>Graphics/<a class="el" href="_texture_page_8cpp.html">TexturePage.cpp</a></li>
+<li>Graphics/<a class="el" href="_sprite_8h_source.html">Sprite.h</a></li>
+<li>Graphics/<a class="el" href="_sprite_8cpp.html">Sprite.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

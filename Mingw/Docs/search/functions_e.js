@@ -1,9 +1,6 @@
 var searchData=
 [
-  ['radtodeg_0',['radtodeg',['../namespacegmath.html#ab2cc63f3baa541de909f96ad003dda3f',1,'gmath']]],
-  ['render_1',['Render',['../class_renderer2_d.html#aad8a25d28ba1b2afbc4814de2892628a',1,'Renderer2D']]],
-  ['renderbegin_2',['renderBegin',['../class_renderer2_d.html#a5929a2295db8e330ecf1381ec2997e86',1,'Renderer2D']]],
-  ['renderend_3',['renderEnd',['../class_renderer2_d.html#a47532d94e549a10ac2f372e9f9e47bae',1,'Renderer2D']]],
-  ['renderer2d_4',['Renderer2D',['../class_renderer2_d.html#a46c1e65c8966d977cc5c7eeb95b10bae',1,'Renderer2D']]],
-  ['round_5',['round',['../namespacegmath.html#a4f3014113b291109d4949ac92f606958',1,'gmath']]]
+  ['point_5fdirection_0',['point_direction',['../namespacegmath.html#a6c8e623049449fe0137c3e46ab5b2832',1,'gmath']]],
+  ['point_5fdistance_1',['point_distance',['../namespacegmath.html#a7329a0559032a7199b3b572c94da5f5f',1,'gmath']]],
+  ['pow_2',['pow',['../namespacegmath.html#ae09fe705a77a299e9ac3a7b38aabef3e',1,'gmath']]]
 ];

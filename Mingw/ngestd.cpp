@@ -38,6 +38,13 @@ std::wstring ar_fix(std::wstring str){
     }
     return out;
 }
+/**
+ * @brief Load an ngesprite image to memory
+ * 
+ * @param path path to ngesprite file
+ * @param spr pointer to the object to be saved in
+ * @return std::vector<unsigned char*> List of pixel data of the loaded sprites (for sprites that has multiple frames)
+ */
 std::vector<unsigned char*> LoadNGESprite(const char* path, Sprite* spr){
     std::ifstream in(path, std::ios::binary);
     
@@ -135,6 +142,11 @@ std::vector<unsigned char*> LoadNGESprite(const char* path, Sprite* spr){
    
     return t_Pixels;
 }
+/**
+ * @brief Load nge sprites located in the 'Sprites' directory to memory for use\n
+ * Sprites are then used by calling Object2D::SpriteSet(std::string)\n
+ * Names of the sprites are the same as the nge files names (without the .ngesprite)
+ */
 void LoadSpritesToMemroy(){
     DIR *dr;
     dirent *en;
@@ -175,12 +187,26 @@ void LoadSpritesToMemroy(){
     
     
 }
-
+/**
+ * @brief Draw a single point on screen
+ * 
+ * @param x coordinates on x-axis
+ * @param y coordinates on y-axis
+ */
 void ngestd::DrawPoint(float x, float y){
     glBegin(GL_POINTS);
     glVertex2f(x,y);
     glEnd();
 }
+/**
+ * @brief Draw a rectangle on screen
+ * 
+ * @param x1 coordinates of the top-left corner on the x-axis
+ * @param y1 coordinates of the top-left corner on the y-axis
+ * @param x2 coordinates of the bottom-right corner on the x-axis
+ * @param y2 coordinates of the bottom-right corner on the y-axis
+ * @param outline A flag to draw the rectangle as an outline (true) or as a filled rectangle(false)
+ */
 void ngestd::DrawRectangle(float x1, float y1, float x2, float y2, bool outline){
     glBegin(GL_QUADS);
     if(outline)
@@ -191,9 +217,19 @@ void ngestd::DrawRectangle(float x1, float y1, float x2, float y2, bool outline)
     glVertex2f(x1,y2);
     glEnd();
 }
+/**
+ * @brief Set the draw color for the engine
+ * 
+ * @param col color in vec3 (float values between 0 and 1)
+ */
 void ngestd::DrawSetColor(glm::vec3 col){
     glColor3f(col.x,col.y,col.z);
 }
+/**
+ * @brief Get the current draw color of the engine
+ * 
+ * @return glm::vec3 float values between 0 and 1
+ */
 glm::vec3 ngestd::DrawGetColor(){
     float col[3];
     glGetFloatv(GL_CURRENT_COLOR,col);

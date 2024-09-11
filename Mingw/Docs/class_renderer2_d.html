@@ -102,18 +102,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9235b95177a89d7318ca685fca58c7a4" id="r_a9235b95177a89d7318ca685fca58c7a4"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9235b95177a89d7318ca685fca58c7a4">~Renderer2D</a> ()</td></tr>
 <tr class="memdesc:a9235b95177a89d7318ca685fca58c7a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees the buffers in memory.  <br /></td></tr>
 <tr class="separator:a9235b95177a89d7318ca685fca58c7a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5929a2295db8e330ecf1381ec2997e86" id="r_a5929a2295db8e330ecf1381ec2997e86"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5929a2295db8e330ecf1381ec2997e86">renderBegin</a> ()</td></tr>
-<tr class="memdesc:a5929a2295db8e330ecf1381ec2997e86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes rendering, necessary before adding sprites.  <br /></td></tr>
-<tr class="separator:a5929a2295db8e330ecf1381ec2997e86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3fcb40ac00ee175ad2c13f554a51bcd5" id="r_a3fcb40ac00ee175ad2c13f554a51bcd5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3fcb40ac00ee175ad2c13f554a51bcd5">addSprite</a> (<a class="el" href="class_sprite.html">Sprite</a> *)</td></tr>
-<tr class="memdesc:a3fcb40ac00ee175ad2c13f554a51bcd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a sprite to the rendering screen.  <br /></td></tr>
-<tr class="separator:a3fcb40ac00ee175ad2c13f554a51bcd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad8a25d28ba1b2afbc4814de2892628a" id="r_aad8a25d28ba1b2afbc4814de2892628a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad8a25d28ba1b2afbc4814de2892628a">Render</a> ()</td></tr>
 <tr class="memdesc:aad8a25d28ba1b2afbc4814de2892628a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start rendering objects added to the renderer.  <br /></td></tr>
 <tr class="separator:aad8a25d28ba1b2afbc4814de2892628a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a47532d94e549a10ac2f372e9f9e47bae" id="r_a47532d94e549a10ac2f372e9f9e47bae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a47532d94e549a10ac2f372e9f9e47bae">renderEnd</a> ()</td></tr>
-<tr class="memdesc:a47532d94e549a10ac2f372e9f9e47bae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ends rendering so that the engine knows it is ready to render.  <br /></td></tr>
-<tr class="separator:a47532d94e549a10ac2f372e9f9e47bae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -169,31 +160,6 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a3fcb40ac00ee175ad2c13f554a51bcd5" name="a3fcb40ac00ee175ad2c13f554a51bcd5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3fcb40ac00ee175ad2c13f554a51bcd5">&#9670;&#160;</a></span>addSprite()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Renderer2D::addSprite </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_sprite.html">Sprite</a> *</td>          <td class="paramname"><span class="paramname"><em>spr</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Add a sprite to the rendering screen. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">spr</td><td>the object of the sprite to add </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="aad8a25d28ba1b2afbc4814de2892628a" name="aad8a25d28ba1b2afbc4814de2892628a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aad8a25d28ba1b2afbc4814de2892628a">&#9670;&#160;</a></span>Render()</h2>
 
@@ -210,44 +176,6 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Start rendering objects added to the renderer. </p>
-
-</div>
-</div>
-<a id="a5929a2295db8e330ecf1381ec2997e86" name="a5929a2295db8e330ecf1381ec2997e86"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5929a2295db8e330ecf1381ec2997e86">&#9670;&#160;</a></span>renderBegin()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Renderer2D::renderBegin </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Initializes rendering, necessary before adding sprites. </p>
-
-</div>
-</div>
-<a id="a47532d94e549a10ac2f372e9f9e47bae" name="a47532d94e549a10ac2f372e9f9e47bae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a47532d94e549a10ac2f372e9f9e47bae">&#9670;&#160;</a></span>renderEnd()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Renderer2D::renderEnd </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Ends rendering so that the engine knows it is ready to render. </p>
 
 </div>
 </div>

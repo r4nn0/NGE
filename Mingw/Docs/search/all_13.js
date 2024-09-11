@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['vbodata_0',['vboData',['../structngetype_1_1vbo_data.html',1,'ngetype']]],
-  ['vertex_1',['vertex',['../structngetype_1_1vbo_data.html#a34a46bdc21d11cbc059079c9eda8e3dc',1,'ngetype::vboData']]],
-  ['vertex_5fsize_2',['VERTEX_SIZE',['../_renderer2_d_8h.html#a14571eb5f0eee95bf614e04c59b0207a',1,'Renderer2D.h']]]
+  ['unbind_0',['Unbind',['../class_texture_page.html#a2ab29ee2cf3c070676d34c1cce98e721',1,'TexturePage']]],
+  ['unbind_1',['unbind',['../classngetype_1_1_i_b_o.html#a5246326259ebb765c47c3a1e5583c1e0',1,'ngetype::IBO']]],
+  ['update_2',['Update',['../class_object2_d.html#ad647f7377bcc23b09b850c9254190bc9',1,'Object2D::Update()'],['../class_test_player.html#a3213b5c0b48b2d8c165db02588535cde',1,'TestPlayer::Update()']]]
 ];

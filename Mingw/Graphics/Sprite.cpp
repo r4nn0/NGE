@@ -117,6 +117,13 @@ void TexturePage::ImageResizeCanvas(int new_width, int new_height, int channel_n
     m_Width = new_width;
     m_Height = new_height;
 }
+/**
+ * @brief Add image to texture page
+ * 
+ * @param data pixels data
+ * @param spr The sprite object
+ * @param t_Frame Frame index of the sprite (for animations)
+ */
 void TexturePage::ImageAdd(unsigned char* data, Sprite* spr, int t_Frame){
     int width = spr->m_BaseSize[t_Frame].x;
 	int height = spr->m_BaseSize[t_Frame].y;
@@ -159,9 +166,6 @@ void TexturePage::ImageAdd(unsigned char* data, Sprite* spr, int t_Frame){
     
 }
 /**
- * @brief Add a sprite to the texture page
- * 
- * @param sprite The sprite object to be added to the texture page
  
 void TexturePage::ImageAdd(Sprite& sprite) {
 	if(sprite.hasTexture()){

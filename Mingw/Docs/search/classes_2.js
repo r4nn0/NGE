@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['renderer2d_0',['Renderer2D',['../class_renderer2_d.html',1,'']]]
+  ['ibo_0',['IBO',['../classngetype_1_1_i_b_o.html',1,'ngetype']]]
 ];

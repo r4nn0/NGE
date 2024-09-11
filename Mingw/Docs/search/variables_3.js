@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['has_5fmi_0',['has_mi',['../main_8cpp.html#a30256a136f5c90d46567284bcd20a69a',1,'main.cpp']]],
-  ['has_5fno_5fmi_1',['has_no_mi',['../main_8cpp.html#a95e31ff057ec602e0e20021254d046a5',1,'main.cpp']]]
+  ['dcpf_0',['dcpf',['../class_renderer2_d.html#aad23c10b8e8fafc913e5e7bd9c2d3df7',1,'Renderer2D']]]
 ];

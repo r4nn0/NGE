@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['_7erenderer2d_0',['~Renderer2D',['../class_renderer2_d.html#a9235b95177a89d7318ca685fca58c7a4',1,'Renderer2D']]]
+  ['vbodata_0',['vboData',['../structngetype_1_1vbo_data.html',1,'ngetype']]],
+  ['vertex_1',['vertex',['../structngetype_1_1vbo_data.html#ae67ed94b87b760f74f5a6715ad2d2629',1,'ngetype::vboData']]],
+  ['vertex_5fsize_2',['VERTEX_SIZE',['../_renderer2_d_8h.html#a14571eb5f0eee95bf614e04c59b0207a',1,'Renderer2D.h']]]
 ];
