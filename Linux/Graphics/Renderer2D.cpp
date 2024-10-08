@@ -18,7 +18,7 @@ Renderer2D::Renderer2D() : dcpf(0) {
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)0); // vec2 pos
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)(sizeof(float)*2)); // vec4 col
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)(sizeof(float)*6)); // vec2 texcoord
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE, (const void*)(sizeof(float)*8)); // float textureSlot
+    glVertexAttribPointer(3, 1, GL_INT, GL_FALSE, VERTEX_SIZE, (const void*)(sizeof(float)*8)); // int textureSlot
     glBindBuffer(GL_ARRAY_BUFFER,0);
 
     unsigned short indices[INDICES_SIZE];
