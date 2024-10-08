@@ -14,7 +14,7 @@ vec4 base_color;
 
 void main() {
     if(fs_in.textureSlot>=0){
-        base_color=texture2D(texture[int(fs_in.textureSlot)], fs_in.texCoords);
+        base_color=texture2D(texture[0], fs_in.texCoords);
         FragColor = fs_in.color * base_color;
 	}
 	else

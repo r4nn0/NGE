@@ -4,19 +4,20 @@
 
 class Object2D{
 public:
-    Object2D(const char*);
+    Object2D(std::string);
     Object2D();
     ~Object2D();
     void Update();
     void Render();
-    //void Object2D::SpriteSet(const char*);
+    void SpriteSet(std::string);
     glm::vec2 position;
     glm::vec2 scale;
     glm::vec4 color;
-    int frame_index, anim_speed;
-    std::vector<std::reference_wrapper<Sprite>> frames;
+    float frame_index, anim_speed;
+    std::string sprite_name;
+    CollisionBox bbox;
 protected:
-    Sprite sprite;
+    Sprite* sprite;
 };
 
 #endif

@@ -24,17 +24,21 @@ int main (){
     Engine gameEngine;
     
     gameEngine.init("NGE", 1000,500);
+    LoadSpritesToMemroy();
+    
+    
     //If the app crashes try using a font that is located in the same directory as the app
-    FTGLPixmapFont font("C:/Windows/Fonts/arial.ttf");
+    FTGLPixmapFont font("/usr/share/fonts/arial.ttf");
     
 	Renderer2D renderer;
     //Sprite spr("sprite.png",glm::vec2(32,32));
-    TestPlayer testObject("sprite.png");
+    TestPlayer testObject("sonic_idle");
     
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
     std::string fpsString = "0";
     while(!glfwWindowShouldClose(gameEngine.get_window())){
+    	//std::cout << "Test" << std::endl;
         //auto t1 = std::chrono::high_resolution_clock::now();
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
             break;
@@ -44,22 +48,23 @@ int main (){
             fpsString=std::to_string(FPS);
             FPS=0;
             prevTime=currTime;
+            std::cout << fpsString << std::endl;
         }
         
         gameEngine.setBackgroundColor(BACKGROUND_COLOR);
         gameEngine.StepEvent();
+        
         testObject.Update();
 
-
-
         gameEngine.BeginDraw();
+        //std::cout << "Test2" << std::endl;
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
-        
-        font.FaceSize(16);
-        font.Render(fpsString.c_str(),-1,FTPoint(0,gameEngine.getViewHeight()-font.FaceSize(),0));
-        font.FaceSize(100);
-        font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
-
+        // ngestd::DrawRectangle(testObject.bbox.left, testObject.bbox.top, testObject.bbox.right, testObject.bbox.bottom, true);
+        //font.FaceSize(16);
+        //font.Render(fpsString.c_str(),-1,FTPoint(0,gameEngine.getViewHeight()-font.FaceSize(),0));
+        //font.FaceSize(100);
+        //font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
+		//std::cout << "Test3" << std::endl;
         
         testObject.Render();
         
