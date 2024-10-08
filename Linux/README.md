@@ -15,6 +15,5 @@
 
 ### Things to fix:
 <ul>
-	<li>Texture slots (from float to const int)</li>
 	<li>Text rendering (Segmentation Fault error upon rendering texts)</li>
 </ul>
