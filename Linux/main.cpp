@@ -28,7 +28,8 @@ int main (){
     
     
     //If the app crashes try using a font that is located in the same directory as the app
-    FTGLPixmapFont font("/usr/share/fonts/arial.ttf");
+    FTGLPixmapFont font("/usr/share/fonts/truetype/freefont/FreeMono.ttf");
+    if(font.Error()) std::cout << "Failed to load font" << std::endl;
     
 	Renderer2D renderer;
     //Sprite spr("sprite.png",glm::vec2(32,32));
@@ -60,10 +61,10 @@ int main (){
         //std::cout << "Test2" << std::endl;
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
         // ngestd::DrawRectangle(testObject.bbox.left, testObject.bbox.top, testObject.bbox.right, testObject.bbox.bottom, true);
-        //font.FaceSize(16);
-        //font.Render(fpsString.c_str(),-1,FTPoint(0,gameEngine.getViewHeight()-font.FaceSize(),0));
-        //font.FaceSize(100);
-        //font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
+        font.FaceSize(16);
+        font.Render(fpsString.c_str(),-1,FTPoint(0,gameEngine.getViewHeight()-font.FaceSize(),0));
+        font.FaceSize(100);
+        font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
 		//std::cout << "Test3" << std::endl;
         
         testObject.Render();
