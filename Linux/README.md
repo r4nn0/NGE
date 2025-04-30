@@ -15,5 +15,5 @@
 
 ### Things to fix:
 <ul>
-	<li>Text rendering (Segmentation Fault error upon rendering texts)</li>
+	<li>(Nothing currently)</li>
 </ul>
