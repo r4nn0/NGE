@@ -35,7 +35,7 @@ public:
     static std::string LoadShaderFromFile(const char*);
     static const float* getProjMatrix();
     static const float* getViewMatrix();
-    Engine();
+    Engine(bool is3D=false);
     void setBackgroundColor(glm::vec3);
     glm::vec2 getWindowSize();
     int getViewWidth();
@@ -49,6 +49,7 @@ private:
     view_wport, view_hport,
     view_width, view_height;
     
+    bool is3D;
     
     GLFWwindow* window;
     static unsigned int CompileShader(unsigned int type, const char*source);

@@ -85,8 +85,8 @@ int main (){
         //font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
 
         
-        //testObject.Render();
-        //renderer.Render();
+        testObject.Render();
+        renderer.Render();
         ObjectsToRender.push_back(obj);
         renderer3D.Render();
         

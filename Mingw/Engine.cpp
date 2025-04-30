@@ -2,12 +2,12 @@
 glm::mat4 Engine::projMat=glm::mat4(0.f);
 glm::mat4 Engine::viewMat=glm::mat4(0.f);
 Camera3D Engine::camera3d;
-Engine::Engine() : window_width(800), window_height(600),
+Engine::Engine(bool _is3D) : window_width(800), window_height(600),
                    view_xport(0), view_yport(0),
                    view_xview(0), view_yview(0),
                    view_wport(0), view_hport(0),
                    view_width(0),view_height(0),
-                   background_color(100,100,100){}
+                   background_color(100,100,100), is3D(_is3D){}
 /**
  * @brief Initialize the engine by creating a rendering window
  * 
@@ -66,7 +66,14 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
     */
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_CULL_FACE);
+    if(is3D){
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glFrontFace(GL_CCW);
+    }
+    //glEnable(GL_CULL_FACE);
     //glCullFace(GL_BACK);
     //glFrontFace(GL_CW); // Or GL_CW depending on your model's winding order
     //glDisable(GL_CULL_FACE);
@@ -90,11 +97,14 @@ void Engine::StepEvent(){
     //glLoadIdentity();
     //gluPerspective(45.0f, (float)view_width/(float)view_height, 0.1f, 100.0f);
     //glOrtho(left, right, bottom, top, near, far);
-    
-    projMat=glm::perspective(45.0f,(float)view_width/(float)view_height,0.1f,100.0f);
-    viewMat = glm::lookAt(camera3d.getPosition(), camera3d.getTarget(), camera3d.getUp());
-    //projMat=glm::ortho(left, right, bottom, top, near, far);
-    //viewMat=glm::translate(glm::mat4(1.0f), glm::vec3(view_xview, view_yview, 0.0f));
+    if(is3D){
+        projMat=glm::perspective(45.0f,(float)view_width/(float)view_height,0.1f,100.0f);
+        viewMat = glm::lookAt(camera3d.getPosition(), camera3d.getTarget(), camera3d.getUp());
+    }
+    else{
+        projMat=glm::ortho(left, right, bottom, top, near, far);
+        viewMat=glm::translate(glm::mat4(1.0f), glm::vec3(-view_xview, view_yview, 0.0f));
+    }
     //glMatrixMode(GL_MODELVIEW);
 }
 /**
