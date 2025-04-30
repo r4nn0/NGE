@@ -101,7 +101,8 @@ void Renderer2D::Render(){
     SpritesToRender.clear();
     
     glUseProgram(m_Shader);
-    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "proj_matrix"),1,GL_FALSE,Engine::getOthroMatrix());
+    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "proj_matrix"),1,GL_FALSE,Engine::getProjMatrix());
+    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "vw_matrix"),1,GL_FALSE,Engine::getViewMatrix());
     glUniform1i(glGetUniformLocation(m_Shader, "texture[0]"), MainTextureAtlas.GetTextureSlot());
     MainTextureAtlas.Bind();
     glBindVertexArray(m_appSurface);

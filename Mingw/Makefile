@@ -3,7 +3,7 @@ srcFiles	+= $(wildcard Graphics/*.cpp)
 objFiles	:= $(srcFiles:.cpp=.o)
 Includedirs	:= include
 Libdirs		:= lib
-Libs		:= ftgl freetype glew32 glfw3 OpenAL32 gdi32 winmm opengl32
+Libs		:= ftgl freetype glew32 glfw3 glu32 OpenAL32 gdi32 winmm opengl32
 LinkLibs	:= -static #dynamic to use dynamic versions of libraries
 Macros		:= GLEW_STATIC AL_LIBTYPE_STATIC
 OutFolder	:= bin
@@ -14,7 +14,7 @@ buildFlags	:= 	$(patsubst %, -D%, $(Macros))\
 				$(patsubst %, -L%, $(Libdirs))
 buildDBG	:= g++ -std=c++1y -Wall -g
 buildREL	:= g++ -std=c++1y -Wall -O2 -s
-
+SHELL		:= cmd.exe
 
 # Debug
 $(OutFolder)/Nge-dbg.exe: $(patsubst %, $(ObjDBG)/%, $(objFiles))

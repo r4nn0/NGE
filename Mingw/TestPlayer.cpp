@@ -4,8 +4,8 @@ TestPlayer::TestPlayer():Object2D::Object2D(), idle_time(0){}
 
 void TestPlayer::Update(){
     int hsp=0, vsp=0;
-    hsp=(keyboard_check(GLFW_KEY_RIGHT)-keyboard_check(GLFW_KEY_LEFT))*3;
-    vsp=(keyboard_check(GLFW_KEY_DOWN)-keyboard_check(GLFW_KEY_UP))*3;
+    hsp=(keyboard_check(GLFW_KEY_RIGHT)-keyboard_check(GLFW_KEY_LEFT));
+    vsp=(keyboard_check(GLFW_KEY_DOWN)-keyboard_check(GLFW_KEY_UP));
     if(hsp==0 && vsp==0) {idle_time++;state=0;}
     else idle_time=0;
     position+=glm::vec2(hsp,vsp);

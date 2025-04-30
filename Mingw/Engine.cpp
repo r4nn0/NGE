@@ -1,5 +1,7 @@
 #include "Engine.h"
-glm::mat4 Engine::ortho_mat=glm::mat4(0.f);
+glm::mat4 Engine::projMat=glm::mat4(0.f);
+glm::mat4 Engine::viewMat=glm::mat4(0.f);
+Camera3D Engine::camera3d;
 Engine::Engine() : window_width(800), window_height(600),
                    view_xport(0), view_yport(0),
                    view_xview(0), view_yview(0),
@@ -55,20 +57,20 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
 
     /// CAMERA
     glViewport(view_xport, view_yport, view_wport, view_hport);
+    /*
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0,0,0,0,-10,10);
     glDepthRange(-64,63);
     glMatrixMode(GL_MODELVIEW);
-
+    */
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    left=view_xview;
-    right=view_width+view_xview;
-    bottom=view_height+view_yview;
-    top=view_yview;
-    near=-10;
-    far=10;
+    glEnable(GL_CULL_FACE);
+    //glCullFace(GL_BACK);
+    //glFrontFace(GL_CW); // Or GL_CW depending on your model's winding order
+    //glDisable(GL_CULL_FACE);
+
     
     return true;
 }
@@ -77,12 +79,23 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
  * 
  */
 void Engine::StepEvent(){
+    left=view_xview;
+    right=view_width+view_xview;
+    bottom=view_height+view_yview;
+    top=view_yview;
+    near=-10;
+    far=10;
     glfwPollEvents();
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(left, right, bottom, top, near, far);
-    ortho_mat=glm::ortho(left,right,bottom,top,near,far);
-    glMatrixMode(GL_MODELVIEW);
+    //glMatrixMode(GL_PROJECTION);
+    //glLoadIdentity();
+    //gluPerspective(45.0f, (float)view_width/(float)view_height, 0.1f, 100.0f);
+    //glOrtho(left, right, bottom, top, near, far);
+    
+    projMat=glm::perspective(45.0f,(float)view_width/(float)view_height,0.1f,100.0f);
+    viewMat = glm::lookAt(camera3d.getPosition(), camera3d.getTarget(), camera3d.getUp());
+    //projMat=glm::ortho(left, right, bottom, top, near, far);
+    //viewMat=glm::translate(glm::mat4(1.0f), glm::vec3(view_xview, view_yview, 0.0f));
+    //glMatrixMode(GL_MODELVIEW);
 }
 /**
  * @brief Initializes rendering by clearing the rendering screen
@@ -112,8 +125,11 @@ GLFWwindow* Engine::get_window(){
  * 
  * @return const float* point to the matrix
  */
-const float* Engine::getOthroMatrix(){
-    return (const float*)glm::value_ptr(ortho_mat);
+const float* Engine::getProjMatrix(){
+    return (const float*)glm::value_ptr(projMat);
+}
+const float* Engine::getViewMatrix(){
+    return (const float*)glm::value_ptr(viewMat);
 }
 /**
  * @brief Sets background color for the screen

@@ -17,6 +17,7 @@
 #include "Input.h"
 #include "gmath.h"
 #include "ngetype.h"
+#include "Graphics/Camera3D.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtc/type_ptr.hpp>
@@ -28,11 +29,12 @@ public:
     void StepEvent();
     void BeginDraw();
     void EndDraw();
-    
+    static Camera3D camera3d;
     GLFWwindow* get_window();
     static unsigned int CreateShader(const char*, const char*);
     static std::string LoadShaderFromFile(const char*);
-    static const float* getOthroMatrix();
+    static const float* getProjMatrix();
+    static const float* getViewMatrix();
     Engine();
     void setBackgroundColor(glm::vec3);
     glm::vec2 getWindowSize();
@@ -51,7 +53,8 @@ private:
     GLFWwindow* window;
     static unsigned int CompileShader(unsigned int type, const char*source);
     float right, left, bottom, top, near, far;
-    static glm::mat4 ortho_mat;
+    static glm::mat4 projMat;
+    static glm::mat4 viewMat;
     glm::vec3 background_color;
 };
 

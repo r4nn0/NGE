@@ -7,6 +7,13 @@
 
 namespace ngetype
 {
+    struct vbo3DData{
+        glm::vec3 vertex;
+        glm::vec4 color;
+        glm::vec2 texCoords;
+        glm::vec3 vNormals;
+        float textureSlot;
+    };
     struct vboData{
         glm::vec2 vertex;
         glm::vec4 color;

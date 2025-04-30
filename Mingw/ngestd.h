@@ -6,7 +6,9 @@
 #include <dirent.h>
 #include <regex>
 #include "Graphics/Sprite.h"
+#include "Graphics/Object3D.h"
 extern std::vector<std::reference_wrapper<Sprite>> SpritesToRender;
+extern std::vector<std::reference_wrapper<Object3D>> ObjectsToRender;
 static const std::wstring ar_alphabet = {
     0xfe8f, 0xfe95, 0xfe99, 0xfe9d,
     0xfea1, 0xfea5, 0xfeb1, 0xfeb5,

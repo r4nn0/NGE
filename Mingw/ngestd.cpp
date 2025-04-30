@@ -1,5 +1,6 @@
 #include "ngestd.h"
 std::vector<std::reference_wrapper<Sprite>> SpritesToRender;
+std::vector<std::reference_wrapper<Object3D>> ObjectsToRender;
 std::wstring ar_fix(std::wstring str){
     for(size_t i = 0; i<str.size();i++){
         
