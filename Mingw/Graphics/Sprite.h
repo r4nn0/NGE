@@ -27,6 +27,9 @@ public:
     friend class TexturePage;
     friend std::vector<unsigned char*> LoadNGESprite(const char*, Sprite*);
     bool operator==(const Sprite&) const;
+
+
+    
 protected:
     std::string m_Name;
     unsigned int m_Frames;
@@ -45,7 +48,7 @@ protected:
 };
 class TexturePage{
 private:
-	int m_xOffset, m_yOffset ,m_Width, m_Height, m_ChannelNum;
+	float m_xOffset, m_yOffset ,m_Width, m_Height, m_ChannelNum, m_lastYOffset;
 	const int m_Slot;
 	unsigned char* m_TexturePage;
 	unsigned int m_Texture;

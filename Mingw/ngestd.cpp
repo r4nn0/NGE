@@ -161,17 +161,18 @@ void LoadSpritesToMemroy(){
             sname+=en->d_name;
             if(std::regex_match(sname, ext)){
                 Sprite *spr= new Sprite(glm::vec2(0), glm::vec2(1));
-                
                 t_Pixels.push_back(LoadNGESprite(sname.c_str(), spr));
-                t_TextureAtlasSize.x=(t_TextureAtlasSize.x>spr->getSize().x)? t_TextureAtlasSize.x : spr->getSize().x;
-                t_TextureAtlasSize.y+=spr->getSumSize().y;
+                
+                //t_TextureAtlasSize.x=(t_TextureAtlasSize.x>spr->getSize().x)? t_TextureAtlasSize.x : spr->getSize().x;
+                //t_TextureAtlasSize.y+=spr->getSumSize().y;
                 
             }
         }
         closedir(dr);
     }
     
-    MainTextureAtlas.ImageResizeCanvas(t_TextureAtlasSize.x, t_TextureAtlasSize.y);
+    //MainTextureAtlas.ImageResizeCanvas(t_TextureAtlasSize.x, t_TextureAtlasSize.y);
+    MainTextureAtlas.ImageResizeCanvas(512,512);
     std::map<std::string, Sprite*>::iterator sprIT = SpritesTotal.begin();
     for(std::vector<unsigned char*> pixels: t_Pixels){
         Sprite* spr = sprIT->second;

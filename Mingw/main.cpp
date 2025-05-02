@@ -23,7 +23,7 @@
  */
 int main (){
     glm::vec3 BACKGROUND_COLOR(100.0/255.0);
-    Engine gameEngine;
+    Engine gameEngine(false);
     
     gameEngine.init("NGE", 1000,500);
     LoadSpritesToMemroy();
@@ -35,7 +35,7 @@ int main (){
 	Renderer2D renderer;
     Renderer3D renderer3D;
     //Sprite spr("sprite.png",glm::vec2(32,32));
-    TestPlayer testObject("sonic_idle");
+    TestPlayer testObject("sonic_run");
     Object3D obj("cube.obj");
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
@@ -81,8 +81,8 @@ int main (){
         // ngestd::DrawRectangle(testObject.bbox.left, testObject.bbox.top, testObject.bbox.right, testObject.bbox.bottom, true);
         font.FaceSize(16);
         font.Render(fpsString.c_str(),-1,FTPoint(0,gameEngine.getViewHeight()-font.FaceSize(),0));
-        //font.FaceSize(100);
-        //font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
+        font.FaceSize(100);
+        font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
 
         
         testObject.Render();

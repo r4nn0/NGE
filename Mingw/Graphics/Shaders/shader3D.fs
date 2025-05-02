@@ -43,7 +43,8 @@ void main() {
     // Combine all components
     vec3 lighting = (ambient + diffuse + specular);
 
-    FragColor = vec4(lighting, 1.0)* fs_in.color;
+    FragColor = fs_in.color;
+    //FragColor = vec4(lighting, 1.0)* fs_in.color;
 	// FragColor = vec4(0,0,0,1);
 }
 
