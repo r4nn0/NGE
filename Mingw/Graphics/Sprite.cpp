@@ -170,6 +170,38 @@ void TexturePage::ImageAdd(unsigned char* data, Sprite* spr, int t_Frame){
     Unbind();
     
 }
+glm::vec2 TexturePage::TextureAdd(unsigned char* data, unsigned width, unsigned height){
+    if((m_xOffset+width)>=m_Width){
+        m_xOffset=0;
+        m_yOffset+=m_lastYOffset;
+        m_lastYOffset=0;
+    }
+    if(height>=m_lastYOffset)
+        m_lastYOffset = height;
+    
+    float x1=m_xOffset/m_Width,
+          y1=m_yOffset/m_Height,
+          x2= x1+ width /m_Width,
+          y2= y1+ height /m_Height;
+    glm::vec2 coordsOffset(m_xOffset, m_yOffset);
+    for (int y = 0;y < height;y++) {
+        for (int x = 0;x < width;x++) {
+            for(int i=0;i<m_ChannelNum;i++){
+                m_TexturePage[(unsigned)(((x+ m_xOffset) + (y+m_yOffset)*m_Height) * m_ChannelNum + i)] = data[(unsigned)((x + width * y) * m_ChannelNum + i)];
+            }
+        }
+    }
+    m_xOffset+=width;
+   
+    Bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_TexturePage);
+    Unbind();
+    return coordsOffset;
+}
 /**
  
 void TexturePage::ImageAdd(Sprite& sprite) {

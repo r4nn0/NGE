@@ -57,6 +57,7 @@ public:
 	TexturePage(int, int, int=4, int=0);
 	void ImageResizeCanvas(int, int, int=4);
     void ImageAdd(unsigned char*, Sprite*, int);
+    glm::vec2 TextureAdd (unsigned char*, unsigned, unsigned);
 	void Bind();
 	void Unbind();
 	int GetTextureSlot();

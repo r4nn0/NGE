@@ -6,7 +6,8 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-
+#include "tiny_gltf.h"
+#include "Sprite.h"
 class Object3D
 {
 public:
@@ -18,31 +19,18 @@ public:
         glm::vec4 color;
         float textureSlot;
     };
-    Object3D(const char* objfile, const char* material=NULL);
+    Object3D(const char* objfile);
     ~Object3D();
+    
     glm::vec3 position;
     std::vector<Vertex3D> getVertices() const { return m_vertices; }
     std::vector<unsigned int> getIndices() const { return m_indices; }
 private:
+    void LoadModel(const char*);
+    std::vector<glm::vec4> readVecFloat(const tinygltf::Model& mdl, const tinygltf::Primitive& prim, const std::string& attr, int expectedComponents);
+    void readIndices(const tinygltf::Model& mdl, const tinygltf::Primitive& primitive);
     std::vector<Vertex3D> m_vertices;
     std::vector<unsigned int> m_indices;
 };
-
-struct VertexKey{
-    unsigned int v, vt, vn;
-    bool operator==(const VertexKey& other) const
-    {
-        return v == other.v && vt == other.vt && vn == other.vn;
-    }
-};
-namespace std {
-    template<>
-    struct hash<VertexKey> {
-        size_t operator()(const VertexKey& key) const {
-            return ((std::hash<unsigned int>()(key.v) ^
-                        (std::hash<unsigned int>()(key.vt) << 1)) >> 1) ^
-                    (std::hash<unsigned int>()(key.vn) << 1);
-        }
-    };
-}
+//extern TexturePage TextureAtlas3D;
 #endif // OBJECT3D_H

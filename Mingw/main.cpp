@@ -21,13 +21,14 @@
  * + Open a terminal window in the same folder and run "make" or "make run"\n
  * Note: Check out the makefile to know if you want to compile a debug or a release version.
  */
+
+
 int main (){
     glm::vec3 BACKGROUND_COLOR(100.0/255.0);
-    Engine gameEngine(false);
+    Engine gameEngine(true);
     
     gameEngine.init("NGE", 1000,500);
     LoadSpritesToMemroy();
-    
     
     //If the app crashes try using a font that is located in the same directory as the app
     FTGLPixmapFont font("C:/Windows/Fonts/arial.ttf");
@@ -36,7 +37,7 @@ int main (){
     Renderer3D renderer3D;
     //Sprite spr("sprite.png",glm::vec2(32,32));
     TestPlayer testObject("sonic_run");
-    Object3D obj("cube.obj");
+    Object3D obj("cube.glb");
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
     std::string fpsString = "0";
@@ -81,12 +82,12 @@ int main (){
         // ngestd::DrawRectangle(testObject.bbox.left, testObject.bbox.top, testObject.bbox.right, testObject.bbox.bottom, true);
         font.FaceSize(16);
         font.Render(fpsString.c_str(),-1,FTPoint(0,gameEngine.getViewHeight()-font.FaceSize(),0));
-        font.FaceSize(100);
-        font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
+        //font.FaceSize(100);
+        //font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
 
         
-        testObject.Render();
-        renderer.Render();
+        //testObject.Render();
+        //renderer.Render();
         ObjectsToRender.push_back(obj);
         renderer3D.Render();
         

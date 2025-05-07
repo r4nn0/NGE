@@ -10,7 +10,7 @@ in DATA{
     float textureSlot;
 }fs_in;
 
-//uniform sampler2D texture[32];
+uniform sampler2D texture[32];
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 uniform vec3 lightColor;
@@ -18,11 +18,12 @@ vec4 base_color;
 
 
 void main() {
+    base_color=texture2D(texture[int(fs_in.textureSlot)], fs_in.texCoords);
+    FragColor = fs_in.color * base_color;
     /*if(fs_in.textureSlot>=0){
-        base_color=texture2D(texture[int(fs_in.textureSlot)], fs_in.texCoords);
-        FragColor = fs_in.color * base_color;
+        
 	}
-	else*/
+	else
     // Ambient component
     float ambientStrength = 0.1;
     vec3 ambient = ambientStrength * lightColor;
@@ -46,6 +47,7 @@ void main() {
     FragColor = fs_in.color;
     //FragColor = vec4(lighting, 1.0)* fs_in.color;
 	// FragColor = vec4(0,0,0,1);
+    */
 }
 
 
