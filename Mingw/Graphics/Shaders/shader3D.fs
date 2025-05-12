@@ -18,12 +18,14 @@ vec4 base_color;
 
 
 void main() {
-    base_color=texture2D(texture[int(fs_in.textureSlot)], fs_in.texCoords);
-    FragColor = fs_in.color * base_color;
-    /*if(fs_in.textureSlot>=0){
-        
+    
+    if(fs_in.textureSlot>=0){
+        base_color=vec4(texture2D(texture[int(fs_in.textureSlot)], fs_in.texCoords).rgb,1.0);
+        FragColor = fs_in.color * base_color;
 	}
 	else
+        FragColor = fs_in.color * vec4(0,0,0,1);
+    /*
     // Ambient component
     float ambientStrength = 0.1;
     vec3 ambient = ambientStrength * lightColor;

@@ -170,7 +170,7 @@ void TexturePage::ImageAdd(unsigned char* data, Sprite* spr, int t_Frame){
     Unbind();
     
 }
-glm::vec2 TexturePage::TextureAdd(unsigned char* data, unsigned width, unsigned height){
+glm::vec2 TexturePage::TextureAdd(std::vector<unsigned char> data, unsigned width, unsigned height){
     if((m_xOffset+width)>=m_Width){
         m_xOffset=0;
         m_yOffset+=m_lastYOffset;
@@ -183,7 +183,7 @@ glm::vec2 TexturePage::TextureAdd(unsigned char* data, unsigned width, unsigned 
           y1=m_yOffset/m_Height,
           x2= x1+ width /m_Width,
           y2= y1+ height /m_Height;
-    glm::vec2 coordsOffset(m_xOffset, m_yOffset);
+    glm::vec2 coordsOffset(m_xOffset/m_Width, m_yOffset/m_Height);
     for (int y = 0;y < height;y++) {
         for (int x = 0;x < width;x++) {
             for(int i=0;i<m_ChannelNum;i++){

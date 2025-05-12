@@ -28,14 +28,15 @@ int main (){
     Engine gameEngine(true);
     
     gameEngine.init("NGE", 1000,500);
-    LoadSpritesToMemroy();
     
+    LoadSpritesToMemroy();
+    //MainTextureAtlas.ImageResizeCanvas(512,512);
     //If the app crashes try using a font that is located in the same directory as the app
     FTGLPixmapFont font("C:/Windows/Fonts/arial.ttf");
     
 	Renderer2D renderer;
     Renderer3D renderer3D;
-    //Sprite spr("sprite.png",glm::vec2(32,32));
+    //Sprite spr(glm::vec2(32,32),glm::vec2(512,512));
     TestPlayer testObject("sonic_run");
     Object3D obj("cube.glb");
     double prevTime = glfwGetTime();
@@ -43,7 +44,7 @@ int main (){
     std::string fpsString = "0";
     float dir=0;
     float pitch=0;
-    
+    //spr.setUV();
     while(!glfwWindowShouldClose(gameEngine.get_window())){
         //auto t1 = std::chrono::high_resolution_clock::now();
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
@@ -55,7 +56,7 @@ int main (){
             FPS=0;
             prevTime=currTime;
         }
-        
+        //SpritesToRender.push_back(spr);
         /*glfwSetCursorPos(gameEngine.get_window(),gameEngine.getViewWidth()/2,gameEngine.getViewHeight()/2);
         dir+=mouse_x-gameEngine.getViewWidth()/2;
         pitch-=mouse_y-gameEngine.getViewHeight()/2;
@@ -73,7 +74,12 @@ int main (){
         gameEngine.camera3d.setTarget(glm::vec3(testObject.position.x, 0, testObject.position.y));
         gameEngine.setBackgroundColor(BACKGROUND_COLOR);
         gameEngine.StepEvent();
+
         
+        float angle = glfwGetTime();
+        obj.setModelMatrix(glm::rotate(glm::mat4(1.0), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+        obj.setModelMatrix(glm::rotate(obj.getModelMatrix(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+        //vertex.model= glm::rotate(vertex.model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
         testObject.Update();
 
         gameEngine.BeginDraw();
@@ -87,7 +93,7 @@ int main (){
 
         
         //testObject.Render();
-        //renderer.Render();
+        renderer.Render();
         ObjectsToRender.push_back(obj);
         renderer3D.Render();
         

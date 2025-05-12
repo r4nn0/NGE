@@ -28,8 +28,16 @@ public:
     friend std::vector<unsigned char*> LoadNGESprite(const char*, Sprite*);
     bool operator==(const Sprite&) const;
 
-
-    
+    /*void setUV(){
+        std::vector<glm::vec2> UV;
+        UV.push_back(glm::vec2(0));
+        UV.push_back(glm::vec2(0,1));
+        UV.push_back(glm::vec2(1,1));
+        UV.push_back(glm::vec2(1,0));
+        m_UV.push_back(UV);
+        m_hasTexture=true;
+        m_texSlot=0;
+    }*/
 protected:
     std::string m_Name;
     unsigned int m_Frames;
@@ -57,11 +65,12 @@ public:
 	TexturePage(int, int, int=4, int=0);
 	void ImageResizeCanvas(int, int, int=4);
     void ImageAdd(unsigned char*, Sprite*, int);
-    glm::vec2 TextureAdd (unsigned char*, unsigned, unsigned);
+    glm::vec2 TextureAdd (std::vector<unsigned char>, unsigned, unsigned);
 	void Bind();
 	void Unbind();
 	int GetTextureSlot();
     glm::vec2 GetAtlasSize();
+    // void setTexture(unsigned int _texture){m_Texture = _texture;}
 };
 extern std::map<std::string, Sprite*> SpritesTotal;
 extern TexturePage MainTextureAtlas;

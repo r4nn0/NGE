@@ -13,6 +13,7 @@ namespace ngetype
         glm::vec2 texCoords;
         glm::vec3 vNormals;
         float textureSlot;
+        glm::mat4 model;
     };
     struct vboData{
         glm::vec2 vertex;

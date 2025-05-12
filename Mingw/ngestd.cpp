@@ -114,6 +114,7 @@ std::vector<unsigned char*> LoadNGESprite(const char* path, Sprite* spr){
         unsigned char* m_Pixels = stbi_load_from_memory((unsigned char*)t_Sprite.c_str(), t_Sprite.length(), &_width, &_height, &_bpp, 4);
         if(stbi_failure_reason()){
             std::cout << "Error loading frame! Image(s) in file are corrupted." << std::endl;
+            std::cout << stbi_failure_reason() << std::endl;
             for(unsigned char* p : t_Pixels){
                 delete p;
             }

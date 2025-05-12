@@ -1,6 +1,6 @@
 #include "Object3D.h"
 //TexutrePage TextureAtlas3D;
-Object3D::Object3D(const char* file) {
+Object3D::Object3D(const char* file) : modelMatrix(glm::mat4(1.0)){
     LoadModel(file);
     /*
     std::ifstream file(objfile);
@@ -72,15 +72,15 @@ void Object3D::LoadModel(const char* path){
             std::vector<glm::vec4> normals = readVecFloat(mdl,primitive, "NORMAL", 3);
             std::vector<glm::vec4> texCoords = readVecFloat(mdl, primitive, "TEXCOORD_0", 2);
             std::vector<glm::vec4> colors = readVecFloat(mdl,primitive, "COLOR_0", 4);
-            glm::vec2 texCoordsOffset(0.0f);
+            glm::vec2 texScaleFactor(1.0f);
             if(primitive.material>=0){
                 const tinygltf::Material& material = mdl.materials[primitive.material];
                 const auto &pbr = material.pbrMetallicRoughness;
                 if(material.pbrMetallicRoughness.baseColorTexture.index>=0){
                     const auto& texture = mdl.textures[material.pbrMetallicRoughness.baseColorTexture.index];
                     const auto& image = mdl.images[texture.source];
-
-                    texCoordsOffset = MainTextureAtlas.TextureAdd((unsigned char*)image.image.data(), image.width, image.height);
+                    texScaleFactor = glm::vec2(image.width, image.height)/MainTextureAtlas.GetAtlasSize();
+                    MainTextureAtlas.TextureAdd(image.image, image.width, image.height);
                 }
             }
 
@@ -88,17 +88,22 @@ void Object3D::LoadModel(const char* path){
                 readIndices(mdl, primitive);
             for(unsigned i =0;i<pos.size();i++){
                 Vertex3D vertex;
-                vertex.pos = pos[i];
-                vertex.normal = (normals.size()>i) ? normals[i] : glm::vec3(0.0f);
+                vertex.pos = pos[getIndexFromAccessor(mdl, primitive, "POSITION", i)];
+                vertex.normal = (normals.size()>i) ? normals[getIndexFromAccessor(mdl, primitive, "NORMAL", i)] : glm::vec3(0.0f);
                 //vertex.color = glm::vec4(1.0f);
-                vertex.color = (colors.size()>i) ? colors[i] : glm::vec4(1.0f);
-                vertex.texCoords = (texCoords.size()>i) ? texCoords[i] : glm::vec2(0.0);
-                vertex.texCoords += texCoordsOffset;
+                vertex.color = (colors.size()>i) ? colors[getIndexFromAccessor(mdl, primitive, "COLOR_0", i)] : glm::vec4(1.0f);
+                vertex.texCoords = (texCoords.size()>i) ? texCoords[getIndexFromAccessor(mdl, primitive, "TEXCOORD_0", i)] : glm::vec2(0.0);
+                vertex.texCoords *= texScaleFactor;
                 vertex.texCoords = glm::clamp(vertex.texCoords, glm::vec2(0.0f), glm::vec2(1.0f));
-                std::cout << "X: " << vertex.texCoords.x << " Y: " << vertex.texCoords.y << std::endl;
-                vertex.textureSlot=0;
+                //std::cout << "X: " << vertex.texCoords.x << " Y: " << vertex.texCoords.y << std::endl;
+                /*if(vertex.texCoords.x<0 || vertex.texCoords.x>1 || vertex.texCoords.y<0 || vertex.texCoords.y >1)
+                    vertex.textureSlot=-1;
+                else*/
+                //vertex.model = glm::mat4(1.0);
+                vertex.textureSlot=MainTextureAtlas.GetTextureSlot();
                 m_vertices.push_back(vertex);
             }
+            //std::cout << pos.size() << std::endl;
         }
     }
 }
@@ -128,6 +133,12 @@ void Object3D::readIndices(const tinygltf::Model& mdl, const tinygltf::Primitive
                 m_indices.push_back(buf[i]);
             break;
         }
+        case TINYGLTF_COMPONENT_TYPE_FLOAT:{
+            const float * buf = reinterpret_cast<const float*>(posDataPtr);
+            for (size_t i = 0; i < count; ++i)
+                m_indices.push_back(static_cast<uint32_t>(buf[i]));
+            break;
+        }
         default:
             std::cerr << "Unsupported index component type: " << posAccessor.componentType << std::endl;
             break;
@@ -153,4 +164,25 @@ std::vector<glm::vec4> Object3D::readVecFloat(const tinygltf::Model& mdl, const 
         vecOut.push_back(vec);
     }
     return vecOut;
+}
+unsigned Object3D::getIndexFromAccessor(const tinygltf::Model& model,
+                         const tinygltf::Primitive& primitive,
+                         const std::string& attributeName,
+                         int vertexIndex)
+{
+    auto attrIt = primitive.attributes.find(attributeName);
+    if (attrIt == primitive.attributes.end()) {
+        return -1; // Attribute not found
+    }
+
+    const tinygltf::Accessor& accessor = model.accessors[attrIt->second];
+
+    // If the accessor has a bufferView, fetch the data index
+    if (vertexIndex >= accessor.count) {
+        return -1; // Out of bounds
+    }
+
+    // Accessors can have byte strides and offsets.
+    // But if you're just accessing raw index value for each vertex:
+    return accessor.byteOffset / tinygltf::GetComponentSizeInBytes(accessor.componentType) + vertexIndex;
 }
