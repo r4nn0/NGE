@@ -65,13 +65,17 @@ void Renderer3D::Render(){
         
         for(const Object3D::Vertex3D& vertex:obj.getVertices()){
             ngetype::vbo3DData vboData;
-            vboData.vertex=vertex.pos;
+            // Multiply the matrix by the position before passing to the shader
+            //glm::vec4 pos = obj.getModelMatrix()*glm::vec4(vertex.pos.x, vertex.pos.y, vertex.pos.z, 1.0);
+            //vboData.vertex= glm::vec3(pos.x, pos.y, pos.z);
+            vboData.vertex= vertex.pos;
             vboData.color=vertex.color;
             vboData.texCoords=vertex.texCoords;
-            vboData.vNormals=vertex.normal;
+            vboData.vNormals= vertex.normal;
             vboData.model = obj.getModelMatrix();
             vboData.textureSlot=vertex.textureSlot;
             m_Buff[vboOffset++] = vboData;
+            //std::cout << vboData.vertex.x << std::endl;
         }
         for(unsigned int index:obj.getIndices()){
             indexPtr[m_indexCount++] = index + vboOffset - obj.getVertices().size();
@@ -82,7 +86,7 @@ void Renderer3D::Render(){
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     ObjectsToRender.clear();
     glUseProgram(m_Shader);
-    glm::mat4 modelMatrix = glm::mat4(1.0f);
+    //glm::mat4 modelMatrix = glm::mat4(1.0f);
     /*
     float angle = glfwGetTime();
     modelMatrix = glm::rotate(modelMatrix, angle, glm::vec3(0.0f, 1.0f, 0.0f));*/

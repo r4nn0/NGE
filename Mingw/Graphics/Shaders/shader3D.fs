@@ -25,6 +25,7 @@ void main() {
 	}
 	else
         FragColor = fs_in.color * vec4(0,0,0,1);
+        
     /*
     // Ambient component
     float ambientStrength = 0.1;
