@@ -20,11 +20,11 @@ vec4 base_color;
 void main() {
     
     if(fs_in.textureSlot>=0){
-        base_color=vec4(texture2D(texture[int(fs_in.textureSlot)], fs_in.texCoords).rgb,1.0);
-        FragColor = fs_in.color * base_color;
+        // base_color=vec4(texture2D(texture[int(fs_in.textureSlot)], fs_in.texCoords).rgb,1.0);
+        FragColor = fs_in.color * texture2D(texture[int(fs_in.textureSlot)], fs_in.texCoords);
 	}
 	else
-        FragColor = fs_in.color * vec4(0,0,0,1);
+        FragColor = fs_in.color;
         
     /*
     // Ambient component
@@ -52,7 +52,3 @@ void main() {
 	// FragColor = vec4(0,0,0,1);
     */
 }
-
-
-
-

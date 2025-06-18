@@ -16,7 +16,7 @@ out DATA{
 }vs_out;
 
 void main() {
-    gl_Position =proj_matrix*vw_matrix*vec4(pos.x,pos.y,-100,1);
+    gl_Position =proj_matrix*vw_matrix*vec4(pos.x,pos.y,100,1);
     vs_out.color=color;
     vs_out.texCoords=texCoords;
     vs_out.textureSlot=textureSlot;

@@ -72,9 +72,11 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
     /*glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     */
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_WRITEMASK);
+    //glEnable(GL_CULL_FACE);
+    //glCullFace(GL_FRONT_AND_BACK);
+    //glFrontFace(GL_CW);
     //glEnable(GL_CULL_FACE);
     //glCullFace(GL_BACK);
     //glFrontFace(GL_CW); // Or GL_CW depending on your model's winding order

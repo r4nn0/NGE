@@ -1,6 +1,6 @@
 #include "Object3D.h"
 //TexutrePage TextureAtlas3D;
-Object3D::Object3D(const char* file) : scale(glm::vec3(1.0)),rotation(glm::vec3(0.0)), position(glm::vec3(0.0)){
+Object3D::Object3D(const char* file) : scale(glm::vec3(1.0)),rotation(glm::vec3(0.0)), position(glm::vec3(0.0)), name(""){
     LoadModel(file);
     /*
     std::ifstream file(objfile);
@@ -56,17 +56,18 @@ Object3D::Object3D(const char* file) : scale(glm::vec3(1.0)),rotation(glm::vec3(
     //std::cout << "Loaded " << m_vertices.size() << " vertices and " << m_indices.size() << " indices from " << objfile << std::endl;   
     */ 
 }
-Object3D::Object3D(){
+Object3D::Object3D() : scale(glm::vec3(1.0)),rotation(glm::vec3(0.0)), position(glm::vec3(0.0)) , name(""){
 
 }
 void Object3D::samplePlane2D(){
     Vertex3D botLeft, botRight, topRight, topLeft;
     botLeft.textureSlot = botRight.textureSlot=topRight.textureSlot=topLeft.textureSlot=0;
-    botLeft.pos = glm::vec3(-1.5f, 0,-1.5f );
-    botRight.pos = glm::vec3(1.5f, 0,-1.5f );
-    topRight.pos = glm::vec3(1.5f, 0, 1.5f );
-    topLeft.pos = glm::vec3(-1.5f, 0, 1.5f);
+    botLeft.pos = glm::vec3(-5.f, 0,-5.f );
+    botRight.pos = glm::vec3(5.f, 0,-5.f );
+    topRight.pos = glm::vec3(5.f, 0, 5.f );
+    topLeft.pos = glm::vec3(-5.f, 0, 5.f);
     botLeft.normal = botRight.normal = topLeft.normal = topRight.normal = glm::vec3(0,1.0f,0);
+    botLeft.color = botRight.color = topLeft.color = topRight.color = glm::vec4(1,1,1,1);
     botLeft.texCoords = glm::vec2(0,0);
     botRight.texCoords = glm::vec2(1,0);
     topRight.texCoords = glm::vec2(1,1);
@@ -75,9 +76,10 @@ void Object3D::samplePlane2D(){
     m_indices.push_back(1);
     m_indices.push_back(2);
     
+    m_indices.push_back(0);
     m_indices.push_back(2);
     m_indices.push_back(3);
-    m_indices.push_back(0);
+    
     m_vertices.push_back(botLeft);
     m_vertices.push_back(botRight);
     m_vertices.push_back(topRight);
@@ -103,8 +105,8 @@ void Object3D::LoadModel(const char* path){
             if(primitive.material>=0){
                 const tinygltf::Material& material = mdl.materials[primitive.material];
                 const auto &pbr = material.pbrMetallicRoughness;
-                if(material.pbrMetallicRoughness.baseColorTexture.index>=0){
-                    const auto& texture = mdl.textures[material.pbrMetallicRoughness.baseColorTexture.index];
+                if(pbr.baseColorTexture.index>=0){
+                    const auto& texture = mdl.textures[pbr.baseColorTexture.index];
                     const auto& image = mdl.images[texture.source];
                     texScaleFactor = glm::vec2(image.width, image.height)/MainTextureAtlas.GetAtlasSize();
                     MainTextureAtlas.TextureAdd(image.image, image.width, image.height);
@@ -195,7 +197,7 @@ std::vector<glm::vec4> Object3D::readVecFloat(const tinygltf::Model& mdl, const 
 unsigned Object3D::getIndexFromAccessor(const tinygltf::Model& model,
                          const tinygltf::Primitive& primitive,
                          const std::string& attributeName,
-                         int vertexIndex)
+                         const unsigned int vertexIndex) const
 {
     auto attrIt = primitive.attributes.find(attributeName);
     if (attrIt == primitive.attributes.end()) {
@@ -212,4 +214,12 @@ unsigned Object3D::getIndexFromAccessor(const tinygltf::Model& model,
     // Accessors can have byte strides and offsets.
     // But if you're just accessing raw index value for each vertex:
     return accessor.byteOffset / tinygltf::GetComponentSizeInBytes(accessor.componentType) + vertexIndex;
+}
+const glm::mat4 Object3D::getModelMatrix() const {
+    glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0), scale);
+    glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0),rotation.y, glm::vec3(0,1,0))*
+                        glm::rotate(glm::mat4(1.0),rotation.x, glm::vec3(1,0,0))*
+                        glm::rotate(glm::mat4(1.0),rotation.z, glm::vec3(0,0,1));
+    glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0), position);
+    return translationMatrix*rotationMatrix*scaleMatrix;
 }

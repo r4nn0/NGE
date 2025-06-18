@@ -152,8 +152,8 @@ void TexturePage::ImageAdd(unsigned char* data, Sprite* spr, int t_Frame){
     //std::cout << x1 << " " << y1 << " " << x2 << " " << y2 << std::endl;
     spr->m_texSlot=m_Slot;
     
-    for (int y = 0;y < height;y++) {
-        for (int x = 0;x < width;x++) {
+    for (unsigned int y = 0;y < height;y++) {
+        for (unsigned int x = 0;x < width;x++) {
             for(int i=0;i<m_ChannelNum;i++){
                 m_TexturePage[(unsigned)(((x+ m_xOffset) + (y+m_yOffset)*m_Height) * m_ChannelNum + i)] = data[(unsigned)((x + width * y) * m_ChannelNum + i)];
             }
@@ -184,8 +184,8 @@ glm::vec2 TexturePage::TextureAdd(std::vector<unsigned char> data, unsigned widt
           x2= x1+ width /m_Width,
           y2= y1+ height /m_Height;
     glm::vec2 coordsOffset(m_xOffset/m_Width, m_yOffset/m_Height);
-    for (int y = 0;y < height;y++) {
-        for (int x = 0;x < width;x++) {
+    for (unsigned int y = 0;y < height;y++) {
+        for (unsigned int x = 0;x < width;x++) {
             for(int i=0;i<m_ChannelNum;i++){
                 m_TexturePage[(unsigned)(((x+ m_xOffset) + (y+m_yOffset)*m_Height) * m_ChannelNum + i)] = data[(unsigned)((x + width * y) * m_ChannelNum + i)];
             }

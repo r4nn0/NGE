@@ -2,6 +2,7 @@
 #include "FTGL/ftgl.h"
 #include "Graphics/Renderer2D.h"
 #include "Graphics/Renderer3D.h"
+#include <glm/gtx/string_cast.hpp>
 #include <windows.h>
 #include "ngestd.h"
 #include "TestPlayer.h"
@@ -40,13 +41,16 @@ int main (){
     TestPlayer testObject("sonic_run");
     Object3D obj("cube.glb");
     Object3D test;
+    obj.name="obj";
+    test.name="test";
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
     std::string fpsString = "0";
-    float dir=0;
+    //float dir=0;
     float pitch=0;
     //spr.setUV();
     test.samplePlane2D();
+    
     while(!glfwWindowShouldClose(gameEngine.get_window())){
         //auto t1 = std::chrono::high_resolution_clock::now();
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
@@ -72,18 +76,22 @@ int main (){
         gameEngine.camera3d.setTarget(glm::normalize(newTarget));
         glm::vec3 right = glm::cross(gameEngine.camera3d.getTarget(), gameEngine.camera3d.getUp());
         gameEngine.camera3d.setUp(glm::normalize(glm::cross(right, gameEngine.camera3d.getTarget())));*/
-        gameEngine.camera3d.setPosition(glm::vec3(0, -10, -10));
+        gameEngine.camera3d.setPosition(glm::vec3(0, 0, -10));
         gameEngine.camera3d.setTarget(glm::vec3(0, 0, 0));
+        gameEngine.camera3d.setUp(glm::vec3(0,-1,0));
         gameEngine.setBackgroundColor(BACKGROUND_COLOR);
         gameEngine.StepEvent();
 
         if(keyboard_check(GLFW_KEY_W)) pitch+=3;
         else if(keyboard_check(GLFW_KEY_S)) pitch-=3;
-        float angle = glfwGetTime();
+        //float angle = glfwGetTime();
         //glm::vec4 test = glm::vec4(20,32,10,1) * glm::rotate(glm::mat4(1.0), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         //std::cout << test.x << std::endl;
-        test.rotation = glm::vec3(glm::radians(90.f), glm::radians(90.f), 0);
-        test.position = 0.1f*glm::vec3(testObject.position.x, pitch, testObject.position.y);
+        test.rotation = glm::vec3(glm::radians(-90.f), 0,0);
+        
+        obj.rotation = glm::vec3(glm::radians(90.f), glm::radians(90.f), 0);
+        test.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);
+        //test.position = 0.1f*glm::vec3(0);
         //obj.setModelMatrix(glm::rotate(glm::mat4(1.0), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
         //obj.setModelMatrix(glm::rotate(obj.getModelMatrix(), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
         //obj.setModelMatrix(glm::rotate(obj.getModelMatrix(), angle, glm::vec3(0.0f, 1.0f, 0.0f)));
@@ -91,7 +99,6 @@ int main (){
         //obj.setModelMatrix(glm::rotate(obj.getModelMatrix(), angle, glm::vec3(0.0f, 1.0f, 0.0f)));
         //vertex.model= glm::rotate(vertex.model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
         testObject.Update();
-
         gameEngine.BeginDraw();
         
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
@@ -101,9 +108,11 @@ int main (){
         //font.FaceSize(100);
         //font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
 
+        testObject.Render();
+        renderer.Render();
         
-        //testObject.Render();
-        //renderer.Render();
+        
+        ObjectsToRender.push_back(obj);
         ObjectsToRender.push_back(test);
         renderer3D.Render();
         
