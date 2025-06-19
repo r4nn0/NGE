@@ -89,7 +89,7 @@ int main (){
         //std::cout << test.x << std::endl;
         test.rotation = glm::vec3(glm::radians(-90.f), 0,0);
         
-        //obj.rotation = glm::vec3(glm::radians(90.f), glm::radians(90.f), 0);
+        obj.rotation = glm::vec3(glm::radians(-90.f), glm::radians(-90.f), 0);
         obj.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);
         //test.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);
         //test.position = 0.1f*glm::vec3(0);
