@@ -89,8 +89,9 @@ int main (){
         //std::cout << test.x << std::endl;
         test.rotation = glm::vec3(glm::radians(-90.f), 0,0);
         
-        obj.rotation = glm::vec3(glm::radians(90.f), glm::radians(90.f), 0);
-        test.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);
+        //obj.rotation = glm::vec3(glm::radians(90.f), glm::radians(90.f), 0);
+        obj.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);
+        //test.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);
         //test.position = 0.1f*glm::vec3(0);
         //obj.setModelMatrix(glm::rotate(glm::mat4(1.0), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
         //obj.setModelMatrix(glm::rotate(obj.getModelMatrix(), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
@@ -108,12 +109,13 @@ int main (){
         //font.FaceSize(100);
         //font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
 
-        testObject.Render();
-        renderer.Render();
+        //testObject.Render();
+        //renderer.Render();
         
         
         ObjectsToRender.push_back(obj);
         ObjectsToRender.push_back(test);
+        //ObjectsToRender.push_back(obj);
         renderer3D.Render();
         
         

@@ -14,9 +14,9 @@ public:
     struct Vertex3D
     {
         glm::vec3 pos;
-        glm::vec3 normal;
-        glm::vec2 texCoords;
         glm::vec4 color;
+        glm::vec2 texCoords;
+        glm::vec3 normal;
         float textureSlot;
     };
     Object3D(const char* objfile);

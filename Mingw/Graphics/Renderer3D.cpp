@@ -9,17 +9,11 @@ Renderer3D::Renderer3D() : dcpf(0) {
     glGenVertexArrays(1, &m_appSurface);
     glBindVertexArray(m_appSurface);
 
-    
-    glGenBuffers(1, &m_SSBO);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_SSBO);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::mat4) * 150000, nullptr, GL_DYNAMIC_DRAW);
-    
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
     glGenBuffers(1, &m_VBO);
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
     glBufferData(GL_ARRAY_BUFFER, 450000*sizeof(ngetype::vbo3DData), nullptr, GL_DYNAMIC_DRAW);
-    for(int i=0;i<5;i++){
+    for(int i=0;i<6;i++){
         glEnableVertexAttribArray(i);
     }
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(ngetype::vbo3DData), (const void*)0); // vec3 pos
@@ -27,6 +21,13 @@ Renderer3D::Renderer3D() : dcpf(0) {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(ngetype::vbo3DData), (const void*)(sizeof(float)*7));  // vec2 texcoord
     glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(ngetype::vbo3DData), (const void*)(sizeof(float)*9));  // vec3 vNormals
     glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(ngetype::vbo3DData), (const void*)(sizeof(float)*12)); // float textureSlot
+    glVertexAttribPointer(5, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(ngetype::vbo3DData), (const void*)(sizeof(unsigned int)*13)); // unsigned modelID
+
+
+    glGenBuffers(1, &m_SSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_SSBO);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::mat4) * 150000, nullptr, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     /*
     // MATRIX 4x4 Model 
     for(int i=0;i<4;i++){
@@ -74,52 +75,52 @@ Renderer3D::~Renderer3D() {
  * 
  */
 void Renderer3D::Render(){
-    GLsizei m_indexCount = 0, instanceCount=0;
+    GLsizei m_indexCount = 0, instanceCount=0, indexOffset=0;
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
     m_indexBuffer->bind();
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_SSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_SSBO);
 
-    glm::mat4* matrixBuffer = (glm::mat4*) glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY);
+    glm::mat4* ssboBuffer = (glm::mat4*) glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY);
     ngetype::vbo3DData* m_Buff = (ngetype::vbo3DData*) glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
     unsigned int* indexPtr = (unsigned int*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
 
-    if (!m_Buff || !indexPtr || !matrixBuffer) {
+    if (!m_Buff || !indexPtr || !ssboBuffer) {
         std::cerr << "Failed to map buffer!" << std::endl;
         return;
     }
     unsigned int vboOffset = 0;
     for(Object3D& obj:ObjectsToRender){
         //glm::mat4 modelMatrix = obj.getModelMatrix();
-        matrixBuffer[instanceCount] = obj.getModelMatrix();
+        ssboBuffer[instanceCount] = obj.getModelMatrix();
+        //glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::mat4)*instanceCount, sizeof(glm::mat4), &modelMatrix);
+        //instanceCount++;
+        std::vector<unsigned int> ind = obj.getIndices();
+        for(unsigned i = 0; i<ind.size();i++){
+            indexPtr[m_indexCount++] = ind[i] + vboOffset;
+        }
         for(const Object3D::Vertex3D& vertex:obj.getVertices()){
             ngetype::vbo3DData vboData;
             // Multiply the matrix by the position before passing to the shader
             //glm::vec4 pos = obj.getModelMatrix()*glm::vec4(vertex.pos.x, vertex.pos.y, vertex.pos.z, 1.0);
             //vboData.vertex= glm::vec3(pos.x, pos.y, pos.z);
-            vboData.vertex= glm::vec4(vertex.pos,1.0f);
-            vboData.color=vertex.color;
+            vboData.vertex= vertex.pos;
+            vboData.color= vertex.color;
             vboData.texCoords=vertex.texCoords;
             vboData.vNormals= vertex.normal;
             vboData.textureSlot=vertex.textureSlot;
-
+            vboData.modelID = instanceCount;
             m_Buff[vboOffset++] = vboData;
         }
-        std::vector<unsigned int> ind = obj.getIndices();
-        for(unsigned int i = 0; i<ind.size();i++){
-            indexPtr[m_indexCount++] = ind[i] + vboOffset - obj.getVertices().size();
-        }
         instanceCount++;
-        /*
-        if(keyboard_check(GLFW_KEY_ENTER)){
-            std::cout << vboOffset << std::endl;
-            std::cout << glm::to_string(modelMatrix) << std::endl;
-        }*/
     }
+    //std::cout << m_indexCount << std::endl;
     glUnmapBuffer(GL_ARRAY_BUFFER);
     glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+    glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     ObjectsToRender.clear();
     glUseProgram(m_Shader);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, m_SSBO);
     //glm::mat4 modelMatrix = glm::mat4(1.0f);
     /*
     float angle = glfwGetTime();
@@ -139,7 +140,8 @@ void Renderer3D::Render(){
     m_indexBuffer->bind();
     //std::cout << "Index count " << m_indexCount << std::endl;
     //glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, NULL);
-    glDrawElementsInstanced(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, NULL, instanceCount);
+    
+    glDrawElementsInstanced(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, NULL, 1);
     m_indexBuffer->unbind();
     glBindVertexArray(0);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
