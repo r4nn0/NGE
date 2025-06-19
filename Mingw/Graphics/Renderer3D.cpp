@@ -21,7 +21,7 @@ Renderer3D::Renderer3D() : dcpf(0) {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(ngetype::vbo3DData), (const void*)(sizeof(float)*7));  // vec2 texcoord
     glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(ngetype::vbo3DData), (const void*)(sizeof(float)*9));  // vec3 vNormals
     glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(ngetype::vbo3DData), (const void*)(sizeof(float)*12)); // float textureSlot
-    glVertexAttribPointer(5, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(ngetype::vbo3DData), (const void*)(sizeof(unsigned int)*13)); // unsigned modelID
+    glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(ngetype::vbo3DData), (const void*)(sizeof(float)*13)); // unsigned modelID
 
 
     glGenBuffers(1, &m_SSBO);

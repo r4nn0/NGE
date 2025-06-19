@@ -4,7 +4,7 @@ layout (location=1) in vec4 color;
 layout (location=2) in vec2 texCoords;
 layout (location=3) in vec3 vNormals;
 layout (location=4) in float textureSlot;
-layout (location=5) in uint modelID;
+layout (location=5) in float modelID;
 
 
 uniform mat4 proj_matrix;
@@ -24,10 +24,10 @@ out DATA{
 }vs_out;
 
 void main() {
-    gl_Position =proj_matrix*vw_matrix*ml_matrix[modelID]*vec4(pos,1.0f);
+    gl_Position =proj_matrix*vw_matrix*ml_matrix[uint(modelID)]*vec4(pos,1.0f);
     
-    vs_out.FragPos = vec3(ml_matrix[modelID]*vec4(pos, 1.0f));
-    vs_out.vNormals = mat3(transpose(inverse(ml_matrix[modelID])))*vNormals;
+    vs_out.FragPos = vec3(ml_matrix[uint(modelID)]*vec4(pos, 1.0f));
+    vs_out.vNormals = mat3(transpose(inverse(ml_matrix[uint(modelID)])))*vNormals;
     vs_out.color=color;
     vs_out.texCoords=texCoords;
     vs_out.textureSlot=textureSlot;
