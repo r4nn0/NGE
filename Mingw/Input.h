@@ -13,10 +13,10 @@ extern bool mouse_check_button(int);
 extern bool mouse_check_button_released(int);
 /// Keyboard Functions
 extern void keyboardCallback(GLFWwindow*, int, int, int, int);
-extern bool keyboard_check_pressed(int);
-extern bool keyboard_check(int);
-extern bool keyboard_check_released(int);
-extern int keyboard_get_pressed();
+extern bool keyboard_check_pressed(short);
+extern bool keyboard_check(short);
+extern bool keyboard_check_released(short);
+extern short keyboard_get_pressed();
 /// Joystick Functions
 extern void joystickCallback(int, int);
 extern bool gamepad_is_connected(int);

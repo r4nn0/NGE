@@ -75,7 +75,7 @@ Renderer3D::~Renderer3D() {
  * 
  */
 void Renderer3D::Render(){
-    GLsizei m_indexCount = 0, instanceCount=0, indexOffset=0;
+    GLsizei m_indexCount = 0, instanceCount=0;
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
     m_indexBuffer->bind();
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_SSBO);

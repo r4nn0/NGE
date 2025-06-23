@@ -46,11 +46,13 @@ int main (){
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
     std::string fpsString = "0";
-    //float dir=0;
-    float pitch=0;
+    float actdir=0;
+    float actpitch=0;
+    float hsp=0, vsp=0;
+    float sense = 0.1f;
     //spr.setUV();
     test.samplePlane2D();
-    
+    //gameEngine.ToggleCursorVisibility();
     while(!glfwWindowShouldClose(gameEngine.get_window())){
         //auto t1 = std::chrono::high_resolution_clock::now();
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
@@ -63,11 +65,26 @@ int main (){
             prevTime=currTime;
         }
         //SpritesToRender.push_back(spr);
-        /*glfwSetCursorPos(gameEngine.get_window(),gameEngine.getViewWidth()/2,gameEngine.getViewHeight()/2);
-        dir+=mouse_x-gameEngine.getViewWidth()/2;
-        pitch-=mouse_y-gameEngine.getViewHeight()/2;
-        if (pitch > 89.0f) pitch = 89.0f;
-        if (pitch < -89.0f) pitch = -89.0f;
+        
+        glfwSetCursorPos(gameEngine.get_window(),gameEngine.getViewWidth()/2,gameEngine.getViewHeight()/2);
+        actdir-=(mouse_x-gameEngine.getViewWidth()/2) * sense;
+        if(actdir>360) actdir = 0;
+        if(actdir<0) actdir = 360;
+        float dir = glm::radians(actdir);
+
+        actpitch-=(mouse_y-gameEngine.getViewHeight()/2) * sense;
+        if (actpitch > 60.0f) actpitch = 60.0f;
+        if (actpitch < -60.0f) actpitch = -60.0f;
+        float pitch = glm::radians(actpitch);
+
+        
+        hsp += (keyboard_check('D') - keyboard_check('A')) * glm::sin(dir)
+             +(keyboard_check('W') - keyboard_check('S')) * glm::cos(dir);
+        vsp -= (keyboard_check('D') - keyboard_check('A')) * glm::cos(dir)
+             -(keyboard_check('W') - keyboard_check('S')) * glm::sin(dir);
+        //hsp=0;
+        /*
+        
         glm::vec3 newTarget;
         newTarget.x = cos(glm::radians(dir))*cos(glm::radians(pitch));
         newTarget.y = sin(glm::radians(pitch));
@@ -76,21 +93,21 @@ int main (){
         gameEngine.camera3d.setTarget(glm::normalize(newTarget));
         glm::vec3 right = glm::cross(gameEngine.camera3d.getTarget(), gameEngine.camera3d.getUp());
         gameEngine.camera3d.setUp(glm::normalize(glm::cross(right, gameEngine.camera3d.getTarget())));*/
-        gameEngine.camera3d.setPosition(glm::vec3(0, 0, -10));
-        gameEngine.camera3d.setTarget(glm::vec3(0, 0, 0));
+        gameEngine.camera3d.setPosition(glm::vec3(hsp , -5.f, vsp));
+        gameEngine.camera3d.setTarget(glm::vec3(glm::cos(dir)+hsp, -glm::sin(pitch)*5.f-5,glm::sin(dir) + vsp));
         gameEngine.camera3d.setUp(glm::vec3(0,-1,0));
         gameEngine.setBackgroundColor(BACKGROUND_COLOR);
         gameEngine.StepEvent();
 
-        if(keyboard_check(GLFW_KEY_W)) pitch+=3;
-        else if(keyboard_check(GLFW_KEY_S)) pitch-=3;
+        //if(keyboard_check(GLFW_KEY_W)) pitch+=3;
+        //else if(keyboard_check(GLFW_KEY_S)) pitch-=3;
         //float angle = glfwGetTime();
         //glm::vec4 test = glm::vec4(20,32,10,1) * glm::rotate(glm::mat4(1.0), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         //std::cout << test.x << std::endl;
-        test.rotation = glm::vec3(glm::radians(-90.f), 0,0);
+        //test.rotation = glm::vec3(glm::radians(-90.f), 0,0);
         
-        obj.rotation = glm::vec3(glm::radians(-90.f), glm::radians(-90.f), 0);
-        obj.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);
+        //obj.rotation = glm::vec3(glm::radians(-90.f), glm::radians(-90.f), 0);
+        //obj.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);
         //test.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);
         //test.position = 0.1f*glm::vec3(0);
         //obj.setModelMatrix(glm::rotate(glm::mat4(1.0), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -113,7 +130,7 @@ int main (){
         //renderer.Render();
         
         
-        ObjectsToRender.push_back(obj);
+        //ObjectsToRender.push_back(obj);
         ObjectsToRender.push_back(test);
         //ObjectsToRender.push_back(obj);
         renderer3D.Render();

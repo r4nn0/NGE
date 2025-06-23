@@ -4,6 +4,7 @@ glm::mat4 Engine::viewMat=glm::mat4(0.f);
 glm::mat4 Engine::orthoMat=glm::mat4(0.f);
 glm::mat4 Engine::viewMat2D=glm::mat4(0.f);
 Camera3D Engine::camera3d;
+bool Engine::isCursorHidden = false;
 Engine::Engine() : window_width(800), window_height(600),
                    view_xport(0), view_yport(0),
                    view_xview(0), view_yview(0),
@@ -47,6 +48,7 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
     // Toggle VSYNC
     glfwSwapInterval(1);
 	
+    glfwSetWindowFocusCallback(window, WindowFocusCallback);
     glfwSetKeyCallback(window,keyboardCallback);
     glfwSetCursorPosCallback(window,mousePosCallback);
     glfwSetMouseButtonCallback(window,mouseButtonCallback);
@@ -85,6 +87,23 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
 
     
     return true;
+}
+void Engine::ToggleCursorVisibility(){
+    if(isCursorHidden == true)
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    else
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    isCursorHidden = !isCursorHidden;
+}
+void WindowFocusCallback(GLFWwindow* window, int focus){
+    if(focus){
+        if(Engine::isCursorHidden)
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+        else
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+    else
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 /**
  * @brief Updates the view and values for the callbacks functions to work properly

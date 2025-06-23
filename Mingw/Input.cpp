@@ -76,10 +76,10 @@ bool mouse_check_button_released(int _button){
     return x;
 }
 /* Keyboard Input */
-static int key_pressed_code=0;
-static bool key_pressed[GLFW_KEY_LAST]={0};
-static bool key_held[GLFW_KEY_LAST]={0};
-static bool key_released[GLFW_KEY_LAST]={0};
+static short key_pressed_code=0;
+static bool key_pressed[GLFW_KEY_LAST+1]={0};
+static bool key_held[GLFW_KEY_LAST+1]={0};
+static bool key_released[GLFW_KEY_LAST+1]={0};
 /**
  * @brief Set keyboard callback function\n 
  * Note: Read more about modifier keys on https://www.glfw.org/docs/3.3/group__mods.html
@@ -110,7 +110,7 @@ void keyboardCallback(GLFWwindow* window,int key, int scancode, int action, int 
  * @return true if the key has been pressed
  * @return false if the key has not been pressed
  */
-bool keyboard_check_pressed(int _vk){
+bool keyboard_check_pressed(short _vk){
     bool x=key_pressed[_vk];
     key_pressed[_vk]=false;
     return x;
@@ -122,7 +122,7 @@ bool keyboard_check_pressed(int _vk){
  * @return true if the key has been pressed and held
  * @return false if the key has not been pressed or has been released
  */
-bool keyboard_check(int _vk){
+bool keyboard_check(short _vk){
     bool x=key_held[_vk];
     if(!x){key_held[_vk]=false;}
     return x;
@@ -134,7 +134,7 @@ bool keyboard_check(int _vk){
  * @return true if the key has been released
  * @return false if they key wasn't pressed or has not been released
  */
-bool keyboard_check_released(int _vk){
+bool keyboard_check_released(short _vk){
     bool x=key_released[_vk];
     key_released[_vk]=false;
     return x;
@@ -144,7 +144,7 @@ bool keyboard_check_released(int _vk){
  * 
  * @return int the key code of the pressed key
  */
-int keyboard_get_pressed(){
+short keyboard_get_pressed(){
     return key_pressed_code;
 }
 /* Joystick Input */

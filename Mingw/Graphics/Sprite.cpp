@@ -179,10 +179,10 @@ glm::vec2 TexturePage::TextureAdd(std::vector<unsigned char> data, unsigned widt
     if(height>=m_lastYOffset)
         m_lastYOffset = height;
     
-    float x1=m_xOffset/m_Width,
+    /*float x1=m_xOffset/m_Width,
           y1=m_yOffset/m_Height,
           x2= x1+ width /m_Width,
-          y2= y1+ height /m_Height;
+          y2= y1+ height /m_Height;*/
     glm::vec2 coordsOffset(m_xOffset/m_Width, m_yOffset/m_Height);
     for (unsigned int y = 0;y < height;y++) {
         for (unsigned int x = 0;x < width;x++) {

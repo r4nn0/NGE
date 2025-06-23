@@ -22,6 +22,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #pragma once
+void WindowFocusCallback(GLFWwindow*, int);
 class Engine{
 public:
     bool init(const char* window_title, int _view_xport, int _view_yport);
@@ -29,7 +30,9 @@ public:
     void StepEvent();
     void BeginDraw();
     void EndDraw();
+    void ToggleCursorVisibility();
     static Camera3D camera3d;
+    static bool isCursorHidden;
     GLFWwindow* get_window();
     static unsigned int CreateShader(const char*, const char*);
     static std::string LoadShaderFromFile(const char*);
