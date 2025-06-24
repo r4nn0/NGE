@@ -28,17 +28,14 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
     }
     window_width = _window_width;
     window_height= _window_height;
-    window=glfwCreateWindow(window_width, window_height, window_title, NULL, NULL);
+    window=glfwCreateWindow(_window_width, _window_height, window_title, NULL, NULL);
     
     if(window==NULL){
         std::cout << "Error Creating Window" << std::endl;
         return false;
     }
-    view_width=window_width;
-    view_height=window_height;
-    
-    view_wport = window_width;
-    view_hport = window_height;
+    view_wport = view_width = window_width;
+    view_hport = view_height = window_height;
     
     glfwMakeContextCurrent(window);
     if(glewInit()!=GLEW_OK){
@@ -48,19 +45,20 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
     // Toggle VSYNC
     glfwSwapInterval(1);
 	
-    glfwSetWindowFocusCallback(window, WindowFocusCallback);
+    glfwSetWindowFocusCallback(window, windowFocusCallback);
+    glfwSetWindowSizeCallback(window, windowSizeCallback);
     glfwSetKeyCallback(window,keyboardCallback);
     glfwSetCursorPosCallback(window,mousePosCallback);
     glfwSetMouseButtonCallback(window,mouseButtonCallback);
 	glfwSetJoystickCallback(joystickCallback);
     const GLFWvidmode* mode= glfwGetVideoMode(glfwGetPrimaryMonitor());
-    int xPos=(mode->width - window_width)/2;
-    int yPos=(mode->height - window_height)/2;
+    int xPos=(mode->width - _window_width)/2;
+    int yPos=(mode->height - _window_height)/2;
     glfwSetWindowPos(window, xPos, yPos);
     
 
     /// CAMERA
-    glViewport(view_xport, view_yport, view_wport, view_hport);
+    //glViewport(view_xport, view_yport, view_wport, view_hport);
     /*
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -95,7 +93,11 @@ void Engine::ToggleCursorVisibility(){
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
     isCursorHidden = !isCursorHidden;
 }
-void WindowFocusCallback(GLFWwindow* window, int focus){
+void windowSizeCallback(GLFWwindow* window, int width, int height){
+    glViewport(0, 0, width, height);
+}
+void windowFocusCallback(GLFWwindow* window, int focus){
+    
     if(focus){
         if(Engine::isCursorHidden)
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
@@ -121,7 +123,9 @@ void Engine::StepEvent(){
     //glLoadIdentity();
     //gluPerspective(45.0f, (float)view_width/(float)view_height, 0.1f, 100.0f);
     //glOrtho(left, right, bottom, top, near, far);
-    projMat=glm::perspective(45.0f,(float)view_width/(float)view_height,0.1f,1000.0f);
+    int _vp[4];
+    glGetIntegerv(GL_VIEWPORT, _vp);
+    projMat=glm::perspective(45.0f,(float)_vp[2]/(float)_vp[3],0.1f,1000.0f);
     viewMat = glm::lookAt(camera3d.getPosition(), camera3d.getTarget(), camera3d.getUp());
     orthoMat=glm::ortho(left, right, bottom, top, near, far);
     viewMat2D=glm::translate(glm::mat4(1.0f), glm::vec3(-view_xview, view_yview, 0.0f));
@@ -181,7 +185,9 @@ void Engine::setBackgroundColor(glm::vec3 bg){
  * @return glm::vec2 Size in glm::vec2 (width, height)
  */
 glm::vec2 Engine::getWindowSize(){
-    return glm::vec2(window_width, window_height);
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+    return glm::vec2(width, height);
 }
 /**
  * @brief Get current view width

@@ -46,13 +46,13 @@ int main (){
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
     std::string fpsString = "0";
-    float actdir=0;
-    float actpitch=0;
-    float hsp=0, vsp=0;
+    float actdir=-45;
+    float actpitch=-60;
+    float hsp=-10, vsp=-10;
     float sense = 0.1f;
     //spr.setUV();
     test.samplePlane2D();
-    //gameEngine.ToggleCursorVisibility();
+    
     while(!glfwWindowShouldClose(gameEngine.get_window())){
         //auto t1 = std::chrono::high_resolution_clock::now();
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
@@ -65,24 +65,30 @@ int main (){
             prevTime=currTime;
         }
         //SpritesToRender.push_back(spr);
+        int _vp[4];
+        glGetIntegerv(GL_VIEWPORT, _vp);
+        glfwSetCursorPos(gameEngine.get_window(),_vp[2]/2, _vp[3]/2);
         
-        glfwSetCursorPos(gameEngine.get_window(),gameEngine.getViewWidth()/2,gameEngine.getViewHeight()/2);
-        actdir-=(mouse_x-gameEngine.getViewWidth()/2) * sense;
+        actdir-=(mouse_x-_vp[2]/2) * sense;
         if(actdir>360) actdir = 0;
         if(actdir<0) actdir = 360;
         float dir = glm::radians(actdir);
 
-        actpitch-=(mouse_y-gameEngine.getViewHeight()/2) * sense;
+        actpitch-=(mouse_y-_vp[3]/2) * sense;
         if (actpitch > 60.0f) actpitch = 60.0f;
         if (actpitch < -60.0f) actpitch = -60.0f;
         float pitch = glm::radians(actpitch);
 
+        if(keyboard_check_pressed('L'))
+            gameEngine.ToggleCursorVisibility();
         
-        hsp += (keyboard_check('D') - keyboard_check('A')) * glm::sin(dir)
-             +(keyboard_check('W') - keyboard_check('S')) * glm::cos(dir);
-        vsp -= (keyboard_check('D') - keyboard_check('A')) * glm::cos(dir)
-             -(keyboard_check('W') - keyboard_check('S')) * glm::sin(dir);
-        //hsp=0;
+        float moveSpeed = 0.2;
+        if(keyboard_check(GLFW_KEY_LEFT_SHIFT) || keyboard_check(GLFW_KEY_RIGHT_SHIFT))
+            moveSpeed=0.5;
+        hsp += ((keyboard_check('D') - keyboard_check('A')) * glm::sin(dir)
+             +(keyboard_check('W') - keyboard_check('S')) * glm::cos(dir)) * moveSpeed;
+        vsp -= ((keyboard_check('D') - keyboard_check('A')) * glm::cos(dir)
+             -(keyboard_check('W') - keyboard_check('S')) * glm::sin(dir)) * moveSpeed;
         /*
         
         glm::vec3 newTarget;
@@ -105,7 +111,7 @@ int main (){
         //glm::vec4 test = glm::vec4(20,32,10,1) * glm::rotate(glm::mat4(1.0), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         //std::cout << test.x << std::endl;
         //test.rotation = glm::vec3(glm::radians(-90.f), 0,0);
-        
+        test.scale=glm::vec3(10,1,10);
         //obj.rotation = glm::vec3(glm::radians(-90.f), glm::radians(-90.f), 0);
         //obj.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);
         //test.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);
