@@ -130,9 +130,9 @@ void Renderer3D::Render(){
     glUniformMatrix4fv(glGetUniformLocation(m_Shader, "vw_matrix"),1,GL_FALSE,Engine::getViewMatrix());
     //glUniformMatrix4fv(glGetUniformLocation(m_Shader, "ml_matrix"),1,GL_FALSE,glm::value_ptr(modelMatrix));
     glUniform1i(glGetUniformLocation(m_Shader, "texture[0]"), MainTextureAtlas.GetTextureSlot());
-    //glUniform3f(glGetUniformLocation(m_Shader, "lightPos"), 1.2f, 10.0f, 2.0f);
-    //glUniform3f(glGetUniformLocation(m_Shader, "viewPos"), Engine::camera3d.getPosition().x, Engine::camera3d.getPosition().y, Engine::camera3d.getPosition().z);
-    //glUniform3f(glGetUniformLocation(m_Shader, "lightColor"), 1.0f, 1.0f, 1.0f);
+    glUniform3f(glGetUniformLocation(m_Shader, "lightPos"), Engine::camera3d.getPosition().x, Engine::camera3d.getPosition().y, Engine::camera3d.getPosition().z);
+    glUniform3f(glGetUniformLocation(m_Shader, "viewPos"), Engine::camera3d.getPosition().x, Engine::camera3d.getPosition().y, Engine::camera3d.getPosition().z);
+    glUniform3f(glGetUniformLocation(m_Shader, "lightColor"), 1.0f, 1.0f, 1.0f);
     //glUniform1i(glGetUniformLocation(m_Shader, "texture[0]"), MainTextureAtlas.GetTextureSlot());
     
     MainTextureAtlas.Bind();

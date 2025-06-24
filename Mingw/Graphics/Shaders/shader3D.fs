@@ -19,14 +19,14 @@ vec4 base_color;
 
 void main() {
     
-    if(fs_in.textureSlot>=0){
-        // base_color=vec4(texture2D(texture[int(fs_in.textureSlot)], fs_in.texCoords).rgb,1.0);
-        FragColor = fs_in.color * texture2D(texture[int(fs_in.textureSlot)], fs_in.texCoords);
-	}
-	else
-        FragColor = fs_in.color;
+    if(fs_in.textureSlot>=0)//{
+        base_color=vec4(texture2D(texture[int(fs_in.textureSlot)], fs_in.texCoords).rgb,1.0);
+        //FragColor = fs_in.color * texture2D(texture[int(fs_in.textureSlot)], fs_in.texCoords);
+	//}
+	//else
+    //    FragColor = fs_in.color;
         
-    /*
+    
     // Ambient component
     float ambientStrength = 0.1;
     vec3 ambient = ambientStrength * lightColor;
@@ -47,8 +47,8 @@ void main() {
     // Combine all components
     vec3 lighting = (ambient + diffuse + specular);
 
-    FragColor = fs_in.color;
-    //FragColor = vec4(lighting, 1.0)* fs_in.color;
+    //FragColor = fs_in.color;
+    FragColor = vec4(lighting, 1.0)* base_color * fs_in.color;
 	// FragColor = vec4(0,0,0,1);
-    */
+    
 }

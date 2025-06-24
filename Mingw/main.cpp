@@ -111,7 +111,7 @@ int main (){
         //glm::vec4 test = glm::vec4(20,32,10,1) * glm::rotate(glm::mat4(1.0), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         //std::cout << test.x << std::endl;
         //test.rotation = glm::vec3(glm::radians(-90.f), 0,0);
-        test.scale=glm::vec3(10,1,10);
+        //test.scale=glm::vec3(10,1,10);
         //obj.rotation = glm::vec3(glm::radians(-90.f), glm::radians(-90.f), 0);
         //obj.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);
         //test.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);

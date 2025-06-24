@@ -61,13 +61,13 @@ Object3D::Object3D() : scale(glm::vec3(1.0)),rotation(glm::vec3(0.0)), position(
 }
 void Object3D::samplePlane2D(){
     Vertex3D botLeft, botRight, topRight, topLeft;
-    botLeft.textureSlot = botRight.textureSlot=topRight.textureSlot=topLeft.textureSlot=-1;
+    botLeft.textureSlot = botRight.textureSlot=topRight.textureSlot=topLeft.textureSlot=0;
     botLeft.pos = glm::vec3(-5.f, 0,-5.f );
     botRight.pos = glm::vec3(5.f, 0,-5.f );
     topRight.pos = glm::vec3(5.f, 0, 5.f );
     topLeft.pos = glm::vec3(-5.f, 0, 5.f);
     botLeft.normal = botRight.normal = topLeft.normal = topRight.normal = glm::vec3(0,1.0f,0);
-    botLeft.color = botRight.color = topLeft.color = topRight.color = glm::vec4(0,0,0,1);
+    botLeft.color = botRight.color = topLeft.color = topRight.color = glm::vec4(1,1,1,1);
     botLeft.texCoords = glm::vec2(0,0);
     botRight.texCoords = glm::vec2(1,0);
     topRight.texCoords = glm::vec2(1,1);
