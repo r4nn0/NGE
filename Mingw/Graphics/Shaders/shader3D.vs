@@ -11,7 +11,7 @@ uniform mat4 proj_matrix;
 uniform mat4 vw_matrix;
 //uniform mat4 ml_matrix=mat4(1.0);
 
-layout(binding = 6, std430) readonly buffer ssbo1 {
+layout(binding = 0, std430) readonly buffer ssbo1 {
     mat4 ml_matrix[];
 };
 

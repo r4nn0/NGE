@@ -52,7 +52,16 @@ int main (){
     float sense = 0.1f;
     //spr.setUV();
     test.samplePlane2D();
-    
+
+    //unsigned testTex, texBuffer;
+    //GLuint64 texHandle;
+    //glGenTextures(1, &testTex);
+    //texHandle=glGetTextureHandleARB(testTex);
+    // glMakeTextureHandleResidentARB(texHandle);
+    // glMakeTextureHandleNonResidentARB(texHandle); make texture removable from residency list
+    //glCreateBuffers(1, &texBuffer);
+    //glNamedBufferStorage(texBuffer, sizeof(GLuint64), &texHandle, GL_DYNAMIC_DRAW);
+
     while(!glfwWindowShouldClose(gameEngine.get_window())){
         //auto t1 = std::chrono::high_resolution_clock::now();
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
@@ -90,7 +99,6 @@ int main (){
         vsp -= ((keyboard_check('D') - keyboard_check('A')) * glm::cos(dir)
              -(keyboard_check('W') - keyboard_check('S')) * glm::sin(dir)) * moveSpeed;
         /*
-        
         glm::vec3 newTarget;
         newTarget.x = cos(glm::radians(dir))*cos(glm::radians(pitch));
         newTarget.y = sin(glm::radians(pitch));
@@ -112,8 +120,8 @@ int main (){
         //std::cout << test.x << std::endl;
         //test.rotation = glm::vec3(glm::radians(-90.f), 0,0);
         //test.scale=glm::vec3(10,1,10);
-        //obj.rotation = glm::vec3(glm::radians(-90.f), glm::radians(-90.f), 0);
-        //obj.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);
+        obj.rotation = glm::vec3(glm::radians(-90.f), 0, 0);
+        obj.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);
         //test.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);
         //test.position = 0.1f*glm::vec3(0);
         //obj.setModelMatrix(glm::rotate(glm::mat4(1.0), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -136,7 +144,7 @@ int main (){
         //renderer.Render();
         
         
-        //ObjectsToRender.push_back(obj);
+        ObjectsToRender.push_back(obj);
         ObjectsToRender.push_back(test);
         //ObjectsToRender.push_back(obj);
         renderer3D.Render();

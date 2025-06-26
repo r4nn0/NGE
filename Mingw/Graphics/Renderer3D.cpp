@@ -120,7 +120,7 @@ void Renderer3D::Render(){
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     ObjectsToRender.clear();
     glUseProgram(m_Shader);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, m_SSBO);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_SSBO);
     //glm::mat4 modelMatrix = glm::mat4(1.0f);
     /*
     float angle = glfwGetTime();
@@ -139,9 +139,9 @@ void Renderer3D::Render(){
     glBindVertexArray(m_appSurface);
     m_indexBuffer->bind();
     //std::cout << "Index count " << m_indexCount << std::endl;
-    //glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, NULL);
+    glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, NULL);
     
-    glDrawElementsInstanced(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, NULL, 1);
+    //glDrawElementsInstanced(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, NULL, 1);
     m_indexBuffer->unbind();
     glBindVertexArray(0);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
