@@ -2,6 +2,13 @@
 
 out vec4 FragColor;
 
+#extension GL_ARB_bindless_texture : require
+
+// SSBO containing the textures
+//layout(binding = 1, std430) readonly buffer textureSSBO {
+//    sampler2D m_texture;
+//};
+
 in DATA{
     vec3 FragPos;
     vec3 vNormals;
@@ -18,9 +25,10 @@ vec4 base_color;
 
 
 void main() {
-    
+    //sampler2D tex = sampler2D(TextureSSBO.m_texture[0]);
     if(fs_in.textureSlot>=0)//{
         base_color=vec4(texture2D(texture[int(fs_in.textureSlot)], fs_in.texCoords).rgb,1.0);
+        //base_color = vec4(texture2D(m_texture, fs_in.texCoords).rgb,1.0);
         //FragColor = fs_in.color * texture2D(texture[int(fs_in.textureSlot)], fs_in.texCoords);
 	//}
 	//else
@@ -47,8 +55,9 @@ void main() {
     // Combine all components
     vec3 lighting = (ambient + diffuse + specular);
 
-    //FragColor = fs_in.color;
-    FragColor = vec4(lighting, 1.0)* base_color * fs_in.color;
-	// FragColor = vec4(0,0,0,1);
+    // FragColor = fs_in.color;
+     FragColor = vec4(lighting, 1.0)* base_color * fs_in.color;
+    // FragColor = base_color;
+	// FragColor = vec4(1,0,0,1);
     
 }

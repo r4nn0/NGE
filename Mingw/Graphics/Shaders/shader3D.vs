@@ -6,7 +6,7 @@ layout (location=3) in vec3 vNormals;
 layout (location=4) in float textureSlot;
 layout (location=5) in float modelID;
 
-
+#extension GL_ARB_bindless_texture : require
 uniform mat4 proj_matrix;
 uniform mat4 vw_matrix;
 //uniform mat4 ml_matrix=mat4(1.0);

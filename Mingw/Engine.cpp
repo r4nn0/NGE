@@ -26,6 +26,9 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
         std::cout << "Error Initializing GLFW" << std::endl;
         return false;
     }
+    //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 5);
+    //glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
     window_width = _window_width;
     window_height= _window_height;
     window=glfwCreateWindow(_window_width, _window_height, window_title, NULL, NULL);

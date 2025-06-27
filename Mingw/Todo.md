@@ -4,9 +4,13 @@
 
 ### Add collision boxes (Both 2D and 3D)
 
-### Fix realistic graphics / lighting
+### Fix realistic graphics / lighting (With / without Vulkan)
 
 ### Add bindless textures (SSBO) (Partially done)
+### Add Vulkan support since only nvidia and amd gpus support bindless textures
+### Keep texture atlas as a fallback method (MaxRect packing)
+### Alternativaly add TextureArrays (3D arrays with fixed size, up to 2048 layers per texture array)
+
 
 ### Custom font renderer (with shaders)
 

@@ -17,11 +17,9 @@ public:
 protected:
 
 private:
-    //int m_maxTextures;
-    ngetype::IBO* m_indexBuffer;
-    //GLsizei m_indexCount;
-    unsigned int m_appSurface, m_VBO, m_Shader, m_SSBO;
-    //ngetype::vbo3DData* m_Buff;
+    unsigned int m_appSurface, m_VBO, m_IBO, m_Shader, m_SSBO;
+    unsigned testTex, texBuffer;
+    GLuint64 texHandle;
 };
 
 #endif // RENDERER2D_H

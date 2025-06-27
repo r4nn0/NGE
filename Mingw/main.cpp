@@ -6,6 +6,8 @@
 #include <windows.h>
 #include "ngestd.h"
 #include "TestPlayer.h"
+/*
+#include <vulkan/vulkan.h>
 /*! \mainpage NGE (NewbiesGameEngine)
  *
  * \section intro_sec Introduction
@@ -21,15 +23,53 @@
  * \subsection comp Compiling:
  * + Open a terminal window in the same folder and run "make" or "make run"\n
  * Note: Check out the makefile to know if you want to compile a debug or a release version.
- */
+
+int main(){
+    glfwInit();
+
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+    GLFWwindow* window = glfwCreateWindow(800, 600, "Vulkan", nullptr, nullptr);
 
 
+    VkInstance instance;
+    VkApplicationInfo appInfo{};
+    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    appInfo.pApplicationName = "Hello Triangle";
+    appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.pEngineName = "No Engine";
+    appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.apiVersion = VK_API_VERSION_1_0;
+    VkInstanceCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    createInfo.pApplicationInfo = &appInfo;
+    uint32_t glfwExtensionCount = 0;
+    const char** glfwExtensions;
+    
+
+    glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+    createInfo.enabledExtensionCount = glfwExtensionCount;
+    createInfo.ppEnabledExtensionNames = glfwExtensions;
+createInfo.enabledLayerCount = 0;
+    if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create instance!");
+    }
+
+    while (!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
+    }
+
+    glfwDestroyWindow(window);
+    glfwTerminate();
+}
+*/
 int main (){
     glm::vec3 BACKGROUND_COLOR(100.0/255.0);
     Engine gameEngine;
     
     gameEngine.init("NGE", 1000,500);
-    
     LoadSpritesToMemroy();
     //MainTextureAtlas.ImageResizeCanvas(512,512);
     //If the app crashes try using a font that is located in the same directory as the app
@@ -52,15 +92,6 @@ int main (){
     float sense = 0.1f;
     //spr.setUV();
     test.samplePlane2D();
-
-    //unsigned testTex, texBuffer;
-    //GLuint64 texHandle;
-    //glGenTextures(1, &testTex);
-    //texHandle=glGetTextureHandleARB(testTex);
-    // glMakeTextureHandleResidentARB(texHandle);
-    // glMakeTextureHandleNonResidentARB(texHandle); make texture removable from residency list
-    //glCreateBuffers(1, &texBuffer);
-    //glNamedBufferStorage(texBuffer, sizeof(GLuint64), &texHandle, GL_DYNAMIC_DRAW);
 
     while(!glfwWindowShouldClose(gameEngine.get_window())){
         //auto t1 = std::chrono::high_resolution_clock::now();
@@ -148,7 +179,6 @@ int main (){
         ObjectsToRender.push_back(test);
         //ObjectsToRender.push_back(obj);
         renderer3D.Render();
-        
         
         gameEngine.EndDraw();
         renderer3D.dcpf = 0;
