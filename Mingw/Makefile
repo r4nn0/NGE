@@ -1,18 +1,18 @@
 srcFiles	:= $(wildcard *.cpp)
 srcFiles	+= $(wildcard Graphics/*.cpp)
 objFiles	:= $(srcFiles:.cpp=.o)
-Includedirs	:= "include" "C:\VulkanSDK\1.4.313.2\Include"
-Libdirs		:= "lib" "C:\VulkanSDK\1.4.313.2\Lib"
-Libs		:= ftgl freetype glew32 glfw3 glu32 OpenAL32 gdi32 winmm opengl32
-LinkLibs	:= -static #dynamic to use dynamic versions of libraries
-Macros		:= GLEW_STATIC AL_LIBTYPE_STATIC
+Includedirs	:= "include" #"C:\VulkanSDK\1.4.313.2\Include"
+Libdirs		:= "lib" #"C:\VulkanSDK\1.4.313.2\Lib"
+Libs		:= ftgl64 freetype64 glew64 glfw364 glu32 gdi32 winmm opengl32
+LinkLibs	:= -static #use static or dynamic option to link against versions respectivly
+Macros		:= 
 OutFolder	:= bin
 ObjDBG	 	:= obj-dbg
 ObjREL	 	:= obj-rel
 buildFlags	:= 	$(patsubst %, -D%, $(Macros))\
 				$(patsubst %, -I%, $(Includedirs))\
 				$(patsubst %, -L%, $(Libdirs))
-CXX			:= C:/mingw/bin/g++
+CXX			:= C:/mingw64/bin/g++
 buildDBG	:= $(CXX) -std=c++1y -Wall -g
 buildREL	:= $(CXX) -std=c++1y -Wall -O2 -s
 SHELL		:= cmd.exe
