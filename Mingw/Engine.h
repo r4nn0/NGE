@@ -26,7 +26,7 @@ void windowSizeCallback(GLFWwindow*, int, int);
 void windowFocusCallback(GLFWwindow*, int);
 class Engine{
 public:
-    bool init(const char* window_title, int _view_xport, int _view_yport);
+    bool init(const char* window_title, int, int);
 
     void StepEvent();
     void BeginDraw();
@@ -38,8 +38,10 @@ public:
     static unsigned int CreateShader(const char*, const char*);
     static std::string LoadShaderFromFile(const char*);
     static const float* getProjMatrix();
+    static void setProjMatrix(glm::mat4);
     static const float* getViewMatrix();
     static const float* getOrthoMatrix();
+    static void setOrthoMatrix(glm::mat4);
     static const float* getViewMatrix2D();
     Engine();
     void setBackgroundColor(glm::vec3);
@@ -49,20 +51,17 @@ public:
     int getViewX();
     int getViewY();
 private:
-    int window_width, window_height,
-    view_xport, view_yport,
-    view_xview, view_yview,
-    view_wport, view_hport,
-    view_width, view_height;
-    
+    int view_xview, view_yview;
+    glm::vec3 background_color;
+
+
     GLFWwindow* window;
     static unsigned int CompileShader(unsigned int type, const char*source);
-    float right, left, bottom, top, near, far;
     static glm::mat4 projMat;
     static glm::mat4 viewMat;
     static glm::mat4 orthoMat;
     static glm::mat4 viewMat2D;
-    glm::vec3 background_color;
+    
 };
 
 

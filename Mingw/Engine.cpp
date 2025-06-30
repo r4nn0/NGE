@@ -5,11 +5,7 @@ glm::mat4 Engine::orthoMat=glm::mat4(0.f);
 glm::mat4 Engine::viewMat2D=glm::mat4(0.f);
 Camera3D Engine::camera3d;
 bool Engine::isCursorHidden = false;
-Engine::Engine() : window_width(800), window_height(600),
-                   view_xport(0), view_yport(0),
-                   view_xview(0), view_yview(0),
-                   view_wport(0), view_hport(0),
-                   view_width(0),view_height(0),
+Engine::Engine() : view_xview(0), view_yview(0),
                    background_color(100,100,100){}
 /**
  * @brief Initialize the engine by creating a rendering window
@@ -29,16 +25,14 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 5);
     //glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
-    window_width = _window_width;
-    window_height= _window_height;
+    //window_width = _window_width;
+    //window_height= _window_height;
     window=glfwCreateWindow(_window_width, _window_height, window_title, NULL, NULL);
     
     if(window==NULL){
         std::cout << "Error Creating Window" << std::endl;
         return false;
     }
-    view_wport = view_width = window_width;
-    view_hport = view_height = window_height;
     
     glfwMakeContextCurrent(window);
     if(glewInit()!=GLEW_OK){
@@ -61,7 +55,9 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
     
 
     /// CAMERA
-    //glViewport(view_xport, view_yport, view_wport, view_hport);
+    //view_width = _window_width;
+    //view_height = _window_height;
+    glViewport(0, 0, _window_width, _window_height);
     /*
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -87,6 +83,9 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
     //glDisable(GL_CULL_FACE);
 
     
+    projMat=glm::perspective(45.0f, (float)_window_width/_window_height,0.1f,1000.0f);
+    orthoMat=glm::ortho(0.f, (float)_window_width, (float)_window_height, 0.f, -128.f, 127.f);
+    
     return true;
 }
 void Engine::ToggleCursorVisibility(){
@@ -97,7 +96,11 @@ void Engine::ToggleCursorVisibility(){
     isCursorHidden = !isCursorHidden;
 }
 void windowSizeCallback(GLFWwindow* window, int width, int height){
+    //view_width = width;
+    //view_height = height;
     glViewport(0, 0, width, height);
+    Engine::setProjMatrix(glm::perspective(45.0f,(float)width/height,0.1f,1000.0f));
+    Engine::setOrthoMatrix(glm::ortho(0.f, (float)width, (float)height, 0.f, -128.f, 127.f));
 }
 void windowFocusCallback(GLFWwindow* window, int focus){
     
@@ -115,24 +118,10 @@ void windowFocusCallback(GLFWwindow* window, int focus){
  * 
  */
 void Engine::StepEvent(){
-    left=view_xview;
-    right=view_width+view_xview;
-    bottom=view_height+view_yview;
-    top=view_yview;
-    near=-10;
-    far=10;
     glfwPollEvents();
-    //glMatrixMode(GL_PROJECTION);
-    //glLoadIdentity();
-    //gluPerspective(45.0f, (float)view_width/(float)view_height, 0.1f, 100.0f);
-    //glOrtho(left, right, bottom, top, near, far);
-    int _vp[4];
-    glGetIntegerv(GL_VIEWPORT, _vp);
-    projMat=glm::perspective(45.0f,(float)_vp[2]/(float)_vp[3],0.1f,1000.0f);
-    viewMat = glm::lookAt(camera3d.getPosition(), camera3d.getTarget(), camera3d.getUp());
-    orthoMat=glm::ortho(left, right, bottom, top, near, far);
-    viewMat2D=glm::translate(glm::mat4(1.0f), glm::vec3(-view_xview, view_yview, 0.0f));
-    //glMatrixMode(GL_MODELVIEW);
+    
+    viewMat = camera3d.getMatrix();
+    viewMat2D = glm::translate(glm::mat4(1.0f), glm::vec3(-view_xview, view_yview, 0.0f));
 }
 /**
  * @brief Initializes rendering by clearing the rendering screen
@@ -140,7 +129,7 @@ void Engine::StepEvent(){
  */
 void Engine::BeginDraw(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(100/255.0,100/255.0,100/255.0,1);
+    glClearColor(background_color.x, background_color.y, background_color.z, 1.f);
 }
 /**
  * @brief Swaps rendered frames with current frames (Updates rendered screen)
@@ -165,11 +154,17 @@ GLFWwindow* Engine::get_window(){
 const float* Engine::getProjMatrix(){
     return (const float*)glm::value_ptr(projMat);
 }
+void Engine::setProjMatrix(glm::mat4 mat){
+    projMat = mat;
+}
 const float* Engine::getViewMatrix(){
     return (const float*)glm::value_ptr(viewMat);
 }
 const float* Engine::getOrthoMatrix(){
     return (const float*)glm::value_ptr(orthoMat);
+}
+void Engine::setOrthoMatrix(glm::mat4 mat){
+    orthoMat = mat;
 }
 const float* Engine::getViewMatrix2D(){
     return (const float*)glm::value_ptr(viewMat2D);
@@ -198,7 +193,7 @@ glm::vec2 Engine::getWindowSize(){
  * @return int view_width
  */
 int Engine::getViewWidth(){
-    return view_width;
+    return glm::ceil(glm::abs(2.0f/orthoMat[0][0]));
 }
 /**
  * @brief Get current view height
@@ -206,7 +201,7 @@ int Engine::getViewWidth(){
  * @return int view_height
  */
 int Engine::getViewHeight(){
-    return view_height;
+    return glm::ceil(glm::abs(2.0f/orthoMat[1][1]));
 }
 /**
  * @brief Get current view X coordinate 

@@ -66,7 +66,7 @@ createInfo.enabledLayerCount = 0;
 }
 */
 int main (){
-    glm::vec3 BACKGROUND_COLOR(100.0/255.0);
+    glm::vec3 BACKGROUND_COLOR(50.f/255.f);
     Engine gameEngine;
     
     gameEngine.init("NGE", 1000,500);
@@ -86,13 +86,13 @@ int main (){
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
     std::string fpsString = "0";
-    float actdir=-45;
-    float actpitch=-60;
+    float actdir= -60;
+    float actpitch=60;
     float hsp=-10, vsp=-10;
     float sense = 0.1f;
     //spr.setUV();
     test.samplePlane2D();
-
+    gameEngine.setBackgroundColor(BACKGROUND_COLOR);
     while(!glfwWindowShouldClose(gameEngine.get_window())){
         //auto t1 = std::chrono::high_resolution_clock::now();
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
@@ -104,17 +104,14 @@ int main (){
             FPS=0;
             prevTime=currTime;
         }
-        //SpritesToRender.push_back(spr);
-        int _vp[4];
-        glGetIntegerv(GL_VIEWPORT, _vp);
-        glfwSetCursorPos(gameEngine.get_window(),_vp[2]/2, _vp[3]/2);
-        
-        actdir-=(mouse_x-_vp[2]/2) * sense;
-        if(actdir>360) actdir = 0;
-        if(actdir<0) actdir = 360;
+        glfwSetCursorPos(gameEngine.get_window(),gameEngine.getViewWidth()/2, gameEngine.getViewHeight()/2);
+
+        actdir+=(mouse_x-gameEngine.getViewWidth()/2) * sense;
+        if(actdir>360) actdir -= 360;
+        if(actdir<0) actdir += 360;
         float dir = glm::radians(actdir);
 
-        actpitch-=(mouse_y-_vp[3]/2) * sense;
+        actpitch+=(mouse_y-gameEngine.getViewHeight()/2) * sense;
         if (actpitch > 60.0f) actpitch = 60.0f;
         if (actpitch < -60.0f) actpitch = -60.0f;
         float pitch = glm::radians(actpitch);
@@ -125,23 +122,15 @@ int main (){
         float moveSpeed = 0.2;
         if(keyboard_check(GLFW_KEY_LEFT_SHIFT) || keyboard_check(GLFW_KEY_RIGHT_SHIFT))
             moveSpeed=0.5;
-        hsp += ((keyboard_check('D') - keyboard_check('A')) * glm::sin(dir)
-             +(keyboard_check('W') - keyboard_check('S')) * glm::cos(dir)) * moveSpeed;
-        vsp -= ((keyboard_check('D') - keyboard_check('A')) * glm::cos(dir)
-             -(keyboard_check('W') - keyboard_check('S')) * glm::sin(dir)) * moveSpeed;
-        /*
-        glm::vec3 newTarget;
-        newTarget.x = cos(glm::radians(dir))*cos(glm::radians(pitch));
-        newTarget.y = sin(glm::radians(pitch));
-        newTarget.z = sin(glm::radians(dir))*cos(glm::radians(pitch));
-
-        gameEngine.camera3d.setTarget(glm::normalize(newTarget));
-        glm::vec3 right = glm::cross(gameEngine.camera3d.getTarget(), gameEngine.camera3d.getUp());
-        gameEngine.camera3d.setUp(glm::normalize(glm::cross(right, gameEngine.camera3d.getTarget())));*/
+        hsp -= ((keyboard_check('D') - keyboard_check('A')) * glm::cos(dir)
+             +(keyboard_check('W') - keyboard_check('S')) * glm::sin(dir)) * moveSpeed;
+        vsp += ((keyboard_check('D') - keyboard_check('A')) * glm::sin(dir)
+             -(keyboard_check('W') - keyboard_check('S')) * glm::cos(dir)) * moveSpeed;
+        
         gameEngine.camera3d.setPosition(glm::vec3(hsp , -5.f, vsp));
-        gameEngine.camera3d.setTarget(glm::vec3(glm::cos(dir)+hsp, -glm::sin(pitch)*5.f-5,glm::sin(dir) + vsp));
-        gameEngine.camera3d.setUp(glm::vec3(0,-1,0));
-        gameEngine.setBackgroundColor(BACKGROUND_COLOR);
+        gameEngine.camera3d.setRotation(glm::vec3(dir , pitch, glm::radians(180.f)));
+        
+        
         gameEngine.StepEvent();
 
         //if(keyboard_check(GLFW_KEY_W)) pitch+=3;
@@ -149,10 +138,10 @@ int main (){
         //float angle = glfwGetTime();
         //glm::vec4 test = glm::vec4(20,32,10,1) * glm::rotate(glm::mat4(1.0), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         //std::cout << test.x << std::endl;
-        //test.rotation = glm::vec3(glm::radians(-90.f), 0,0);
+        test.rotation = glm::vec3(glm::radians(testObject.position.x), glm::radians(testObject.position.y),0);
         //test.scale=glm::vec3(10,1,10);
         obj.rotation = glm::vec3(glm::radians(-90.f), 0, 0);
-        obj.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);
+        //obj.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, 0);
         //test.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);
         //test.position = 0.1f*glm::vec3(0);
         //obj.setModelMatrix(glm::rotate(glm::mat4(1.0), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -168,6 +157,7 @@ int main (){
         // ngestd::DrawRectangle(testObject.bbox.left, testObject.bbox.top, testObject.bbox.right, testObject.bbox.bottom, true);
         font.FaceSize(16);
         font.Render(fpsString.c_str(),-1,FTPoint(0,gameEngine.getViewHeight()-font.FaceSize(),0));
+        //std::cout << gameEngine.getViewHeight() << std::endl;
         //font.FaceSize(100);
         //font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
 

@@ -14,4 +14,4 @@
 
 ### Custom font renderer (with shaders)
 
-### Fix so that there is only one renderer for both 2D and 3D (Partially done)
+### Fix so that there is only one renderer for both 2D and 3D (Almost done)

@@ -3,9 +3,9 @@ srcFiles	+= $(wildcard Graphics/*.cpp)
 objFiles	:= $(srcFiles:.cpp=.o)
 Includedirs	:= "include" #"C:\VulkanSDK\1.4.313.2\Include"
 Libdirs		:= "lib" #"C:\VulkanSDK\1.4.313.2\Lib"
-Libs		:= ftgl64 freetype64 glew64 glfw364 glu32 gdi32 winmm opengl32
+Libs		:= ftgl64 freetype64 glew64 glfw364 glu32 gdi32 winmm opengl32 #
 LinkLibs	:= -static #use static or dynamic option to link against versions respectivly
-Macros		:= 
+Macros		:= GLEW_STATIC
 OutFolder	:= bin
 ObjDBG	 	:= obj-dbg
 ObjREL	 	:= obj-rel
