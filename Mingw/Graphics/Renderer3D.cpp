@@ -75,7 +75,7 @@ Renderer3D::Renderer3D() : dcpf(0) {
     
     //glGenTextures(1, &testTex);
     
-    const unsigned char limit = (unsigned char)(rand() % 231 + 25);
+    //const unsigned char limit = (unsigned char)(rand() % 231 + 25);
     // Randomly generate an unsigned char per RGB channel
     unsigned char textureData[32*32*3];
     for (int j = 0; j < 32*32*3; ++j) {

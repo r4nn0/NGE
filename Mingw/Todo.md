@@ -1,7 +1,5 @@
 ### Add soundplaying to engine using OpenAL: https://github.com/kcat/openal-soft
 
-
-
 ### Add collision boxes (Both 2D and 3D)
 
 ### Fix realistic graphics / lighting (With / without Vulkan)

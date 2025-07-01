@@ -6,8 +6,7 @@
 #include <windows.h>
 #include "ngestd.h"
 #include "TestPlayer.h"
-/*
-#include <vulkan/vulkan.h>
+//#include <vulkan/vulkan.h>
 /*! \mainpage NGE (NewbiesGameEngine)
  *
  * \section intro_sec Introduction

@@ -3,16 +3,17 @@ srcFiles	+= $(wildcard Graphics/*.cpp)
 objFiles	:= $(srcFiles:.cpp=.o)
 Includedirs	:= "include" #"C:\VulkanSDK\1.4.313.2\Include"
 Libdirs		:= "lib" #"C:\VulkanSDK\1.4.313.2\Lib"
-Libs		:= tess32 ftgl freetype glew32 glfw3 glu32 gdi32 winmm opengl32 #
-LinkLibs	:= -static #use static or dynamic option to link against versions respectivly
+TARGET		:= 32
+Libs		:= tess${TARGET} ftgl${TARGET} freetype${TARGET} glew${TARGET} glfw${TARGET} glu32 gdi32 winmm opengl32 #
+LinkLibs	:= -dynamic #use static or dynamic option to link against versions respectivly
 Macros		:= GLEW_STATIC
-OutFolder	:= bin
-ObjDBG	 	:= obj-dbg
-ObjREL	 	:= obj-rel
+OutFolder	:= bin\x${TARGET}
+ObjDBG	 	:= obj-dbg/x${TARGET}
+ObjREL	 	:= obj-rel/x${TARGET}
 buildFlags	:= 	$(patsubst %, -D%, $(Macros))\
 				$(patsubst %, -I%, $(Includedirs))\
 				$(patsubst %, -L%, $(Libdirs))
-CXX			:= C:/mingw/bin/g++
+CXX			:= C:/mingw${TARGET}/bin/g++
 buildDBG	:= $(CXX) -std=c++1y -Wall -g
 buildREL	:= $(CXX) -std=c++1y -Wall -O2 -s
 SHELL		:= cmd.exe
@@ -41,5 +42,5 @@ $(patsubst %, $(ObjDBG)/%.o, %): %.cpp
 	$(buildDBG) -c $< -o $@ $(buildFlags)
 
 clean:
-	del /S *.o
+	powershell -Command "Get-ChildItem -Recurse -Filter *.o | Where-Object { $$_.Name -ne 'headerImpl.o' } | Remove-Item"
 	del $(OutFolder)\*.exe
