@@ -161,7 +161,7 @@ void LoadSpritesToMemroy(){
             std::string sname="Sprites/";
             sname+=en->d_name;
             if(std::regex_match(sname, ext)){
-                Sprite *spr= new Sprite(glm::vec2(0), glm::vec2(1));
+                Sprite *spr= new Sprite(glm::vec3(0), glm::vec2(1));
                 t_Pixels.push_back(LoadNGESprite(sname.c_str(), spr));
                 
                 //t_TextureAtlasSize.x=(t_TextureAtlasSize.x>spr->getSize().x)? t_TextureAtlasSize.x : spr->getSize().x;

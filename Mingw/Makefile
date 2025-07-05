@@ -1,11 +1,11 @@
 srcFiles	:= $(wildcard *.cpp)
 srcFiles	+= $(wildcard Graphics/*.cpp)
 objFiles	:= $(srcFiles:.cpp=.o)
-Includedirs	:= "include" #"C:\VulkanSDK\1.4.313.2\Include"
-Libdirs		:= "lib" #"C:\VulkanSDK\1.4.313.2\Lib"
+Includedirs	:= include ${VULKAN_SDK}\Include
 TARGET		:= 32
-Libs		:= tess${TARGET} ftgl${TARGET} freetype${TARGET} glew${TARGET} glfw${TARGET} glu32 gdi32 winmm opengl32 #
-LinkLibs	:= -dynamic #use static or dynamic option to link against versions respectivly
+Libdirs		:= lib ${VULKAN_SDK}\lib${TARGET}
+Libs		:= vulkan-1 tess${TARGET} ftgl${TARGET} freetype${TARGET} glew${TARGET} glfw${TARGET} glu32 gdi32 winmm opengl32
+LinkLibs	:= -static #use static or dynamic option to link against versions respectivly
 Macros		:= GLEW_STATIC
 OutFolder	:= bin\x${TARGET}
 ObjDBG	 	:= obj-dbg/x${TARGET}
@@ -42,5 +42,6 @@ $(patsubst %, $(ObjDBG)/%.o, %): %.cpp
 	$(buildDBG) -c $< -o $@ $(buildFlags)
 
 clean:
-	powershell -Command "Get-ChildItem -Recurse -Filter *.o | Where-Object { $$_.Name -ne 'headerImpl.o' } | Remove-Item"
+# powershell -Command "Get-ChildItem -Recurse -Filter *.o | Where-Object { $$_.Name -ne 'headerImpl.o' } | Remove-Item"
+	del /S *.o
 	del $(OutFolder)\*.exe

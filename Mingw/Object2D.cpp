@@ -4,7 +4,7 @@
  * 
  * @param sprName the name of the sprite to use for the object
  */
-Object2D::Object2D(std::string sprName) : position(glm::vec2(0)),
+Object2D::Object2D(std::string sprName) : position(glm::vec3(0)),
                                        scale(glm::vec2(1)),
                                        color(glm::vec4(1)),
                                        frame_index(0), anim_speed(0),
@@ -15,7 +15,7 @@ Object2D::Object2D(std::string sprName) : position(glm::vec2(0)),
  * @brief Default constructor for Object2D
  * 
  */
-Object2D::Object2D() : position(glm::vec2(0)),
+Object2D::Object2D() : position(glm::vec3(0)),
                        scale(glm::vec2(1)),
                        color(glm::vec4(1)),
                        frame_index(0), anim_speed(0),

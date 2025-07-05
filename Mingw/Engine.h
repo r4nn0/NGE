@@ -32,6 +32,7 @@ public:
     void BeginDraw();
     void EndDraw();
     void ToggleCursorVisibility();
+    static float znear2D, zfar2D;
     static Camera3D camera3d;
     static bool isCursorHidden;
     GLFWwindow* get_window();
@@ -61,7 +62,7 @@ private:
     static glm::mat4 viewMat;
     static glm::mat4 orthoMat;
     static glm::mat4 viewMat2D;
-    
+
 };
 
 

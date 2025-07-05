@@ -160,17 +160,16 @@ int main (){
         //font.FaceSize(100);
         //font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
 
-        //testObject.Render();
-        //renderer.Render();
+        testObject.Render();
+        renderer.Render();
         
         
-        ObjectsToRender.push_back(obj);
         ObjectsToRender.push_back(test);
-        //ObjectsToRender.push_back(obj);
+        ObjectsToRender.push_back(obj);
         renderer3D.Render();
         
         gameEngine.EndDraw();
-        renderer3D.dcpf = 0;
+        //renderer3D.dcpf = 0;
 
         //auto t2 = std::chrono::high_resolution_clock::now();
         //auto ms_int = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);

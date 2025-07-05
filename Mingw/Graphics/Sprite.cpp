@@ -7,20 +7,10 @@ TexturePage MainTextureAtlas;
  * @param path Path to image
  * @param _pos position where to render the sprite
  */
-Sprite::Sprite(const char* path, glm::vec2 _pos): m_Name(path),m_Frames(1),m_FrameIndex(0), m_Pos(_pos),
+Sprite::Sprite(const char* path, glm::vec3 _pos): m_Name(path),m_Frames(1),m_FrameIndex(0), m_Pos(_pos),
                                                   m_BaseSize(0), m_Size(0),
                                                   m_Color(1), m_hasTexture(false),m_texSlot(-1), m_Widest(0), m_Heighest(0), m_WidthCombined(0), m_HeightCombined(0){
 
-    
-        /*
-        glm::vec2 AtlasSize=MainTextureAtlas.GetAtlasSize();
-        if(AtlasSize.x<m_Widest) AtlasSize.x=m_Widest;
-        MainTextureAtlas.ImageResizeCanvas(AtlasSize.x, AtlasSize.y+m_HeightCombined);
-        
-        for(unsigned i=0;i<t_Pixels.size();i++){
-            MainTextureAtlas.ImageAdd(t_Pixels[i], m_UV[i], m_BaseSize[i], m_texSlot);
-        }
-        */
 }
 /**
  * @brief Create a sprite without texture
@@ -28,7 +18,7 @@ Sprite::Sprite(const char* path, glm::vec2 _pos): m_Name(path),m_Frames(1),m_Fra
  * @param _pos position where to render the sprite
  * @param _size size of the sprite
  */
-Sprite::Sprite(glm::vec2 _pos, glm::vec2 _size): m_Name("noSprite"),m_Frames(1),m_FrameIndex(0), m_Pos(_pos), m_Size(_size),
+Sprite::Sprite(glm::vec3 _pos, glm::vec2 _size): m_Name("noSprite"),m_Frames(1),m_FrameIndex(0), m_Pos(_pos), m_Size(_size),
                                                  m_Color(1), m_hasTexture(false), m_texSlot(-1), m_Widest(0), m_Heighest(0),m_WidthCombined(0), m_HeightCombined(0){
     m_Name+=std::to_string(SpritesTotal.size());
     m_BaseSize.push_back(_size);
@@ -45,7 +35,7 @@ Sprite::Sprite(glm::vec2 _pos, glm::vec2 _size): m_Name("noSprite"),m_Frames(1),
  * 
  * @param _pos position where the sprite should be rendered
  */
-void Sprite::setPosition (glm::vec2 _pos) {m_Pos=_pos;}
+void Sprite::setPosition (glm::vec3 _pos) {m_Pos=_pos;}
 /**
  * @brief Scales the sprite
  * 

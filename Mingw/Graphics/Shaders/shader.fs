@@ -1,4 +1,4 @@
-#version 330 core
+#version 450 core
 
 out vec4 FragColor;
 
@@ -19,6 +19,7 @@ void main() {
 	}
 	else
 		FragColor = fs_in.color;
+        
 }
 
 

@@ -8,15 +8,15 @@
 class Sprite{
 
 public:
-    Sprite(const char*, glm::vec2);
-	Sprite(glm::vec2, glm::vec2);
-    void setPosition(glm::vec2);
+    Sprite(const char*, glm::vec3);
+	Sprite(glm::vec3, glm::vec2);
+    void setPosition(glm::vec3);
     void setScale(glm::vec2);
     void setColor(glm::vec4);
     void setFrameIndex(unsigned);
     inline unsigned getFrameCount(){return m_Frames;}
     inline int getTextureSlot(){return m_texSlot;}
-	inline glm::vec2& getPosition(){return m_Pos;}
+	inline glm::vec3& getPosition(){return m_Pos;}
     inline glm::vec2& getSize(){return m_Size;}
     inline glm::vec2 getSumSize(){return glm::vec2(m_WidthCombined, m_HeightCombined);}
     inline glm::vec2& getBaseSize(int _frameIndex=-1){if(_frameIndex==-1) _frameIndex=m_FrameIndex;return m_BaseSize[_frameIndex];}
@@ -42,7 +42,7 @@ protected:
     std::string m_Name;
     unsigned int m_Frames;
     unsigned int m_FrameIndex;
-    glm::vec2 m_Pos;
+    glm::vec3 m_Pos;
     std::vector<glm::vec2> m_BaseSize;
     glm::vec2 m_Size;
     glm::vec4 m_Color;

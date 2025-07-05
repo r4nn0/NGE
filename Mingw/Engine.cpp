@@ -3,6 +3,8 @@ glm::mat4 Engine::projMat=glm::mat4(0.f);
 glm::mat4 Engine::viewMat=glm::mat4(0.f);
 glm::mat4 Engine::orthoMat=glm::mat4(0.f);
 glm::mat4 Engine::viewMat2D=glm::mat4(0.f);
+float Engine::znear2D=-128;
+float Engine::zfar2D=127;
 Camera3D Engine::camera3d;
 bool Engine::isCursorHidden = false;
 Engine::Engine() : view_xview(0), view_yview(0),
@@ -84,7 +86,7 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
 
     
     projMat=glm::perspective(45.0f, (float)_window_width/_window_height,0.1f,1000.0f);
-    orthoMat=glm::ortho(0.f, (float)_window_width, (float)_window_height, 0.f, -128.f, 127.f);
+    orthoMat=glm::ortho(0.f, (float)_window_width, (float)_window_height, 0.f, -znear2D, -(zfar2D+1));
     
     return true;
 }
@@ -100,7 +102,7 @@ void windowSizeCallback(GLFWwindow* window, int width, int height){
     //view_height = height;
     glViewport(0, 0, width, height);
     Engine::setProjMatrix(glm::perspective(45.0f,(float)width/height,0.1f,1000.0f));
-    Engine::setOrthoMatrix(glm::ortho(0.f, (float)width, (float)height, 0.f, -128.f, 127.f));
+    Engine::setOrthoMatrix(glm::ortho(0.f, (float)width, (float)height, 0.f, -Engine::znear2D, -(Engine::zfar2D+1)));
 }
 void windowFocusCallback(GLFWwindow* window, int focus){
     

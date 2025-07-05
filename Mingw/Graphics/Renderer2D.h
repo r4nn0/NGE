@@ -15,19 +15,14 @@ public:
     Renderer2D();
     virtual ~Renderer2D();
     void Render();
-    /**
-     * @brief A variable that counts drawcalls per frame
-     * 
-     */
-    unsigned int dcpf;
 protected:
 
 private:
     int m_maxTextures;
     ngetype::IBO* m_indexBuffer;
-    GLsizei m_indexCount;
-    unsigned int m_appSurface,m_VBO, m_Shader;
-    ngetype::vboData* m_Buff;
+    //GLsizei m_indexCount;
+    unsigned int m_appSurface,m_VBO, m_Shader, m_IBO;
+    //ngetype::vboData* m_Buff;
 };
 
 #endif // RENDERER2D_H

@@ -10,7 +10,7 @@ public:
     void Update();
     void Render();
     void SpriteSet(std::string);
-    glm::vec2 position;
+    glm::vec3 position;
     glm::vec2 scale;
     glm::vec4 color;
     float frame_index, anim_speed;
