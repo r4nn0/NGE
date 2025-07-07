@@ -66,25 +66,23 @@ createInfo.enabledLayerCount = 0;
 }
 */
 int main (){
-    glm::vec3 BACKGROUND_COLOR(50.f/255.f);
+    glm::vec3 BACKGROUND_COLOR(25.f/255.f);
     Engine gameEngine;
     
     gameEngine.init("NGE", 1000,500);
     LoadSpritesToMemroy();
     LoadModelsToMemory();
-    //MainTextureAtlas.ImageResizeCanvas(512,512);
+
     //If the app crashes try using a font that is located in the same directory as the app
     FTGLPixmapFont font("C:/Windows/Fonts/arial.ttf");
     
 	Renderer2D renderer;
     Renderer3D renderer3D;
-    //Sprite spr(glm::vec2(32,32),glm::vec2(512,512));
-    TestPlayer testObject("sonic_run");
+    TestPlayer obj2D("sonic_run");
     //testObject.color = glm::vec4(1,0,0,1);
-    //Object3D obj("cube.glb");
-    //Object3D test;
-    //obj.name="obj";
-    //test.name="test";
+
+    Entity obj3D("cube");
+    Entity floor;
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
     std::string fpsString = "0";
@@ -92,11 +90,8 @@ int main (){
     float actpitch=60;
     float hsp=-10, vsp=-10;
     float sense = 0.1f;
-    //spr.setUV();
-    //test.samplePlane2D();
     
-    Entity test("cube");
-    Entity obj("cube");
+    
     
     gameEngine.setBackgroundColor(BACKGROUND_COLOR);
     while(!glfwWindowShouldClose(gameEngine.get_window())){
@@ -129,42 +124,44 @@ int main (){
              +(keyboard_check('W') - keyboard_check('S')) * glm::sin(dir)) * moveSpeed;
         vsp += ((keyboard_check('D') - keyboard_check('A')) * glm::sin(dir)
              -(keyboard_check('W') - keyboard_check('S')) * glm::cos(dir)) * moveSpeed;
-        obj.position = glm::vec3(hsp, 0, vsp);
+        obj3D.position = glm::vec3(hsp, -3, vsp);
+        floor.scale = glm::vec3(5,0,5);
+
         if(keyboard_check_pressed('L'))
             gameEngine.ToggleCursorVisibility();
         
         
         
-        gameEngine.camera3d.setPosition(obj.position-glm::vec3(0,0,10));
+        gameEngine.camera3d.setPosition(obj3D.position-glm::vec3(0,0,10));
         gameEngine.camera3d.setRotation(glm::vec3(dir , pitch, glm::radians(180.f)));
-        gameEngine.camera3d.setOrbit(obj.position);
+        gameEngine.camera3d.setOrbit(obj3D.position);
         
         
         
         gameEngine.StepEvent();
 
         
-        testObject.Update();
+        obj2D.Update();
         //testObject2.Update();
         
         gameEngine.BeginDraw();
         
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
-        ngestd::DrawRectangle(glm::vec4(testObject.bbox.left, testObject.bbox.top, testObject.bbox.right, testObject.bbox.bottom), true);
+        //ngestd::DrawRectangle(glm::vec4(obj2D.bbox.left, obj2D.bbox.top, obj2D.bbox.right, obj2D.bbox.bottom), false);
         font.FaceSize(16);
         font.Render(fpsString.c_str(),-1,FTPoint(0,gameEngine.getViewHeight()-font.FaceSize(),0));
 
         //font.FaceSize(100);
         //font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
 
-        testObject.Render();
+        obj2D.Render();
         
         renderer.Render();
         
         
-        test.Render();
-        obj.Render();
-        
+        obj3D.Render();
+        floor.Render();
+
         renderer3D.Render();
         
         gameEngine.EndDraw();

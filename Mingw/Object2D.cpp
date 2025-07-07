@@ -64,11 +64,3 @@ void Object2D::SpriteSet(std::string sprName){
     
     *sprite = *(pos->second);
 }
-/*
-void Object2D::SpriteSet(const char* name){
-    try{
-        sprite=SpritesTotal.at(name);
-    }catch(const std::out_of_range&){
-        sprite=SpritesTotal.begin()->second;
-    }
-}*/
