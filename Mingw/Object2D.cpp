@@ -12,20 +12,11 @@ Object2D::Object2D(std::string sprName) : position(glm::vec3(0)),
     SpriteSet(sprite_name);
 }
 /**
- * @brief Default constructor for Object2D
- * 
- */
-Object2D::Object2D() : position(glm::vec3(0)),
-                       scale(glm::vec2(1)),
-                       color(glm::vec4(1)),
-                       frame_index(0), anim_speed(0),
-                       sprite_name(""), bbox(1), sprite(nullptr){}
-/**
  * @brief Destroy the Object2D
  * 
  */
 Object2D::~Object2D(){
-    // We don't want to delete the sprite because it might be in use by other objects
+    delete sprite;
 }
 /**
  * @brief Update the object every frame
@@ -52,11 +43,7 @@ void Object2D::Update(){
  */
 void Object2D::Render(){
     if(sprite==nullptr) return;
-    for(Sprite &spr: SpritesToRender){
-        if (*sprite==spr) {
-            return;
-        }
-    }
+    
     SpritesToRender.push_back(*sprite);
 }
 /**
@@ -66,13 +53,16 @@ void Object2D::Render(){
  */
 void Object2D::SpriteSet(std::string sprName){
     sprite_name=sprName;
+    if(sprite!=nullptr) delete sprite;
+    sprite = new Sprite(glm::vec3(0.0), glm::vec2(32.0f));
     
     std::map<std::string, Sprite*>::iterator pos = SpritesTotal.find(sprite_name);
     if(pos==SpritesTotal.end()){
         std::cout << "Sprite not found or not loaded to memory!" << std::endl;
         return;
     }
-    sprite = pos->second;
+    
+    *sprite = *(pos->second);
 }
 /*
 void Object2D::SpriteSet(const char* name){

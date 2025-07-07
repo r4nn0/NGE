@@ -3,13 +3,9 @@
 #include "Object2D.h"
 
 class TestPlayer : public Object2D{
-private:
-    unsigned idle_time;
-    unsigned state;
 public:
-    TestPlayer(std::string);
-    TestPlayer();
-    void Update();
+    using Object2D::Object2D;
+    void Update () override;
 }; 
 
 #endif

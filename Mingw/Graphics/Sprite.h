@@ -26,6 +26,22 @@ public:
 
     friend class TexturePage;
     friend std::vector<unsigned char*> LoadNGESprite(const char*, Sprite*);
+
+    Sprite& operator=(const Sprite& other){
+        this->m_Name = other.m_Name;
+        this->m_Frames = other.m_Frames;
+        this->m_FrameIndex = other.m_FrameIndex;
+        this->m_Pos = other.m_Pos;
+        this->m_BaseSize = other.m_BaseSize;
+        this->m_Size = other.m_Size;
+        this->m_Color = other.m_Color;
+        this->m_hasTexture = other.m_hasTexture;
+        this->m_texSlot = other.m_texSlot;
+
+        this->m_UV = other.m_UV;
+        return *this;
+    
+    }
     bool operator==(const Sprite&) const;
 
     /*void setUV(){

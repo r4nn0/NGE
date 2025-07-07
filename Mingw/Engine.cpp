@@ -56,33 +56,18 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
     glfwSetWindowPos(window, xPos, yPos);
     
 
-    /// CAMERA
-    //view_width = _window_width;
-    //view_height = _window_height;
     glViewport(0, 0, _window_width, _window_height);
-    /*
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0,0,0,0,-10,10);
-    glDepthRange(-64,63);
-    glMatrixMode(GL_MODELVIEW);
-    */
+    
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
-    /*glEnable(GL_DEPTH_TEST);
-    
+    /*
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CCW); // Or GL_CW depending on your model's winding order
     */
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_DEPTH_WRITEMASK);
-    
-    //glEnable(GL_CULL_FACE);
-    //glCullFace(GL_FRONT_AND_BACK);
-    //glFrontFace(GL_CW);
-    //glEnable(GL_CULL_FACE);
-    //glCullFace(GL_BACK);
-    //glFrontFace(GL_CW); // Or GL_CW depending on your model's winding order
-    //glDisable(GL_CULL_FACE);
 
     
     projMat=glm::perspective(45.0f, (float)_window_width/_window_height,0.1f,1000.0f);

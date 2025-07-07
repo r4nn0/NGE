@@ -1,6 +1,7 @@
 #include "Object3D.h"
+std::map<std::string, Object3D*> ObjectsTotal;
 //TexutrePage TextureAtlas3D;
-Object3D::Object3D(const char* file) : scale(glm::vec3(1.0)),rotation(glm::vec3(0.0)), position(glm::vec3(0.0)), name(""){
+Object3D::Object3D(const char* file) : modelMatrix(glm::mat4(1.0f)){
     LoadModel(file);
     /*
     std::ifstream file(objfile);
@@ -56,8 +57,7 @@ Object3D::Object3D(const char* file) : scale(glm::vec3(1.0)),rotation(glm::vec3(
     //std::cout << "Loaded " << m_vertices.size() << " vertices and " << m_indices.size() << " indices from " << objfile << std::endl;   
     */ 
 }
-Object3D::Object3D() : scale(glm::vec3(1.0)),rotation(glm::vec3(0.0)), position(glm::vec3(0.0)) , name(""){
-
+Object3D::Object3D() : modelMatrix(glm::mat4(1.0f)){
 }
 void Object3D::samplePlane2D(){
     Vertex3D botLeft, botRight, topRight, topLeft;
@@ -215,11 +215,16 @@ unsigned Object3D::getIndexFromAccessor(const tinygltf::Model& model,
     // But if you're just accessing raw index value for each vertex:
     return accessor.byteOffset / tinygltf::GetComponentSizeInBytes(accessor.componentType) + vertexIndex;
 }
-const glm::mat4 Object3D::getModelMatrix() const {
+//const glm::mat4 Object3D::getModelMatrix() const {
+//    return modelMatrix;
+    /*
     glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0), scale);
     glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0),rotation.y, glm::vec3(0,1,0))*
                         glm::rotate(glm::mat4(1.0),rotation.x, glm::vec3(1,0,0))*
                         glm::rotate(glm::mat4(1.0),rotation.z, glm::vec3(0,0,1));
     glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0), position);
-    return translationMatrix*rotationMatrix*scaleMatrix;
+    return translationMatrix*rotationMatrix*scaleMatrix;*/
+//}
+void Object3D::setModelMatrix(glm::mat4 mdl_matrix){
+    modelMatrix = mdl_matrix;
 }

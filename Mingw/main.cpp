@@ -6,6 +6,7 @@
 #include <windows.h>
 #include "ngestd.h"
 #include "TestPlayer.h"
+#include "Entity.h"
 //#include <vulkan/vulkan.h>
 /*! \mainpage NGE (NewbiesGameEngine)
  *
@@ -70,6 +71,7 @@ int main (){
     
     gameEngine.init("NGE", 1000,500);
     LoadSpritesToMemroy();
+    LoadModelsToMemory();
     //MainTextureAtlas.ImageResizeCanvas(512,512);
     //If the app crashes try using a font that is located in the same directory as the app
     FTGLPixmapFont font("C:/Windows/Fonts/arial.ttf");
@@ -78,10 +80,11 @@ int main (){
     Renderer3D renderer3D;
     //Sprite spr(glm::vec2(32,32),glm::vec2(512,512));
     TestPlayer testObject("sonic_run");
-    Object3D obj("cube.glb");
-    Object3D test;
-    obj.name="obj";
-    test.name="test";
+    //testObject.color = glm::vec4(1,0,0,1);
+    //Object3D obj("cube.glb");
+    //Object3D test;
+    //obj.name="obj";
+    //test.name="test";
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
     std::string fpsString = "0";
@@ -90,7 +93,11 @@ int main (){
     float hsp=-10, vsp=-10;
     float sense = 0.1f;
     //spr.setUV();
-    test.samplePlane2D();
+    //test.samplePlane2D();
+    
+    Entity test("cube");
+    Entity obj("cube");
+    
     gameEngine.setBackgroundColor(BACKGROUND_COLOR);
     while(!glfwWindowShouldClose(gameEngine.get_window())){
         //auto t1 = std::chrono::high_resolution_clock::now();
@@ -115,9 +122,6 @@ int main (){
         if (actpitch < -60.0f) actpitch = -60.0f;
         float pitch = glm::radians(actpitch);
 
-        if(keyboard_check_pressed('L'))
-            gameEngine.ToggleCursorVisibility();
-        
         float moveSpeed = 0.2;
         if(keyboard_check(GLFW_KEY_LEFT_SHIFT) || keyboard_check(GLFW_KEY_RIGHT_SHIFT))
             moveSpeed=0.5;
@@ -125,31 +129,24 @@ int main (){
              +(keyboard_check('W') - keyboard_check('S')) * glm::sin(dir)) * moveSpeed;
         vsp += ((keyboard_check('D') - keyboard_check('A')) * glm::sin(dir)
              -(keyboard_check('W') - keyboard_check('S')) * glm::cos(dir)) * moveSpeed;
+        obj.position = glm::vec3(hsp, 0, vsp);
+        if(keyboard_check_pressed('L'))
+            gameEngine.ToggleCursorVisibility();
         
-        gameEngine.camera3d.setPosition(glm::vec3(hsp , -5.f, vsp));
+        
+        
+        gameEngine.camera3d.setPosition(obj.position-glm::vec3(0,0,10));
         gameEngine.camera3d.setRotation(glm::vec3(dir , pitch, glm::radians(180.f)));
+        gameEngine.camera3d.setOrbit(obj.position);
+        
         
         
         gameEngine.StepEvent();
 
-        //if(keyboard_check(GLFW_KEY_W)) pitch+=3;
-        //else if(keyboard_check(GLFW_KEY_S)) pitch-=3;
-        //float angle = glfwGetTime();
-        //glm::vec4 test = glm::vec4(20,32,10,1) * glm::rotate(glm::mat4(1.0), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        //std::cout << test.x << std::endl;
-        test.rotation = glm::vec3(glm::radians(testObject.position.x), glm::radians(testObject.position.y),0);
-        //test.scale=glm::vec3(10,1,10);
-        obj.rotation = glm::vec3(glm::radians(-90.f), 0, 0);
-        //obj.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, 0);
-        //test.position = 0.2f*glm::vec3(testObject.position.x, testObject.position.y, pitch);
-        //test.position = 0.1f*glm::vec3(0);
-        //obj.setModelMatrix(glm::rotate(glm::mat4(1.0), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
-        //obj.setModelMatrix(glm::rotate(obj.getModelMatrix(), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-        //obj.setModelMatrix(glm::rotate(obj.getModelMatrix(), angle, glm::vec3(0.0f, 1.0f, 0.0f)));
-        //obj.setModelMatrix(glm::translate(glm::mat4(1.0), glm::vec3(1000, 0, 0)));
-        //obj.setModelMatrix(glm::rotate(obj.getModelMatrix(), angle, glm::vec3(0.0f, 1.0f, 0.0f)));
-        //vertex.model= glm::rotate(vertex.model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+        
         testObject.Update();
+        //testObject2.Update();
+        
         gameEngine.BeginDraw();
         
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
@@ -161,11 +158,13 @@ int main (){
         //font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
 
         testObject.Render();
+        //testObject.position +=glm::vec3(0,0,1);
         renderer.Render();
         
         
-        ObjectsToRender.push_back(test);
-        ObjectsToRender.push_back(obj);
+        test.Render();
+        obj.Render();
+        
         renderer3D.Render();
         
         gameEngine.EndDraw();

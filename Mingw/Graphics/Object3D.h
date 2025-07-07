@@ -11,8 +11,7 @@
 class Object3D
 {
 public:
-    struct Vertex3D
-    {
+    struct Vertex3D {
         glm::vec3 pos;
         glm::vec4 color;
         glm::vec2 texCoords;
@@ -22,14 +21,20 @@ public:
     Object3D(const char* objfile);
     Object3D();
     ~Object3D();
-    glm::vec3 scale, rotation, position;
 
     void samplePlane2D();
-    std::string name;
     const std::vector<Vertex3D> getVertices() const { return m_vertices; }
     const std::vector<unsigned int> getIndices() const { return m_indices; }
-    const glm::mat4 getModelMatrix() const;
+
+    void setModelMatrix(glm::mat4);
+    const glm::mat4 getModelMatrix() const {return modelMatrix;}
+    Object3D& operator=(const Object3D& other){
+        this->m_vertices = other.m_vertices;
+        this->m_indices = other.m_indices;
+        return *this;
+    }
 private:
+    glm::mat4 modelMatrix;
     void LoadModel(const char*);
     std::vector<glm::vec4> readVecFloat(const tinygltf::Model& mdl, const tinygltf::Primitive& prim, const std::string& attr, int expectedComponents);
     unsigned getIndexFromAccessor(const tinygltf::Model& ,const tinygltf::Primitive&,const std::string&,const unsigned int) const;
@@ -37,5 +42,5 @@ private:
     std::vector<Vertex3D> m_vertices;
     std::vector<unsigned int> m_indices;
 };
-//extern TexturePage TextureAtlas3D;
+extern std::map<std::string, Object3D*> ObjectsTotal;
 #endif // OBJECT3D_H

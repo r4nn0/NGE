@@ -48,7 +48,8 @@ static const std::wstring  has_no_mi = {
 };
 
 std::wstring ar_fix(std::wstring);
-std::vector<unsigned char*> LoadNGESprite(const char*, Sprite*); 
+std::vector<unsigned char*> LoadNGESprite(const char*, Sprite*);
+void LoadModelsToMemory();
 void LoadSpritesToMemroy();
 
 struct CollisionBox{

@@ -1,20 +1,21 @@
 #include "Renderer2D.h"
-
+#define VERTEX_SIZE2D sizeof(vboData)
+#define BUFFER_SIZE2D VERTEX_SIZE2D * 4 * 32000
+#define INDICES_SIZE2D 32000*6
 /**
  * @brief Initialize batch renderer to pass correct values to shaders
  * 
  */
 Renderer2D::Renderer2D() {
-    //glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &m_maxTextures);
     glCreateVertexArrays(1, &m_appSurface);
 
     glCreateBuffers(1, &m_VBO);
-    glNamedBufferStorage(m_VBO, BUFFER_SIZE, nullptr, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
-    glVertexArrayVertexBuffer(m_appSurface,0,m_VBO,0, VERTEX_SIZE);
+    glNamedBufferStorage(m_VBO, BUFFER_SIZE2D, nullptr, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
+    glVertexArrayVertexBuffer(m_appSurface,0,m_VBO,0, VERTEX_SIZE2D);
 
-    unsigned short indices[INDICES_SIZE];
+    unsigned short indices[INDICES_SIZE2D];
     unsigned offset=0;
-    for(unsigned i=0;i<INDICES_SIZE;i+=6){
+    for(unsigned i=0;i<INDICES_SIZE2D;i+=6){
         indices[ i ]=offset;
         indices[i+1]=offset+1;
         indices[i+2]=offset+2;
@@ -24,7 +25,7 @@ Renderer2D::Renderer2D() {
         offset+=4;
     }
     glCreateBuffers(1, &m_IBO);
-    glNamedBufferStorage(m_IBO, INDICES_SIZE*sizeof(short), indices, GL_DYNAMIC_STORAGE_BIT);
+    glNamedBufferStorage(m_IBO, INDICES_SIZE2D*sizeof(short), indices, GL_DYNAMIC_STORAGE_BIT);
     glVertexArrayElementBuffer(m_appSurface, m_IBO);
 
     for(int i=0;i<4;i++){
@@ -55,8 +56,7 @@ Renderer2D::~Renderer2D() {
  */
 void Renderer2D::Render(){
     GLsizei m_indexCount=0;
-    //glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-    ngetype::vboData* m_Buff = (ngetype::vboData*) glMapNamedBuffer(m_VBO, GL_WRITE_ONLY);
+    vboData* m_Buff = (vboData*) glMapNamedBuffer(m_VBO, GL_WRITE_ONLY);
     for(Sprite& spr:SpritesToRender){
         float textureSlot =spr.getTextureSlot();
         
@@ -66,36 +66,18 @@ void Renderer2D::Render(){
         glm::vec2& _size = spr.getSize();
         glm::vec4& _col = spr.getColor();
         std::vector<glm::vec2> uvs = spr.getUV();
-        //std::cout << uvs[2].x << " " << uvs[2].y << std::endl;
-        
-
-        //m_Buff->texCoords = glm::vec2(0, 0);
-        m_Buff->texCoords = uvs[0];
-        m_Buff->vertex=_pos;
-        m_Buff->color=_col;
-        m_Buff->textureSlot=textureSlot;
-        m_Buff++;
-
-        //m_Buff->texCoords = glm::vec2(1, 0);
-        m_Buff->texCoords = uvs[1];
-        m_Buff->vertex=glm::vec3(_pos.x+_size.x,_pos.y, _pos.z);
-        m_Buff->color=_col;
-        m_Buff->textureSlot = textureSlot;
-        m_Buff++;
-
-        //m_Buff->texCoords = glm::vec2(1, 1);
-        m_Buff->texCoords = uvs[2];
-        m_Buff->vertex=glm::vec3(_pos.x+_size.x,_pos.y+_size.y, _pos.z);
-        m_Buff->color=_col;
-        m_Buff->textureSlot = textureSlot;
-        m_Buff++;
-
-        //m_Buff->texCoords = glm::vec2(0, 1);
-        m_Buff->texCoords = uvs[3];
-        m_Buff->vertex=glm::vec3(_pos.x,_pos.y+_size.y, _pos.z);
-        m_Buff->color=_col;
-        m_Buff->textureSlot = textureSlot;
-        m_Buff++;
+        std::vector<glm::vec3> _box;
+        _box.push_back(glm::vec3(0,0,0));
+        _box.push_back(glm::vec3(_size.x,0,0));
+        _box.push_back(glm::vec3(_size.x,_size.y,0));
+        _box.push_back(glm::vec3(0,_size.y,0));
+        for(int i=0;i<4;i++){
+            m_Buff->texCoords = uvs[i];
+            m_Buff->pos = _pos+_box[i];
+            m_Buff->color=_col;
+            m_Buff->textureSlot = textureSlot;
+            m_Buff++;
+        }
         m_indexCount+=6;
     }
     glUnmapNamedBuffer(m_VBO);

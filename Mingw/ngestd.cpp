@@ -190,6 +190,27 @@ void LoadSpritesToMemroy(){
     
     
 }
+void LoadModelsToMemory(){
+    DIR *dr;
+    dirent *en;
+    dr = opendir("3DObjects");
+    std::regex ext(".*\\.glb$");
+    if (dr) {
+        while ((en = readdir(dr)) != NULL) {
+            std::string objPath="3DObjects/";
+            objPath+=en->d_name;
+            if(std::regex_match(objPath, ext)){
+                Object3D *obj = new Object3D(objPath.c_str());
+                std::string objFullname = en->d_name;
+                std::string objName = objFullname.substr(0, objFullname.find("."));
+                //std::cout << objName << std::endl;
+                ObjectsTotal.insert({objName, obj});
+                
+            }
+        }
+        closedir(dr);
+    }
+}
 /**
  * @brief Draw a single point on screen
  * 

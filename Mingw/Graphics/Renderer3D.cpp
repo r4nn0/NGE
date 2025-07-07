@@ -1,23 +1,28 @@
 #include "Renderer3D.h"
 #include <glm/gtx/string_cast.hpp>
+#define MEGABYTE 1048576
+#define VERTEX_SIZE3D sizeof(vboData)
+#define BUFFER_SIZE3D 30*MEGABYTE
+#define INDICES_SIZE3D 3*BUFFER_SIZE3D
+#define SSBO_SIZE3D 2*MEGABYTE
 /**
  * @brief Initialize batch renderer to pass correct values to shaders
  * 
  */
-Renderer3D::Renderer3D() : dcpf(0) {
+Renderer3D::Renderer3D() {
     glCreateVertexArrays(1, &m_appSurface);
 
 
     glCreateBuffers(1, &m_VBO);
-    glNamedBufferStorage(m_VBO, 450000*sizeof(ngetype::vbo3DData), nullptr, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
+    glNamedBufferStorage(m_VBO, BUFFER_SIZE3D, nullptr, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
     
     glCreateBuffers(1, &m_IBO);
-    glNamedBufferStorage(m_IBO, 1000000*8, nullptr, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT );
+    glNamedBufferStorage(m_IBO, INDICES_SIZE3D, nullptr, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT );
 
     glCreateBuffers(1, &m_SSBO);
-    glNamedBufferStorage(m_SSBO, sizeof(glm::mat4) * 150000, nullptr, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
+    glNamedBufferStorage(m_SSBO, SSBO_SIZE3D, nullptr, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
 
-    glVertexArrayVertexBuffer(m_appSurface,0,m_VBO,0,sizeof(ngetype::vbo3DData));
+    glVertexArrayVertexBuffer(m_appSurface,0,m_VBO,0, VERTEX_SIZE3D);
     glVertexArrayElementBuffer(m_appSurface, m_IBO);
 
 
@@ -97,7 +102,7 @@ Renderer3D::Renderer3D() : dcpf(0) {
     
     glCreateBuffers(1, &texBuffer);
     glNamedBufferStorage(texBuffer, sizeof(GLuint64), (const void*)(&texHandle), GL_DYNAMIC_STORAGE_BIT);
-    glMakeTextureHandleResidentARB(texHandle);
+    //glMakeTextureHandleResidentARB(texHandle);
     if(glGetError()!=GL_NO_ERROR){
         std::cout << "Error making texture handle resident" << std::endl;
     }
@@ -123,7 +128,7 @@ Renderer3D::~Renderer3D() {
 void Renderer3D::Render(){
     GLsizei m_indexCount = 0, instanceCount=0;
 
-    ngetype::vbo3DData* m_Buff = (ngetype::vbo3DData*) glMapNamedBuffer(m_VBO, GL_WRITE_ONLY);
+    vboData* m_Buff = (vboData*) glMapNamedBuffer(m_VBO, GL_WRITE_ONLY);
     unsigned int* indexPtr = (unsigned int*)glMapNamedBuffer(m_IBO, GL_WRITE_ONLY);
     glm::mat4* ssboBuffer = (glm::mat4*) glMapNamedBuffer(m_SSBO, GL_WRITE_ONLY);
     
@@ -134,26 +139,16 @@ void Renderer3D::Render(){
     }
     unsigned int vboOffset = 0;
     for(Object3D& obj:ObjectsToRender){
-        //glm::mat4 modelMatrix = obj.getModelMatrix();
         ssboBuffer[instanceCount] = obj.getModelMatrix();
-        //glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::mat4)*instanceCount, sizeof(glm::mat4), &modelMatrix);
-        //instanceCount++;
         std::vector<unsigned int> ind = obj.getIndices();
         for(unsigned i = 0; i<ind.size();i++){
             indexPtr[m_indexCount++] = ind[i] + vboOffset;
         }
         for(const Object3D::Vertex3D& vertex:obj.getVertices()){
-            ngetype::vbo3DData vboData;
-            // Multiply the matrix by the position before passing to the shader
-            //glm::vec4 pos = obj.getModelMatrix()*glm::vec4(vertex.pos.x, vertex.pos.y, vertex.pos.z, 1.0);
-            //vboData.vertex= glm::vec3(pos.x, pos.y, pos.z);
-            vboData.vertex= vertex.pos;
-            vboData.color= vertex.color;
-            vboData.texCoords=vertex.texCoords;
-            vboData.vNormals= vertex.normal;
-            vboData.textureSlot=vertex.textureSlot;
-            vboData.modelID = instanceCount;
-            m_Buff[vboOffset++] = vboData;
+            vboData currentVertex;
+            currentVertex = vertex;
+            currentVertex.modelID = instanceCount;
+            m_Buff[vboOffset++] = currentVertex;
         }
         instanceCount++;
     }
@@ -177,7 +172,7 @@ void Renderer3D::Render(){
     glUniform3f(glGetUniformLocation(m_Shader, "lightColor"), 1.0f, 1.0f, 1.0f);
     
     
-    //MainTextureAtlas.Bind();
+    MainTextureAtlas.Bind();
     glBindVertexArray(m_appSurface);
     
     glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, NULL);
@@ -185,9 +180,7 @@ void Renderer3D::Render(){
     //glMakeTextureHandleNonResidentARB(texHandle);
     
     glBindVertexArray(0);
+    MainTextureAtlas.Unbind();
     
-    //MainTextureAtlas.Unbind();
-    
-    dcpf++;
     glUseProgram(0);
 }
