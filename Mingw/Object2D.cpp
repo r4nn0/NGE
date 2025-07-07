@@ -8,7 +8,7 @@ Object2D::Object2D(std::string sprName) : position(glm::vec3(0)),
                                        scale(glm::vec2(1)),
                                        color(glm::vec4(1)),
                                        frame_index(0), anim_speed(0),
-                                       sprite_name(sprName), bbox(1),sprite(nullptr){
+                                       bbox(1), sprite_name(sprName),sprite(nullptr){
     SpriteSet(sprite_name);
 }
 /**

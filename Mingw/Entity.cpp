@@ -1,6 +1,9 @@
 #include "Entity.h"
 
-Entity::Entity(std::string objName) : objectName(objName), scale(glm::vec3(1.0f)), rotation(glm::vec3(0.0f)), position(glm::vec3(0.0f)), model(nullptr){
+Entity::Entity(std::string objName) : scale(glm::vec3(1.0f)),
+                                      rotation(glm::vec3(0.0f)),
+                                      position(glm::vec3(0.0f)),
+                                      objectName(objName), model(nullptr){
     modelSet(objectName);
 }
 Entity::~Entity(){

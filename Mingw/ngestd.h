@@ -62,7 +62,7 @@ struct CollisionBox{
 namespace ngestd{
     void DrawSetColor(glm::vec3);
     void DrawPoint(float, float);
-    void DrawRectangle(float, float, float, float, bool);
+    void DrawRectangle(glm::vec4, bool);
     glm::vec3 DrawGetColor();
 };
 

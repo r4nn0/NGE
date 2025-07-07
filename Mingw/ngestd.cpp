@@ -231,14 +231,20 @@ void ngestd::DrawPoint(float x, float y){
  * @param y2 coordinates of the bottom-right corner on the y-axis
  * @param outline A flag to draw the rectangle as an outline (true) or as a filled rectangle(false)
  */
-void ngestd::DrawRectangle(float x1, float y1, float x2, float y2, bool outline){
+void ngestd::DrawRectangle(glm::vec4 rect, bool outline){
+    float vp[4];
+    glGetFloatv(GL_VIEWPORT, vp);
+    float hw=vp[2];
+    float hh=vp[3];
+    //rect -= glm::vec4(hw,-hh,hw,-hh);
+    rect = ((rect*2.f)/glm::vec4(hw,hh,hw,hh))-1.f;
     glBegin(GL_QUADS);
     if(outline)
-    glBegin(GL_LINE_LOOP);
-    glVertex2f(x1,y1);
-    glVertex2f(x2,y1);
-    glVertex2f(x2,y2);
-    glVertex2f(x1,y2);
+        glBegin(GL_LINE_LOOP);
+    glVertex2f(rect.x, -rect.y);
+    glVertex2f(rect.z, -rect.y);
+    glVertex2f(rect.z, -rect.w);
+    glVertex2f(rect.x, -rect.w);
     glEnd();
 }
 /**

@@ -150,15 +150,15 @@ int main (){
         gameEngine.BeginDraw();
         
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
-        // ngestd::DrawRectangle(testObject.bbox.left, testObject.bbox.top, testObject.bbox.right, testObject.bbox.bottom, true);
+        ngestd::DrawRectangle(glm::vec4(testObject.bbox.left, testObject.bbox.top, testObject.bbox.right, testObject.bbox.bottom), true);
         font.FaceSize(16);
         font.Render(fpsString.c_str(),-1,FTPoint(0,gameEngine.getViewHeight()-font.FaceSize(),0));
-        //std::cout << gameEngine.getViewHeight() << std::endl;
+
         //font.FaceSize(100);
         //font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
 
         testObject.Render();
-        //testObject.position +=glm::vec3(0,0,1);
+        
         renderer.Render();
         
         
@@ -168,7 +168,6 @@ int main (){
         renderer3D.Render();
         
         gameEngine.EndDraw();
-        //renderer3D.dcpf = 0;
 
         //auto t2 = std::chrono::high_resolution_clock::now();
         //auto ms_int = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
