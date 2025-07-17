@@ -2,6 +2,8 @@
 
 ### Add collision boxes (Both 2D and 3D)
 
+### Add modelMatrix for 2D objects (for easier rotaiton and scaling)
+
 ### Fix realistic graphics / lighting (With / without Vulkan)
 
 ### Add bindless textures (SSBO) (Partially done)

@@ -102,37 +102,44 @@ void Object3D::LoadModel(const char* path){
             std::vector<glm::vec4> texCoords = readVecFloat(mdl, primitive, "TEXCOORD_0", 2);
             std::vector<glm::vec4> colors = readVecFloat(mdl,primitive, "COLOR_0", 4);
             glm::vec2 texScaleFactor(1.0f);
-            if(primitive.material>=0){
+            glm::vec2 texOffset(0.0f);
+            if(primitive.material>=0 && primitive.material < mdl.materials.size()){
                 const tinygltf::Material& material = mdl.materials[primitive.material];
                 const auto &pbr = material.pbrMetallicRoughness;
-                if(pbr.baseColorTexture.index>=0){
+                if(pbr.baseColorTexture.index>=0 && pbr.baseColorTexture.index<mdl.textures.size()){
                     const auto& texture = mdl.textures[pbr.baseColorTexture.index];
-                    const auto& image = mdl.images[texture.source];
-                    texScaleFactor = glm::vec2(image.width, image.height)/MainTextureAtlas.GetAtlasSize();
-                    MainTextureAtlas.TextureAdd(image.image, image.width, image.height);
+                    if(texture.source>=0 && texture.source<mdl.images.size()){
+                        const auto& image = mdl.images[texture.source];
+                        
+                        texScaleFactor = glm::vec2(image.width, image.height)/MainTextureAtlas.GetAtlasSize();
+                        //std::cout << texScaleFactor.x << " " << texScaleFactor.y << std::endl;
+                        texOffset = MainTextureAtlas.TextureAdd(image.image, image.width, image.height);
+                    }
                 }
             }
-
-            if(primitive.indices>=0)
+            
+            if(primitive.indices>=0 && primitive.indices<mdl.accessors.size())
                 readIndices(mdl, primitive);
             for(unsigned i =0;i<pos.size();i++){
+                
                 Vertex3D vertex;
-                vertex.pos = pos[getIndexFromAccessor(mdl, primitive, "POSITION", i)];
+                vertex.pos = pos[i];
+                vertex.normal = (normals.size() > i) ? normals[i] : glm::vec4(0.0f);
+                vertex.color = (colors.size() > i) ? colors[i] : glm::vec4(1.0f);
+                vertex.texCoords = (texCoords.size() > i) ? glm::vec2(texCoords[i]) : glm::vec2(0.0f);
+                
+                /*vertex.pos = pos[getIndexFromAccessor(mdl, primitive, "POSITION", i)];
                 vertex.normal = (normals.size()>i) ? normals[getIndexFromAccessor(mdl, primitive, "NORMAL", i)] : glm::vec3(0.0f);
-                //vertex.color = glm::vec4(1.0f);
                 vertex.color = (colors.size()>i) ? colors[getIndexFromAccessor(mdl, primitive, "COLOR_0", i)] : glm::vec4(1.0f);
-                vertex.texCoords = (texCoords.size()>i) ? texCoords[getIndexFromAccessor(mdl, primitive, "TEXCOORD_0", i)] : glm::vec2(0.0);
-                vertex.texCoords *= texScaleFactor;
+                vertex.texCoords = (texCoords.size()>i) ? texCoords[getIndexFromAccessor(mdl, primitive, "TEXCOORD_0", i)] : glm::vec2(0.0);*/
+
+                vertex.texCoords = (vertex.texCoords*texScaleFactor)+texOffset;
                 vertex.texCoords = glm::clamp(vertex.texCoords, glm::vec2(0.0f), glm::vec2(1.0f));
-                //std::cout << "X: " << vertex.texCoords.x << " Y: " << vertex.texCoords.y << std::endl;
-                /*if(vertex.texCoords.x<0 || vertex.texCoords.x>1 || vertex.texCoords.y<0 || vertex.texCoords.y >1)
-                    vertex.textureSlot=-1;
-                else*/
-                //vertex.model = glm::mat4(1.0);
+                //std::cout << vertex.texCoords.x << " " << vertex.texCoords.y << std::endl;
+
                 vertex.textureSlot=MainTextureAtlas.GetTextureSlot();
                 m_vertices.push_back(vertex);
             }
-            //std::cout << pos.size() << std::endl;
         }
     }
 }
@@ -175,8 +182,10 @@ void Object3D::readIndices(const tinygltf::Model& mdl, const tinygltf::Primitive
 }
 std::vector<glm::vec4> Object3D::readVecFloat(const tinygltf::Model& mdl, const tinygltf::Primitive& primitive, const std::string& attr, int expectedComponents){
     std::vector<glm::vec4> vecOut;
-    if(primitive.attributes.find(attr)==primitive.attributes.end())
+    if(primitive.attributes.find(attr)==primitive.attributes.end()){
+        std::cerr << "Missing attribute: " << attr << std::endl;
         return vecOut;
+    }
     const tinygltf::Accessor& posAccessor = mdl.accessors[primitive.attributes.at(attr)];
     const tinygltf::BufferView& posView = mdl.bufferViews[posAccessor.bufferView];
     const tinygltf::Buffer& posBuffer = mdl.buffers[posView.buffer];
@@ -194,6 +203,7 @@ std::vector<glm::vec4> Object3D::readVecFloat(const tinygltf::Model& mdl, const 
     }
     return vecOut;
 }
+/*
 unsigned Object3D::getIndexFromAccessor(const tinygltf::Model& model,
                          const tinygltf::Primitive& primitive,
                          const std::string& attributeName,
@@ -214,7 +224,7 @@ unsigned Object3D::getIndexFromAccessor(const tinygltf::Model& model,
     // Accessors can have byte strides and offsets.
     // But if you're just accessing raw index value for each vertex:
     return accessor.byteOffset / tinygltf::GetComponentSizeInBytes(accessor.componentType) + vertexIndex;
-}
+}*/
 //const glm::mat4 Object3D::getModelMatrix() const {
 //    return modelMatrix;
     /*

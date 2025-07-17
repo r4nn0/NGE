@@ -56,8 +56,8 @@ void main() {
     vec3 lighting = (ambient + diffuse + specular);
 
     // FragColor = fs_in.color;
-     FragColor = vec4(lighting, 1.0)* base_color * fs_in.color;
-    // FragColor = base_color;
+    // FragColor = vec4(lighting, 1.0)* base_color * fs_in.color;
+     FragColor = base_color;
 	// FragColor = vec4(1,0,0,1);
     
 }

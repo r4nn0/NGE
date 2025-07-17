@@ -173,7 +173,7 @@ void LoadSpritesToMemroy(){
     }
     
     //MainTextureAtlas.ImageResizeCanvas(t_TextureAtlasSize.x, t_TextureAtlasSize.y);
-    MainTextureAtlas.ImageResizeCanvas(512,512);
+    MainTextureAtlas.ImageResizeCanvas(4096,4096);
     std::map<std::string, Sprite*>::iterator sprIT = SpritesTotal.begin();
     for(std::vector<unsigned char*> pixels: t_Pixels){
         Sprite* spr = sprIT->second;

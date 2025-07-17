@@ -81,14 +81,14 @@ int main (){
     TestPlayer obj2D("sonic_run");
     //testObject.color = glm::vec4(1,0,0,1);
 
-    Entity obj3D("cube");
+    Entity obj3D("Duck");
     Entity floor;
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
     std::string fpsString = "0";
     float actdir= -60;
     float actpitch=60;
-    float hsp=-10, vsp=-10;
+    float hsp=-10, vsp=-10, zsp=10;
     float sense = 0.1f;
     
     
@@ -124,7 +124,8 @@ int main (){
              +(keyboard_check('W') - keyboard_check('S')) * glm::sin(dir)) * moveSpeed;
         vsp += ((keyboard_check('D') - keyboard_check('A')) * glm::sin(dir)
              -(keyboard_check('W') - keyboard_check('S')) * glm::cos(dir)) * moveSpeed;
-        obj3D.position = glm::vec3(hsp, -3, vsp);
+        zsp +=(keyboard_check('E') - keyboard_check('Q')) * moveSpeed;
+        //obj3D.position = glm::vec3(hsp, -3, vsp);
         floor.scale = glm::vec3(5,0,5);
 
         if(keyboard_check_pressed('L'))
@@ -132,9 +133,9 @@ int main (){
         
         
         
-        gameEngine.camera3d.setPosition(obj3D.position-glm::vec3(0,0,10));
+        gameEngine.camera3d.setPosition(glm::vec3(hsp,zsp,vsp));
         gameEngine.camera3d.setRotation(glm::vec3(dir , pitch, glm::radians(180.f)));
-        gameEngine.camera3d.setOrbit(obj3D.position);
+        gameEngine.camera3d.setOrbit(glm::vec3(hsp,zsp,vsp));
         
         
         

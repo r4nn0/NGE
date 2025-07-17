@@ -37,7 +37,7 @@ private:
     glm::mat4 modelMatrix;
     void LoadModel(const char*);
     std::vector<glm::vec4> readVecFloat(const tinygltf::Model& mdl, const tinygltf::Primitive& prim, const std::string& attr, int expectedComponents);
-    unsigned getIndexFromAccessor(const tinygltf::Model& ,const tinygltf::Primitive&,const std::string&,const unsigned int) const;
+    //unsigned getIndexFromAccessor(const tinygltf::Model& ,const tinygltf::Primitive&,const std::string&,const unsigned int) const;
     void readIndices(const tinygltf::Model& mdl, const tinygltf::Primitive& primitive);
     std::vector<Vertex3D> m_vertices;
     std::vector<unsigned int> m_indices;
