@@ -1,8 +1,8 @@
 #version 460 core
-
+#extension GL_ARB_bindless_texture : require
 out vec4 FragColor;
 
-#extension GL_ARB_bindless_texture : require
+
 
 // SSBO containing the textures
 //layout(binding = 1, std430) readonly buffer textureSSBO {
