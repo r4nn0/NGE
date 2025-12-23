@@ -34,8 +34,8 @@ You can render your sprites by creating a texture page and adding them to it <br
 It is now possible to render from different texture pages simultaneously <br/>
 # Feedback
 Please if you have any feedback or improvments, you can support me by informing me via email:<br/>
-[Ranno@Grodriket](mailto:ranno@grodriket.com)<br/>
+[Kermit@Nullxbyte](mailto:kermit@nullxbyte.com)<br/>
 # License
 The project is absolutly free to use, any feedback would be greetly appreciated<br/>
-support us by subscribing to our youtube channel [GrodRiket Security](https://youtube.com/ITGEEKS)<br/>
-you can contact us on [our website](http://grodriket.com/)
+support us by subscribing to our youtube channel [NullByte](https://www.youtube.com/@NullByte0x)<br/>
+you can contact us on [our website](http://nullxbyte.com/)
