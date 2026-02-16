@@ -14,27 +14,27 @@ in DATA{
     vec3 vNormals;
     vec4 color;
     vec2 texCoords;
-    float textureSlot;
+    flat int textureSlot;
 }fs_in;
 
 uniform sampler2D texture[32];
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 uniform vec3 lightColor;
-vec4 base_color;
+//vec4 base_color;
 
 
 void main() {
     //sampler2D tex = sampler2D(TextureSSBO.m_texture[0]);
-    if(fs_in.textureSlot>=0)//{
-        base_color=vec4(texture2D(texture[int(fs_in.textureSlot)], fs_in.texCoords).rgb,1.0);
+    if(fs_in.textureSlot>=0){
+        //base_color=vec4(texture2D(texture[fs_in.textureSlot], fs_in.texCoords).rgb,1.0);
         //base_color = vec4(texture2D(m_texture, fs_in.texCoords).rgb,1.0);
-        //FragColor = fs_in.color * texture2D(texture[int(fs_in.textureSlot)], fs_in.texCoords);
-	//}
-	//else
-    //    FragColor = fs_in.color;
-        
-    
+        FragColor = fs_in.color * vec4(texture2D(texture[fs_in.textureSlot], fs_in.texCoords).rgb,1.0);
+	}
+	else
+        FragColor = fs_in.color;
+    //FragColor = fs_in.color;    
+    /*
     // Ambient component
     float ambientStrength = 0.1;
     vec3 ambient = ambientStrength * lightColor;
@@ -53,11 +53,9 @@ void main() {
     vec3 specular = specularStrength * spec * lightColor;
 
     // Combine all components
-    vec3 lighting = (ambient + diffuse + specular);
+    vec3 lighting = (ambient + diffuse + specular);*/
 
     // FragColor = fs_in.color;
     // FragColor = vec4(lighting, 1.0)* base_color * fs_in.color;
-     FragColor = base_color;
-	// FragColor = vec4(1,0,0,1);
     
 }

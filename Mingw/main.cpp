@@ -81,16 +81,17 @@ int main (){
     TestPlayer obj2D("sonic_run");
     //testObject.color = glm::vec4(1,0,0,1);
 
-    Entity obj3D("Duck");
+    Entity obj3D("CesiumMilkTruck");
+    Entity sec ("AnimatedMorphSphere");
     Entity floor;
     double prevTime = glfwGetTime();
     unsigned short FPS = 0;
     std::string fpsString = "0";
     float actdir= -60;
     float actpitch=60;
-    float hsp=-10, vsp=-10, zsp=10;
+    float hsp=-10, vsp=-10, zsp=-10;
     float sense = 0.1f;
-    
+    float truckRot =0;
     
     
     gameEngine.setBackgroundColor(BACKGROUND_COLOR);
@@ -125,7 +126,10 @@ int main (){
         vsp += ((keyboard_check('D') - keyboard_check('A')) * glm::sin(dir)
              -(keyboard_check('W') - keyboard_check('S')) * glm::cos(dir)) * moveSpeed;
         zsp +=(keyboard_check('E') - keyboard_check('Q')) * moveSpeed;
-        //obj3D.position = glm::vec3(hsp, -3, vsp);
+        truckRot += glm::radians((keyboard_check('D') - keyboard_check('A'))*moveSpeed);
+        obj3D.rotation=glm::vec3(glm::radians(180.0f), truckRot,0);
+        obj3D.position=glm::vec3(hsp-10,0,vsp-10);
+        //sec.position = glm::vec3(50,0,50);
         floor.scale = glm::vec3(5,0,5);
 
         if(keyboard_check_pressed('L'))
@@ -135,7 +139,7 @@ int main (){
         
         gameEngine.camera3d.setPosition(glm::vec3(hsp,zsp,vsp));
         gameEngine.camera3d.setRotation(glm::vec3(dir , pitch, glm::radians(180.f)));
-        gameEngine.camera3d.setOrbit(glm::vec3(hsp,zsp,vsp));
+        gameEngine.camera3d.setOrbit(glm::vec3(hsp-10,0,vsp-10));
         
         
         
@@ -161,6 +165,7 @@ int main (){
         
         
         obj3D.Render();
+        sec.Render();
         floor.Render();
 
         renderer3D.Render();

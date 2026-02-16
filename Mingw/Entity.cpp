@@ -16,7 +16,9 @@ void Entity::Render(){
                         glm::rotate(glm::mat4(1.0),rotation.x, glm::vec3(1,0,0))*
                         glm::rotate(glm::mat4(1.0),rotation.z, glm::vec3(0,0,1));
     glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0), position);
-    model->setModelMatrix(translationMatrix*rotationMatrix*scaleMatrix);
+    model->modelMatrix = translationMatrix*rotationMatrix*scaleMatrix;
+    //model->playing=true;
+    model->UpdateAnimation(0.01f);
     ObjectsToRender.push_back(*model);
 }
 void Entity::modelSet(std::string objName){
