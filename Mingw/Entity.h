@@ -8,6 +8,7 @@ public:
     Entity(std::string="");
     ~Entity();
     void Update();
+    void UpdateAnimation(float);
     void Render();
     void modelSet(std::string);
     const std::string& getModelName()const { return objectName;} 

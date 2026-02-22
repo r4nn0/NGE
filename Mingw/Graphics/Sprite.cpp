@@ -1,6 +1,6 @@
 #include "Sprite.h"
 std::map<std::string, Sprite*> SpritesTotal;
-TexturePage MainTextureAtlas;
+TexturePage MainTextureAtlas(4096,4096,4,0);
 /**
  * @brief Create a new sprite from an image
  * 
@@ -161,6 +161,7 @@ void TexturePage::ImageAdd(unsigned char* data, Sprite* spr, int t_Frame){
     
 }
 glm::vec2 TexturePage::TextureAdd(std::vector<unsigned char> data, unsigned width, unsigned height){
+    
     if((m_xOffset+width)>=m_Width){
         m_xOffset=0;
         m_yOffset+=m_lastYOffset;
@@ -173,6 +174,8 @@ glm::vec2 TexturePage::TextureAdd(std::vector<unsigned char> data, unsigned widt
           y1=m_yOffset/m_Height,
           x2= x1+ width /m_Width,
           y2= y1+ height /m_Height;*/
+          
+    
     glm::vec2 coordsOffset(m_xOffset/m_Width, m_yOffset/m_Height);
     for (unsigned int y = 0;y < height;y++) {
         for (unsigned int x = 0;x < width;x++) {
@@ -188,8 +191,13 @@ glm::vec2 TexturePage::TextureAdd(std::vector<unsigned char> data, unsigned widt
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_TexturePage);
+    if(m_ChannelNum==4)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_TexturePage);
+    else if(m_ChannelNum==1)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, m_Width, m_Height, 0, GL_RED, GL_UNSIGNED_BYTE, m_TexturePage);
     Unbind();
+    
+    //stbi_write_png("atlas_debug.png", m_Width, m_Height, 1, m_TexturePage, m_Width);
     return coordsOffset;
 }
 /**

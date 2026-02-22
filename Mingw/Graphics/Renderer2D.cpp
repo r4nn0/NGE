@@ -89,9 +89,11 @@ void Renderer2D::Render(){
     glUniform1i(glGetUniformLocation(m_Shader, "texture[0]"), MainTextureAtlas.GetTextureSlot());
     MainTextureAtlas.Bind();
     glBindVertexArray(m_appSurface);
-
+    //glDisable(GL_DEPTH_TEST);
+    //glDepthMask(GL_FALSE);
     glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_SHORT, NULL);
-    
+    //glDepthMask(GL_TRUE);
+    //glEnable(GL_DEPTH_TEST);
     glBindVertexArray(0);
     
     MainTextureAtlas.Unbind();

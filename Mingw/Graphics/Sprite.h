@@ -3,6 +3,7 @@
 
 #include "../Engine.h"
 #include "stb_image.h"
+#include "stb_image_write.h"
 #include <map>
 #include <functional>
 class Sprite{

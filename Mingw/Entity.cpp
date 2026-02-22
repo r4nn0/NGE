@@ -9,6 +9,10 @@ Entity::Entity(std::string objName) : scale(glm::vec3(1.0f)),
 Entity::~Entity(){
     delete model;
 }
+void Entity::UpdateAnimation(float delta){
+    if(model==nullptr) return;
+    model->UpdateAnimation(delta);
+}
 void Entity::Render(){
     if(model==nullptr) return;
     glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0), scale);
@@ -18,7 +22,7 @@ void Entity::Render(){
     glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0), position);
     model->modelMatrix = translationMatrix*rotationMatrix*scaleMatrix;
     //model->playing=true;
-    model->UpdateAnimation(0.01f);
+    //model->UpdateAnimation(0.01f);
     ObjectsToRender.push_back(*model);
 }
 void Entity::modelSet(std::string objName){
