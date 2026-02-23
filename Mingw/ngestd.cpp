@@ -76,7 +76,7 @@ std::vector<unsigned char*> LoadNGESprite(const char* path, Sprite* spr){
 
     unsigned i=0;
     std::vector<unsigned char*> t_Pixels;
-    spr->m_BaseSize.clear();
+    spr->m_CurrentFrameSize.clear();
     spr->m_UV.clear();
     while(i<spr->m_Frames){
         
@@ -125,7 +125,7 @@ std::vector<unsigned char*> LoadNGESprite(const char* path, Sprite* spr){
         spr->m_Heighest=(spr->m_Heighest>(unsigned)_height)? spr->m_Heighest:_height;
         spr->m_HeightCombined+=_height;
         spr->m_WidthCombined+=_width;
-        spr->m_BaseSize.push_back(glm::vec2(_width, _height));
+        spr->m_CurrentFrameSize.push_back(glm::vec2(_width, _height));
         t_Pixels.push_back(m_Pixels);
         std::vector<glm::vec2> UV;
         UV.push_back(glm::vec2(0, 0));
@@ -136,7 +136,7 @@ std::vector<unsigned char*> LoadNGESprite(const char* path, Sprite* spr){
         i++;
     }
     
-    spr->m_Size=glm::vec2(spr->m_Widest, spr->m_Heighest);
+    //spr->m_Size=glm::vec2(spr->m_Widest, spr->m_Heighest);
     spr->m_hasTexture=true;
     
     
@@ -161,7 +161,7 @@ void LoadSpritesToMemroy(){
             std::string sname="Sprites/";
             sname+=en->d_name;
             if(std::regex_match(sname, ext)){
-                Sprite *spr= new Sprite(glm::vec3(0), glm::vec2(1));
+                Sprite *spr= new Sprite();
                 t_Pixels.push_back(LoadNGESprite(sname.c_str(), spr));
                 
                 //t_TextureAtlasSize.x=(t_TextureAtlasSize.x>spr->getSize().x)? t_TextureAtlasSize.x : spr->getSize().x;

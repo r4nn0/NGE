@@ -1,6 +1,6 @@
 #include "TextRenderer.h"
 
-TextRenderer::TextRenderer(std::string fnt) : fontName(fnt), indexCount(0), fontTexPage(2048,2048, 1){
+TextRenderer::TextRenderer(std::string fnt) : fontName(fnt), indexCount(0), fontTexPage(2048,2048, 1), m_fence(nullptr){
     FT_Library ft;
     if (FT_Init_FreeType(&ft)){
         std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
@@ -86,7 +86,7 @@ void TextRenderer::initRenderer(){
     m_Shader = Engine::CreateShader(Engine::LoadShaderFromFile("./Graphics/Shaders/fontShader.vs").c_str(),
                                     Engine::LoadShaderFromFile("./Graphics/Shaders/fontShader.fs").c_str());
 
-    vboBasePtr = glMapNamedBufferRange(m_VBO, 0, MAX_CHARS*4*sizeof(charVertex), GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+    vboBasePtr = glMapNamedBufferRange(m_VBO, 0, MAX_CHARS * 4 * sizeof(charVertex), GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
     charVertBuff = (charVertex*)vboBasePtr;
 }
 TextRenderer::Glyph& TextRenderer::loadChar(FT_ULong c){
@@ -111,7 +111,11 @@ TextRenderer::Glyph& TextRenderer::loadChar(FT_ULong c){
 void TextRenderer::renderText(std::wstring str, float x, float y, float z){
     float pen_x = x;
     glm::vec2 texSize = fontTexPage.GetAtlasSize();
-    
+    if(!indexCount && m_fence){
+        glClientWaitSync(m_fence, GL_SYNC_FLUSH_COMMANDS_BIT, GL_TIMEOUT_IGNORED);
+        glDeleteSync(m_fence);
+        m_fence=nullptr;
+    }
     for(wchar_t c : str){
         
         Glyph& g = loadChar(c);
@@ -158,6 +162,7 @@ void TextRenderer::flush(){
     //glDepthMask(GL_TRUE);
     //glEnable(GL_DEPTH_TEST);
     charVertBuff = (charVertex*)vboBasePtr;
+    m_fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     glBindVertexArray(0);
     indexCount=0;
     fontTexPage.Unbind();

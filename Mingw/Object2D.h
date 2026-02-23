@@ -1,6 +1,6 @@
 #ifndef OBJECT2D_HEADER
 #define OBJECT2D_HEADER
-#include "Graphics/Renderer2D.h"
+#include "Graphics/Renderers/Renderer2D.h"
 
 class Object2D{
 public:
@@ -11,6 +11,7 @@ public:
     void SpriteSet(std::string);
     glm::vec3 position;
     glm::vec2 scale;
+    glm::vec3 rotation;
     glm::vec4 color;
     float frame_index, anim_speed;
     const std::string getSpriteName() const {return sprite_name;}

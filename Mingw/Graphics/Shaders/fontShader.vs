@@ -6,7 +6,7 @@ layout (location=3) in int textureSlot;
 
 uniform mat4 proj_matrix;
 uniform mat4 vw_matrix;
-//uniform mat4 ml_matrix=mat4(1.0);
+
 
 
 out DATA{

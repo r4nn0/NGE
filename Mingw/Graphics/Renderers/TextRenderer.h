@@ -1,9 +1,9 @@
-#ifndef TEXT_RENDERER
-#define TEXT_RENDERER
+#ifndef TEXT_RENDERER_H
+#define TEXT_RENDERER_H
 #include <iostream>
 //#include <tesselator.h>
 #include <unordered_map>
-#include "Sprite.h"
+#include "../Sprite.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
@@ -40,6 +40,7 @@ private:
     TexturePage fontTexPage;
     void* vboBasePtr;
     charVertex* charVertBuff;
+    GLsync m_fence;
     Glyph& loadChar(FT_ULong);
 };
 

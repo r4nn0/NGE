@@ -6,6 +6,7 @@
  */
 Object2D::Object2D(std::string sprName) : position(glm::vec3(0)),
                                        scale(glm::vec2(1)),
+                                       rotation(glm::vec3(0,0,0)),
                                        color(glm::vec4(1)),
                                        frame_index(0), anim_speed(0),
                                        bbox(1), sprite_name(sprName),sprite(nullptr){
@@ -30,8 +31,6 @@ void Object2D::Update(){
     if(sprite!=nullptr){
         
         sprite->setFrameIndex(frame_index);
-        sprite->setPosition(position);
-        sprite->setScale(scale);
         sprite->setColor(color);
         bbox.right+=sprite->getSize().x;
         bbox.bottom+=sprite->getSize().y;
@@ -43,7 +42,12 @@ void Object2D::Update(){
  */
 void Object2D::Render(){
     if(sprite==nullptr) return;
-    
+    glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0), glm::vec3(scale.x, scale.y, 1));
+    glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0),rotation.y, glm::vec3(0,1,0))*
+                        glm::rotate(glm::mat4(1.0),rotation.x, glm::vec3(1,0,0))*
+                        glm::rotate(glm::mat4(1.0),rotation.z, glm::vec3(0,0,1));
+    glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0), position);
+    sprite->modelMatrix = translationMatrix*rotationMatrix*scaleMatrix;
     SpritesToRender.push_back(*sprite);
 }
 /**
@@ -54,9 +58,10 @@ void Object2D::Render(){
 void Object2D::SpriteSet(std::string sprName){
     sprite_name=sprName;
     if(sprite!=nullptr) delete sprite;
-    sprite = new Sprite(glm::vec3(0.0), glm::vec2(32.0f));
+    sprite = new Sprite();
     
     std::map<std::string, Sprite*>::iterator pos = SpritesTotal.find(sprite_name);
+    
     if(pos==SpritesTotal.end()){
         std::cout << "Sprite not found or not loaded to memory!" << std::endl;
         return;

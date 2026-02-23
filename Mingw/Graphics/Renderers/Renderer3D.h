@@ -47,6 +47,8 @@ private:
     unsigned int m_appSurface, m_VBO, m_IBO, m_Shader, m_ModelMatricesSSBO, m_MorphPositionsSSBO,m_JointMatricesSSBO, m_MorphWeightsSSBO, m_NodeMatricesSSBO;
     unsigned testTex, texBuffer;
     GLuint64 texHandle;
+    void *m_vboBase, *m_indexBase, *m_mmSSBOBase, *m_mpSSBOBase, *m_jmSSBOBase, *m_mwSSBOBase, *m_nmSSBOBase;
+    GLsync m_fence;
 };
 
 #endif // RENDERER2D_H

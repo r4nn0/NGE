@@ -1,7 +1,7 @@
 #ifndef ENTITY_HEADER
 #define ENTITY_HEADER
 
-#include "Graphics/Renderer3D.h"
+#include "Graphics/Renderers/Renderer3D.h"
 
 class Entity{
 public:

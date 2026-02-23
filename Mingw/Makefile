@@ -1,5 +1,5 @@
-srcFiles	:= $(wildcard *.cpp)
-srcFiles	+= $(wildcard Graphics/*.cpp)
+rwildcard = $(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
+srcFiles 	:= $(call rwildcard,.,*.cpp)
 objFiles	:= $(srcFiles:.cpp=.o)
 Includedirs	:= include 
 TARGET		:= 32
@@ -19,11 +19,11 @@ buildREL	:= $(CXX) -std=c++1y -Wall -O2 -s
 SHELL		:= cmd.exe
 
 # Debug
-$(OutFolder)/Nge-dbg.exe: $(patsubst %, $(ObjDBG)/%, $(objFiles))
+$(OutFolder)/Nge-dbg.exe: $(patsubst %, $(ObjDBG)/%, $(notdir $(objFiles)))
 	$(buildDBG) $^ -o $@ $(buildFlags) $(LinkLibs) $(patsubst %, -l%, $(Libs))
 
 # Release
-$(OutFolder)/Nge-rel.exe: $(patsubst %, $(ObjREL)/%, $(objFiles))
+$(OutFolder)/Nge-rel.exe: $(patsubst %, $(ObjREL)/%, $(notdir $(objFiles)))
 	$(buildREL) $^ -o $@ $(buildFlags) $(LinkLibs) $(patsubst %, -l%, $(Libs))
 rel: $(OutFolder)/Nge-rel.exe
 dbg: $(OutFolder)/Nge-dbg.exe
@@ -37,9 +37,9 @@ run: $(OutFolder)/Nge-dbg.exe
 
 
 $(patsubst %, $(ObjREL)/%.o, %): %.cpp 
-	$(buildREL) -c $< -o $@ $(buildFlags)
+	$(buildREL) -c $< -o $(ObjREL)/$(notdir $@) $(buildFlags)
 $(patsubst %, $(ObjDBG)/%.o, %): %.cpp 
-	$(buildDBG) -c $< -o $@ $(buildFlags)
+	$(buildDBG) -c $< -o $(ObjDBG)/$(notdir $@) $(buildFlags)
 
 clean:
 # powershell -Command "Get-ChildItem -Recurse -Filter *.o | Where-Object { $$_.Name -ne 'headerImpl.o' } | Remove-Item"

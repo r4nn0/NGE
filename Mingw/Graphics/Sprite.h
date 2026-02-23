@@ -9,18 +9,17 @@
 class Sprite{
 
 public:
-    Sprite(const char*, glm::vec3);
-	Sprite(glm::vec3, glm::vec2);
-    void setPosition(glm::vec3);
-    void setScale(glm::vec2);
+	Sprite();
     void setColor(glm::vec4);
     void setFrameIndex(unsigned);
+    void setOrigin(glm::vec2);
     inline unsigned getFrameCount(){return m_Frames;}
     inline int getTextureSlot(){return m_texSlot;}
-	inline glm::vec3& getPosition(){return m_Pos;}
-    inline glm::vec2& getSize(){return m_Size;}
+	inline glm::vec2& getOrigin(){return m_Origin;}
+    inline glm::vec2& getSize(){return m_CurrentFrameSize[m_FrameIndex];}
+    inline glm::vec2 getLargestFrame(){return glm::vec2(m_Widest, m_Heighest);}
     inline glm::vec2 getSumSize(){return glm::vec2(m_WidthCombined, m_HeightCombined);}
-    inline glm::vec2& getBaseSize(int _frameIndex=-1){if(_frameIndex==-1) _frameIndex=m_FrameIndex;return m_BaseSize[_frameIndex];}
+    //inline glm::vec2& getBaseSize(int _frameIndex=-1){if(_frameIndex==-1) _frameIndex=m_FrameIndex;return m_BaseSize[_frameIndex];}
     inline glm::vec4& getColor(){return m_Color;}
     inline std::vector<glm::vec2>& getUV(int _frameIndex=-1){if(_frameIndex==-1) _frameIndex=m_FrameIndex;return m_UV[_frameIndex];}
     inline bool& hasTexture(){return m_hasTexture;}
@@ -32,9 +31,7 @@ public:
         this->m_Name = other.m_Name;
         this->m_Frames = other.m_Frames;
         this->m_FrameIndex = other.m_FrameIndex;
-        this->m_Pos = other.m_Pos;
-        this->m_BaseSize = other.m_BaseSize;
-        this->m_Size = other.m_Size;
+        this->m_CurrentFrameSize = other.m_CurrentFrameSize;
         this->m_Color = other.m_Color;
         this->m_hasTexture = other.m_hasTexture;
         this->m_texSlot = other.m_texSlot;
@@ -43,8 +40,8 @@ public:
         return *this;
     
     }
-    bool operator==(const Sprite&) const;
-
+    
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
     /*void setUV(){
         std::vector<glm::vec2> UV;
         UV.push_back(glm::vec2(0));
@@ -59,11 +56,9 @@ protected:
     std::string m_Name;
     unsigned int m_Frames;
     unsigned int m_FrameIndex;
-    glm::vec3 m_Pos;
-    std::vector<glm::vec2> m_BaseSize;
-    glm::vec2 m_Size;
+    std::vector<glm::vec2> m_CurrentFrameSize;
+    glm::vec2 m_Origin;
     glm::vec4 m_Color;
-    
     bool m_hasTexture;
     int m_texSlot;
     

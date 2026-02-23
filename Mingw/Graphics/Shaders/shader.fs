@@ -5,7 +5,7 @@ out vec4 FragColor;
 in DATA{
     vec4 color;
     vec2 texCoords;
-    float textureSlot;
+    flat int textureSlot;
 }fs_in;
 
 uniform sampler2D texture[32];
@@ -14,7 +14,7 @@ vec4 base_color;
 
 void main() {
     if(fs_in.textureSlot>=0){
-        base_color=texture2D(texture[int(fs_in.textureSlot)], fs_in.texCoords);
+        base_color=texture2D(texture[fs_in.textureSlot], fs_in.texCoords);
         FragColor = fs_in.color * base_color;
 	}
 	else

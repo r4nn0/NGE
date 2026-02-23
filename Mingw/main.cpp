@@ -1,13 +1,13 @@
 #include <algorithm>
 #include "FTGL/ftgl.h"
-#include "Graphics/Renderer2D.h"
-#include "Graphics/Renderer3D.h"
+#include "Graphics/Renderers/Renderer2D.h"
+#include "Graphics/Renderers/Renderer3D.h"
 #include <glm/gtx/string_cast.hpp>
 #include <windows.h>
 #include "ngestd.h"
 #include "TestPlayer.h"
 #include "Entity.h"
-#include "Graphics/TextRenderer.h"
+#include "Graphics/Renderers/TextRenderer.h"
 //#include <vulkan/vulkan.h>
 /*! \mainpage NGE (NewbiesGameEngine)
  *
@@ -79,6 +79,8 @@ int main (){
     
 	Renderer2D renderer;
     Renderer3D renderer3D;
+    
+    
     TestPlayer obj2D("sonic_run");
     //testObject.color = glm::vec4(1,0,0,1);
 
@@ -95,7 +97,6 @@ int main (){
     float truckRot =0;
     
     TextRenderer tr;
-    
     gameEngine.setBackgroundColor(BACKGROUND_COLOR);
     while(!glfwWindowShouldClose(gameEngine.get_window())){
         //auto t1 = std::chrono::high_resolution_clock::now();
@@ -173,7 +174,7 @@ int main (){
         obj3D.Render();
         //sec.Render();
         floor.Render();
-        tr.renderText(fpsString, 0, 20, -1);
+        tr.renderText(fpsString, 5, 15, 0);
         //tr.renderText(ar_fix(L"مرحبا هذه تجربة"), 100,  100, -1);
         
         renderer3D.Render();

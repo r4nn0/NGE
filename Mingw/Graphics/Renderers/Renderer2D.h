@@ -12,13 +12,16 @@ public:
 protected:
 
 private:
-    unsigned int m_appSurface, m_VBO, m_Shader, m_IBO;
+    unsigned int m_appSurface, m_VBO, m_Shader, m_IBO, m_ModelMatricesSSBO;
+    void* m_vboBase, *m_mmSSBOBase;
     struct vboData{
         glm::vec3 pos;
         glm::vec4 color;
         glm::vec2 texCoords;
-        float textureSlot;
+        int textureSlot;
+        unsigned modelID;
     };
+    GLsync m_fence;
 };
 
 #endif // RENDERER2D_H

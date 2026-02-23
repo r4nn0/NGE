@@ -1,60 +1,25 @@
 #include "Sprite.h"
 std::map<std::string, Sprite*> SpritesTotal;
 TexturePage MainTextureAtlas(4096,4096,4,0);
-/**
- * @brief Create a new sprite from an image
- * 
- * @param path Path to image
- * @param _pos position where to render the sprite
- */
-Sprite::Sprite(const char* path, glm::vec3 _pos): m_Name(path),m_Frames(1),m_FrameIndex(0), m_Pos(_pos),
-                                                  m_BaseSize(0), m_Size(0),
-                                                  m_Color(1), m_hasTexture(false),m_texSlot(-1), m_Widest(0), m_Heighest(0), m_WidthCombined(0), m_HeightCombined(0){
 
-}
 /**
  * @brief Create a sprite without texture
  * 
  * @param _pos position where to render the sprite
  * @param _size size of the sprite
  */
-Sprite::Sprite(glm::vec3 _pos, glm::vec2 _size): m_Name("noSprite"),m_Frames(1),m_FrameIndex(0), m_Pos(_pos), m_Size(_size),
-                                                 m_Color(1), m_hasTexture(false), m_texSlot(-1), m_Widest(0), m_Heighest(0),m_WidthCombined(0), m_HeightCombined(0){
-    m_Name+=std::to_string(SpritesTotal.size());
-    m_BaseSize.push_back(_size);
-    std::vector<glm::vec2> t_UV;
-	m_UV.push_back(t_UV);
-    m_UV[0].push_back(glm::vec2(0, 0));
-    m_UV[0].push_back(glm::vec2(1, 0));
-    m_UV[0].push_back(glm::vec2(1, 1));
-    m_UV[0].push_back(glm::vec2(0, 1));
+Sprite::Sprite(): m_Name(""),m_Frames(0), m_FrameIndex(0),m_Origin(glm::vec2(0,0)), m_hasTexture(false), m_texSlot(-1), m_Widest(0), m_Heighest(0),m_WidthCombined(0), m_HeightCombined(0){
 }
-
-/**
- * @brief Set poisition of the sprite
- * 
- * @param _pos position where the sprite should be rendered
- */
-void Sprite::setPosition (glm::vec3 _pos) {m_Pos=_pos;}
-/**
- * @brief Scales the sprite
- * 
- * @param _scale scale in vec2, where (1,1) is the base scale
- */
-void Sprite::setScale(glm::vec2 _scale)  {m_Size=_scale*m_BaseSize[m_FrameIndex];}
-/**
- * @brief Set the color in which the sprite will be rendered
- * 
- * @param _color Color in RGBA format
- */
-void Sprite::setColor(glm::vec4 _color)  {m_Color=_color;}
+void Sprite::setOrigin(glm::vec2 origin){
+    m_Origin = origin;
+}
+void Sprite::setColor(glm::vec4 color){
+    m_Color = color;
+}
 void Sprite::setFrameIndex(unsigned _index){
     m_FrameIndex = _index%m_Frames;
 }
-bool Sprite::operator==(const Sprite& spr2) const{
-    return m_Pos==spr2.m_Pos && m_Size==spr2.m_Size
-        && m_UV[m_FrameIndex]==spr2.m_UV[spr2.m_FrameIndex] && m_texSlot==spr2.m_texSlot;
-}
+
 /**
  * @brief Initialize the texture page where the sprites should be saved
  * 
@@ -115,8 +80,8 @@ void TexturePage::ImageResizeCanvas(int new_width, int new_height, int channel_n
  * @param t_Frame Frame index of the sprite (for animations)
  */
 void TexturePage::ImageAdd(unsigned char* data, Sprite* spr, int t_Frame){
-    float width = spr->m_BaseSize[t_Frame].x;
-	float height = spr->m_BaseSize[t_Frame].y;
+    float width = spr->m_CurrentFrameSize[t_Frame].x;
+	float height = spr->m_CurrentFrameSize[t_Frame].y;
     if((m_xOffset+width)>=m_Width){
         m_xOffset=0;
         m_yOffset+=m_lastYOffset;

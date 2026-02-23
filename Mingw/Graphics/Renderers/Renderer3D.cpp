@@ -14,34 +14,43 @@
  * @brief Initialize batch renderer to pass correct values to shaders
  * 
  */
-Renderer3D::Renderer3D() {
+Renderer3D::Renderer3D() : m_fence(nullptr){
     glCreateVertexArrays(1, &m_appSurface);
 
 
     glCreateBuffers(1, &m_VBO);
-    glNamedBufferStorage(m_VBO, BUFFER_SIZE3D, nullptr, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
+    glNamedBufferStorage(m_VBO, BUFFER_SIZE3D, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
     
     glCreateBuffers(1, &m_IBO);
-    glNamedBufferStorage(m_IBO, INDICES_SIZE3D, nullptr, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT );
+    glNamedBufferStorage(m_IBO, INDICES_SIZE3D, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT );
 
     glCreateBuffers(1, &m_ModelMatricesSSBO);
-    glNamedBufferStorage(m_ModelMatricesSSBO, MODEL_MATRICES_SSBO_SIZE3D, nullptr, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
+    glNamedBufferStorage(m_ModelMatricesSSBO, MODEL_MATRICES_SSBO_SIZE3D, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 
     glCreateBuffers(1, &m_MorphPositionsSSBO);
-    glNamedBufferStorage(m_MorphPositionsSSBO, MORPH_POSITIONS_SSBO_SIZE3D, nullptr, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
+    glNamedBufferStorage(m_MorphPositionsSSBO, MORPH_POSITIONS_SSBO_SIZE3D, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 
     glCreateBuffers(1, &m_JointMatricesSSBO);
-    glNamedBufferStorage(m_JointMatricesSSBO, JOINT_MATRICES_SSBO_SIZE3D, nullptr, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
+    glNamedBufferStorage(m_JointMatricesSSBO, JOINT_MATRICES_SSBO_SIZE3D, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 
     glCreateBuffers(1, &m_MorphWeightsSSBO);
-    glNamedBufferStorage(m_MorphWeightsSSBO, MORPH_WEIGHTS_SSBO_SIZE3D, nullptr, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
+    glNamedBufferStorage(m_MorphWeightsSSBO, MORPH_WEIGHTS_SSBO_SIZE3D, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 
     glCreateBuffers(1, &m_NodeMatricesSSBO);
-    glNamedBufferStorage(m_NodeMatricesSSBO, NODE_MATRICES_SSBO_SIZE3D, nullptr, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
+    glNamedBufferStorage(m_NodeMatricesSSBO, NODE_MATRICES_SSBO_SIZE3D, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 
     glVertexArrayVertexBuffer(m_appSurface,0,m_VBO,0, VERTEX_SIZE3D);
     glVertexArrayElementBuffer(m_appSurface, m_IBO);
 
+
+
+    m_vboBase = glMapNamedBufferRange(m_VBO, 0, BUFFER_SIZE3D, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+    m_indexBase = glMapNamedBufferRange(m_IBO, 0, INDICES_SIZE3D, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+    m_mmSSBOBase = glMapNamedBufferRange(m_ModelMatricesSSBO, 0, MODEL_MATRICES_SSBO_SIZE3D, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+    m_mpSSBOBase = glMapNamedBufferRange(m_MorphPositionsSSBO, 0, MORPH_POSITIONS_SSBO_SIZE3D, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+    m_jmSSBOBase = glMapNamedBufferRange(m_JointMatricesSSBO, 0, JOINT_MATRICES_SSBO_SIZE3D, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+    m_mwSSBOBase =  glMapNamedBufferRange(m_MorphWeightsSSBO, 0, MORPH_WEIGHTS_SSBO_SIZE3D, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+    m_nmSSBOBase = glMapNamedBufferRange(m_NodeMatricesSSBO, 0, NODE_MATRICES_SSBO_SIZE3D, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 
     for(int i=0;i<=14;i++){
         glEnableVertexArrayAttrib(m_appSurface,i);
@@ -186,15 +195,16 @@ Renderer3D::~Renderer3D() {
 void Renderer3D::Render(){
     GLsizei m_indexCount = 0, instanceCount=0, jointOffset=0, morphWeightsOffset=0, morphPositionsOffset=0;
 
-    vboData* m_Buff = (vboData*) glMapNamedBuffer(m_VBO, GL_WRITE_ONLY);
-    unsigned int* indexPtr = (unsigned int*)glMapNamedBuffer(m_IBO, GL_WRITE_ONLY);
-    glm::mat4* mmSSBOptr = (glm::mat4*) glMapNamedBuffer(m_ModelMatricesSSBO, GL_WRITE_ONLY);
-    glm::vec3* mpSSBOptr = (glm::vec3*) glMapNamedBuffer(m_MorphPositionsSSBO, GL_WRITE_ONLY);
-    glm::mat4* jmSSBOptr = (glm::mat4*) glMapNamedBuffer(m_JointMatricesSSBO, GL_WRITE_ONLY);
-    float* mwSSBOptr = (float*) glMapNamedBuffer(m_MorphWeightsSSBO, GL_WRITE_ONLY);
-    glm::mat4* nmSSBOptr = (glm::mat4*) glMapNamedBuffer(m_NodeMatricesSSBO, GL_WRITE_ONLY);
+    vboData* m_Buff = (vboData*)m_vboBase;
+    unsigned * indexPtr = (unsigned*)m_indexBase;
+    glm::mat4* mmSSBOptr = (glm::mat4*)m_mmSSBOBase;
+    glm::vec3* mpSSBOptr = (glm::vec3*)m_mpSSBOBase;
+    glm::mat4* jmSSBOptr = (glm::mat4*)m_jmSSBOBase;
+    float* mwSSBOptr = (float*)m_mwSSBOBase;
+    glm::mat4* nmSSBOptr = (glm::mat4*)m_nmSSBOBase;
 
     if (!m_Buff || !indexPtr || !mmSSBOptr || !mpSSBOptr || !jmSSBOptr || !mwSSBOptr) {
+        //printf("%p\n", indexPtr );
         std::cerr << "Failed to map buffer!" << std::endl;
         return;
     }
@@ -202,6 +212,13 @@ void Renderer3D::Render(){
     unsigned lastObjectSkinOffset = 0;
     unsigned lastMorphWeightOffset = 0;
     unsigned nodeMatrixOffset = 0;
+
+    if (m_fence) {
+        glClientWaitSync(m_fence, GL_SYNC_FLUSH_COMMANDS_BIT, GL_TIMEOUT_IGNORED);
+        glDeleteSync(m_fence);
+        m_fence = nullptr;
+    }
+
     for(Object3D& obj:ObjectsToRender){
         std::map<int, int> skinOffsets;
         std::vector<int> morphWeightsOffsets;
@@ -270,14 +287,14 @@ void Renderer3D::Render(){
         instanceCount++;
     }
     //std::cout << "Vertex Count: " << vboOffset <<std::endl;
-    
+    /*
     glUnmapNamedBuffer(m_VBO);
     glUnmapNamedBuffer(m_IBO);
     glUnmapNamedBuffer(m_ModelMatricesSSBO);
     glUnmapNamedBuffer(m_MorphPositionsSSBO);
     glUnmapNamedBuffer(m_JointMatricesSSBO);
     glUnmapNamedBuffer(m_MorphWeightsSSBO);
-    glUnmapNamedBuffer(m_NodeMatricesSSBO);
+    glUnmapNamedBuffer(m_NodeMatricesSSBO);*/
     ObjectsToRender.clear();
     
     //glMakeTextureHandleResidentARB(texHandle);
@@ -303,7 +320,7 @@ void Renderer3D::Render(){
     glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, NULL);
     
     //glMakeTextureHandleNonResidentARB(texHandle);
-    
+    m_fence= glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     glBindVertexArray(0);
     MainTextureAtlas.Unbind();
     
