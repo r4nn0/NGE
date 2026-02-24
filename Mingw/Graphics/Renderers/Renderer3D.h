@@ -15,39 +15,11 @@ public:
 protected:
 
 private:
-    struct vboData{
-        glm::vec3 pos;
-        glm::vec4 color;
-        glm::vec2 texCoords;
-        glm::vec3 vNormals;
-        int textureSlot;
-        unsigned modelID;
-        glm::uvec4 aJoints;
-        glm::vec4 aWeights;
-        unsigned mtc;
-        unsigned mwo;
-        unsigned mpo;
-        unsigned jo;
-
-        unsigned vertexIndex;
-        unsigned vertexCount;
-        unsigned nodeMatrixIndex;
-        
-        vboData& operator=(const Object3D::Vertex3D& vertex){
-            pos = vertex.pos;
-            color = vertex.color;
-            texCoords = vertex.texCoords;
-            vNormals = vertex.normal;
-            textureSlot = vertex.textureSlot;
-            aJoints=vertex.joints;
-            aWeights = vertex.weights;
-            return *this;
-        }
-    };
-    unsigned int m_appSurface, m_VBO, m_IBO, m_Shader, m_ModelMatricesSSBO, m_MorphPositionsSSBO,m_JointMatricesSSBO, m_MorphWeightsSSBO, m_NodeMatricesSSBO;
+    
+    unsigned int m_appSurface, m_VBO, m_IBO, m_Shader, m_ModelMatricesSSBO, m_MorphPositionsSSBO,m_JointMatricesSSBO, m_MorphWeightsSSBO, m_NodeMatricesSSBO, m_MaterialsSSBO;
     unsigned testTex, texBuffer;
     GLuint64 texHandle;
-    void *m_vboBase, *m_indexBase, *m_mmSSBOBase, *m_mpSSBOBase, *m_jmSSBOBase, *m_mwSSBOBase, *m_nmSSBOBase;
+    void *m_vboBase, *m_indexBase, *m_mmSSBOBase, *m_mpSSBOBase, *m_jmSSBOBase, *m_mwSSBOBase, *m_nmSSBOBase, *m_materialSSBOBase;
     GLsync m_fence;
 };
 

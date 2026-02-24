@@ -72,8 +72,9 @@ int main (){
     Engine gameEngine;
     
     gameEngine.init("NGE", 1000,500);
-    LoadSpritesToMemroy();
+    //LoadSpritesToMemroy();
     LoadModelsToMemory();
+    
     //If the app crashes try using a font that is located in the same directory as the app
     //FTGLPixmapFont font("C:/Windows/Fonts/arial.ttf");
     
@@ -81,10 +82,11 @@ int main (){
     Renderer3D renderer3D;
     
     
-    TestPlayer obj2D("sonic_run");
+    //TestPlayer obj2D("sonic_run");
     //testObject.color = glm::vec4(1,0,0,1);
 
     Entity obj3D("CesiumMilkTruck");
+    
     //Entity sec ("AnimatedMorphSphere");
     Entity floor;
     double prevTime = glfwGetTime();
@@ -98,6 +100,7 @@ int main (){
     
     TextRenderer tr;
     gameEngine.setBackgroundColor(BACKGROUND_COLOR);
+    
     while(!glfwWindowShouldClose(gameEngine.get_window())){
         //auto t1 = std::chrono::high_resolution_clock::now();
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
@@ -121,25 +124,25 @@ int main (){
         if (actpitch < -60.0f) actpitch = -60.0f;
         float pitch = glm::radians(actpitch);
 
-        float moveSpeed = 0.2;
+        float moveSpeed = 0.02;
         float turnSpeed = 1.2;
         if(keyboard_check(GLFW_KEY_LEFT_SHIFT) || keyboard_check(GLFW_KEY_RIGHT_SHIFT))
             moveSpeed=0.5;
         int moving = keyboard_check('W') - keyboard_check('S');
 
-        /*hsp -= ((keyboard_check('D') - keyboard_check('A')) * glm::cos(dir)
+        hsp -= ((keyboard_check('D') - keyboard_check('A')) * glm::cos(dir)
              +(keyboard_check('W') - keyboard_check('S')) * glm::sin(dir)) * moveSpeed;
         vsp += ((keyboard_check('D') - keyboard_check('A')) * glm::sin(dir)
-             -(keyboard_check('W') - keyboard_check('S')) * glm::cos(dir)) * moveSpeed;*/
-        vsp -= moving *glm::cos(truckRot)* moveSpeed;
-        hsp -= moving *glm::sin(truckRot)* moveSpeed;
+             -(keyboard_check('W') - keyboard_check('S')) * glm::cos(dir)) * moveSpeed;
+        //vsp -= moving *glm::cos(truckRot)* moveSpeed;
+        //hsp -= moving *glm::sin(truckRot)* moveSpeed;
         zsp +=(keyboard_check('E') - keyboard_check('Q')) * moveSpeed;
         
         truckRot += glm::radians((keyboard_check('D') - keyboard_check('A'))*turnSpeed * moving);
         obj3D.UpdateAnimation(moving*0.005f);
         
-        obj3D.rotation=glm::vec3(glm::radians(180.0f), truckRot,0);
-        obj3D.position=glm::vec3(hsp,0,vsp);
+        obj3D.rotation=glm::vec3(glm::radians(180.0f), 0,0);
+        obj3D.position=glm::vec3(-15,-15,-15);
         //sec.UpdateAnimation(0.001);
         //sec.position = glm::vec3(50,0,50);*/
         floor.scale = glm::vec3(5,0,5);
@@ -149,7 +152,7 @@ int main (){
         
         
         
-        gameEngine.camera3d.setPosition(glm::vec3(hsp-5,zsp,vsp-5));
+        gameEngine.camera3d.setPosition(glm::vec3(hsp,zsp,vsp));
         gameEngine.camera3d.setRotation(glm::vec3(dir , pitch, glm::radians(180.f)));
         gameEngine.camera3d.setOrbit(glm::vec3(hsp,zsp,vsp));
         
@@ -158,7 +161,7 @@ int main (){
         gameEngine.StepEvent();
 
         
-        obj2D.Update();
+        //obj2D.Update();
         //testObject2.Update();
         
         gameEngine.BeginDraw();
@@ -170,7 +173,7 @@ int main (){
         //font.FaceSize(100);
         //font.Render(ar_fix(L"مرحبا").c_str(), -1, FTPoint(gameEngine.getViewWidth()/2-font.FaceSize()/2,gameEngine.getViewHeight()/2-font.FaceSize()/2,0));
 
-        obj2D.Render();
+        //obj2D.Render();
         obj3D.Render();
         //sec.Render();
         floor.Render();

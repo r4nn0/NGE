@@ -1,11 +1,11 @@
 #ifndef OBJECT3D_H
 #define OBJECT3D_H
-#include "../include/GLM/glm.hpp"
 #include <iostream>
 #include <unordered_map>
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include "../Ngetype.h"
 #include "tiny_gltf.h"
 #include "Sprite.h"
 class Object3D
@@ -13,7 +13,7 @@ class Object3D
 public:
     Object3D();
     Object3D(const char*);
-    struct Vertex3D {
+    /*struct Vertex3D {
         glm::vec3 pos;
         glm::vec4 color;
         glm::vec2 texCoords;
@@ -21,7 +21,7 @@ public:
         int textureSlot;
         glm::uvec4 joints;
         glm::vec4 weights;
-    };
+    };*/
     tinygltf::Model model;
     const tinygltf::Scene* scene = nullptr;
     struct Primitive
@@ -39,6 +39,7 @@ public:
 
     std::vector<Primitive> primitives;
 
+    std::vector<Material> materials;
 
     std::vector<glm::vec3> nodeTranslation;
     std::vector<glm::quat> nodeRotation;

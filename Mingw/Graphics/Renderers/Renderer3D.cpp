@@ -1,7 +1,7 @@
 #include "Renderer3D.h"
 #include <glm/gtx/string_cast.hpp>
 #define MEGABYTE 1048576
-#define VERTEX_SIZE3D sizeof(vboData)
+#define VERTEX_SIZE3D sizeof(Vertex3D)
 #define BUFFER_SIZE3D 30*MEGABYTE
 #define INDICES_SIZE3D 3*BUFFER_SIZE3D
 #define MODEL_MATRICES_SSBO_SIZE3D 2*MEGABYTE
@@ -9,6 +9,7 @@
 #define JOINT_MATRICES_SSBO_SIZE3D 2*MEGABYTE
 #define MORPH_WEIGHTS_SSBO_SIZE3D MEGABYTE
 #define NODE_MATRICES_SSBO_SIZE3D 2*MEGABYTE
+#define MATERIAL_SSBO_SIZE_3D 2*MEGABYTE
 
 /**
  * @brief Initialize batch renderer to pass correct values to shaders
@@ -39,6 +40,9 @@ Renderer3D::Renderer3D() : m_fence(nullptr){
     glCreateBuffers(1, &m_NodeMatricesSSBO);
     glNamedBufferStorage(m_NodeMatricesSSBO, NODE_MATRICES_SSBO_SIZE3D, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 
+    glCreateBuffers(1, &m_MaterialsSSBO);
+    glNamedBufferStorage(m_MaterialsSSBO, MATERIAL_SSBO_SIZE_3D, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+
     glVertexArrayVertexBuffer(m_appSurface,0,m_VBO,0, VERTEX_SIZE3D);
     glVertexArrayElementBuffer(m_appSurface, m_IBO);
 
@@ -51,23 +55,23 @@ Renderer3D::Renderer3D() : m_fence(nullptr){
     m_jmSSBOBase = glMapNamedBufferRange(m_JointMatricesSSBO, 0, JOINT_MATRICES_SSBO_SIZE3D, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
     m_mwSSBOBase =  glMapNamedBufferRange(m_MorphWeightsSSBO, 0, MORPH_WEIGHTS_SSBO_SIZE3D, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
     m_nmSSBOBase = glMapNamedBufferRange(m_NodeMatricesSSBO, 0, NODE_MATRICES_SSBO_SIZE3D, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
-
-    for(int i=0;i<=14;i++){
+    m_materialSSBOBase = glMapNamedBufferRange(m_MaterialsSSBO, 0, MATERIAL_SSBO_SIZE_3D, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+    for(int i=0;i<=15;i++){
         glEnableVertexArrayAttrib(m_appSurface,i);
         glVertexArrayAttribBinding(m_appSurface,i,0);
     }
     /*
-    std::cout << sizeof(vboData) << std::endl;
-    std::cout << offsetof(vboData,pos) << std::endl;
-    std::cout << offsetof(vboData,color) << std::endl;
-    std::cout << offsetof(vboData,texCoords) << std::endl;
-    std::cout << offsetof(vboData,vNormals) << std::endl;
-    std::cout << offsetof(vboData,textureSlot) << std::endl;
-    std::cout << offsetof(vboData,modelID) << std::endl;
-    std::cout << offsetof(vboData,aJoints) << std::endl;
-    std::cout << offsetof(vboData,aWeights) << std::endl;
-    std::cout << offsetof(vboData,mtc) << std::endl;
-    std::cout << offsetof(vboData,vertexIndex) << std::endl;*/
+    std::cout << sizeof(Vertex3D) << std::endl;
+    std::cout << offsetof(Vertex3D,pos) << std::endl;
+    std::cout << offsetof(Vertex3D,color) << std::endl;
+    std::cout << offsetof(Vertex3D,texCoords) << std::endl;
+    std::cout << offsetof(Vertex3D,vNormals) << std::endl;
+    std::cout << offsetof(Vertex3D,textureSlot) << std::endl;
+    std::cout << offsetof(Vertex3D,modelID) << std::endl;
+    std::cout << offsetof(Vertex3D,aJoints) << std::endl;
+    std::cout << offsetof(Vertex3D,aWeights) << std::endl;
+    std::cout << offsetof(Vertex3D,mtc) << std::endl;
+    std::cout << offsetof(Vertex3D,vertexIndex) << std::endl;*/
     /*
     glm::vec3 pos;
         glm::vec4 color;
@@ -81,25 +85,26 @@ Renderer3D::Renderer3D() : m_fence(nullptr){
         unsigned mwo;
         unsigned mpo;
         unsigned jo; */
-    glVertexArrayAttribFormat(m_appSurface, 0, 3, GL_FLOAT, GL_FALSE, offsetof(vboData, pos));
-glVertexArrayAttribFormat(m_appSurface, 1, 4, GL_FLOAT, GL_FALSE, offsetof(vboData, color));
-glVertexArrayAttribFormat(m_appSurface, 2, 2, GL_FLOAT, GL_FALSE, offsetof(vboData, texCoords));
-glVertexArrayAttribFormat(m_appSurface, 3, 3, GL_FLOAT, GL_FALSE, offsetof(vboData, vNormals));
+    glVertexArrayAttribFormat(m_appSurface, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, pos));
+glVertexArrayAttribFormat(m_appSurface, 1, 4, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, color));
+glVertexArrayAttribFormat(m_appSurface, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, texCoords));
+glVertexArrayAttribFormat(m_appSurface, 3, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, normal));
 
-glVertexArrayAttribIFormat(m_appSurface, 4, 1, GL_INT, offsetof(vboData, textureSlot));
-glVertexArrayAttribIFormat(m_appSurface, 5, 1, GL_UNSIGNED_INT, offsetof(vboData, modelID));
-glVertexArrayAttribIFormat(m_appSurface, 6, 4, GL_UNSIGNED_INT, offsetof(vboData, aJoints));
+glVertexArrayAttribIFormat(m_appSurface, 4, 1, GL_INT, offsetof(Vertex3D, textureSlot));
+glVertexArrayAttribIFormat(m_appSurface, 5, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, modelID));
+glVertexArrayAttribIFormat(m_appSurface, 6, 4, GL_UNSIGNED_INT, offsetof(Vertex3D, joints));
 
-glVertexArrayAttribFormat(m_appSurface, 7, 4, GL_FLOAT, GL_FALSE, offsetof(vboData, aWeights));
+glVertexArrayAttribFormat(m_appSurface, 7, 4, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, weights));
 
-glVertexArrayAttribIFormat(m_appSurface, 8, 1, GL_UNSIGNED_INT, offsetof(vboData, mtc));
-glVertexArrayAttribIFormat(m_appSurface, 9, 1, GL_UNSIGNED_INT, offsetof(vboData, mwo));
-glVertexArrayAttribIFormat(m_appSurface, 10, 1, GL_UNSIGNED_INT, offsetof(vboData, mpo));
-glVertexArrayAttribIFormat(m_appSurface, 11, 1, GL_UNSIGNED_INT, offsetof(vboData, jo));
-glVertexArrayAttribIFormat(m_appSurface, 12, 1, GL_UNSIGNED_INT, offsetof(vboData, vertexIndex));
-glVertexArrayAttribIFormat(m_appSurface, 13, 1, GL_UNSIGNED_INT, offsetof(vboData, vertexCount));
-glVertexArrayAttribIFormat(m_appSurface, 14, 1, GL_UNSIGNED_INT, offsetof(vboData, nodeMatrixIndex));
-//std::cout << "sizeof(vboData): " << sizeof(vboData) << std::endl;
+glVertexArrayAttribIFormat(m_appSurface, 8, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, mtc));
+glVertexArrayAttribIFormat(m_appSurface, 9, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, mwo));
+glVertexArrayAttribIFormat(m_appSurface, 10, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, mpo));
+glVertexArrayAttribIFormat(m_appSurface, 11, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, jo));
+glVertexArrayAttribIFormat(m_appSurface, 12, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, vertexIndex));
+glVertexArrayAttribIFormat(m_appSurface, 13, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, vertexCount));
+glVertexArrayAttribIFormat(m_appSurface, 14, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, nodeMatrixIndex));
+glVertexArrayAttribIFormat(m_appSurface, 15, 1, GL_INT, offsetof(Vertex3D, materialIndex));
+//std::cout << "sizeof(Vertex3D): " << sizeof(Vertex3D) << std::endl;
     /*glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(ngetype::vbo3DData), (const void*)0); // vec3 pos
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(ngetype::vbo3DData), (const void*)(sizeof(float)*3));  // vec4 col
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(ngetype::vbo3DData), (const void*)(sizeof(float)*7));  // vec2 texcoord
@@ -195,13 +200,14 @@ Renderer3D::~Renderer3D() {
 void Renderer3D::Render(){
     GLsizei m_indexCount = 0, instanceCount=0, jointOffset=0, morphWeightsOffset=0, morphPositionsOffset=0;
 
-    vboData* m_Buff = (vboData*)m_vboBase;
+    Vertex3D* m_Buff = (Vertex3D*)m_vboBase;
     unsigned * indexPtr = (unsigned*)m_indexBase;
     glm::mat4* mmSSBOptr = (glm::mat4*)m_mmSSBOBase;
     glm::vec3* mpSSBOptr = (glm::vec3*)m_mpSSBOBase;
     glm::mat4* jmSSBOptr = (glm::mat4*)m_jmSSBOBase;
     float* mwSSBOptr = (float*)m_mwSSBOBase;
     glm::mat4* nmSSBOptr = (glm::mat4*)m_nmSSBOBase;
+    Material* materialSSBOptr = (Material*) m_materialSSBOBase;
 
     if (!m_Buff || !indexPtr || !mmSSBOptr || !mpSSBOptr || !jmSSBOptr || !mwSSBOptr) {
         //printf("%p\n", indexPtr );
@@ -210,15 +216,16 @@ void Renderer3D::Render(){
     }
     unsigned int vboOffset = 0;
     unsigned lastObjectSkinOffset = 0;
-    unsigned lastMorphWeightOffset = 0;
     unsigned nodeMatrixOffset = 0;
-
+    unsigned materialOffset = 1;
     if (m_fence) {
         glClientWaitSync(m_fence, GL_SYNC_FLUSH_COMMANDS_BIT, GL_TIMEOUT_IGNORED);
         glDeleteSync(m_fence);
         m_fence = nullptr;
     }
-
+    Material defaultMat{};
+    materialSSBOptr[0] = defaultMat;
+    
     for(Object3D& obj:ObjectsToRender){
         std::map<int, int> skinOffsets;
         std::vector<int> morphWeightsOffsets;
@@ -248,6 +255,13 @@ void Renderer3D::Render(){
         //int primID = 0;
         unsigned lastMorphPositionsOffset = 0;
         for(Object3D::Primitive& prim : obj.primitives){
+            int materialDefaultSlot = -1;
+            if(prim.materialIndex>=0 && prim.materialIndex<(int)obj.materials.size()){
+                //printf("%d : %d", obj.materials.size(), prim.materialIndex);
+                materialDefaultSlot = materialOffset;
+                materialSSBOptr[materialOffset++] = obj.materials[prim.materialIndex];
+            }
+
             for(std::vector<glm::vec3>& morphPositions : prim.morphPositions){
                 
                 memcpy(mpSSBOptr + morphPositionsOffset, morphPositions.data(), morphPositions.size()* sizeof(glm::vec3));
@@ -260,27 +274,26 @@ void Renderer3D::Render(){
                 //std::cout << ind[i] << std::endl;
             }
             unsigned localVertexIndex = 0;
-            for(const Object3D::Vertex3D& vertex: prim.vertices){
+            for(const Vertex3D& vertex: prim.vertices){
                 
-                vboData currentVertex;
-                //std::cout << vertex.pos.x << ",\t" << vertex.pos.y << ",\t" << vertex.pos.z << std::endl;
+                Vertex3D currentVertex;
                 currentVertex = vertex;
                 currentVertex.modelID = instanceCount;
                 currentVertex.mtc = prim.morphPositions.size();
-                if(prim.nodeIndex<morphWeightsOffsets.size())
-                    currentVertex.mwo = morphWeightsOffsets[prim.nodeIndex];
+                if((unsigned)prim.nodeIndex<morphWeightsOffsets.size()) currentVertex.mwo = morphWeightsOffsets[prim.nodeIndex];
                 else currentVertex.mwo = 0;
                 currentVertex.mpo = lastMorphPositionsOffset;
 
-                if(prim.skinIndex<skinOffsets.size()) currentVertex.jo = skinOffsets[prim.skinIndex];
+                if((unsigned)prim.skinIndex<skinOffsets.size()) currentVertex.jo = skinOffsets[prim.skinIndex];
                 else currentVertex.jo=0;
 
                 currentVertex.vertexIndex = localVertexIndex++;
                 currentVertex.vertexCount = prim.vertices.size();
                 currentVertex.nodeMatrixIndex = nodeMatrixBaseOffset+prim.nodeIndex;
+                currentVertex.materialIndex = materialDefaultSlot;
                 m_Buff[vboOffset++] = currentVertex;
             }
-            //primID++;
+            
             lastMorphPositionsOffset = morphPositionsOffset;
         }
         
@@ -304,14 +317,22 @@ void Renderer3D::Render(){
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_JointMatricesSSBO);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_MorphWeightsSSBO);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_NodeMatricesSSBO);
-    //glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, texBuffer);
-    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "proj_matrix"),1,GL_FALSE,Engine::getProjMatrix());
-    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "vw_matrix"),1,GL_FALSE,Engine::getViewMatrix());
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, m_MaterialsSSBO);
     
+    
+    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "proj_matrix"),1,GL_FALSE,Engine::getProjMatrix());
+    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "vw_matrix"),1,GL_FALSE, Engine::getViewMatrix());
+    glm::mat4 viewMat = Engine::camera3d.getMatrix();
+    glm::vec3 camForward = -glm::vec3(viewMat[0][2],viewMat[1][2],viewMat[2][2]);
+
+
     glUniform1i(glGetUniformLocation(m_Shader, "texture[0]"), MainTextureAtlas.GetTextureSlot());
     glUniform3f(glGetUniformLocation(m_Shader, "lightPos"), Engine::camera3d.getPosition().x, Engine::camera3d.getPosition().y, Engine::camera3d.getPosition().z);
+    glUniform3f(glGetUniformLocation(m_Shader, "lightDir"), camForward.x, camForward.y, camForward.z);
     glUniform3f(glGetUniformLocation(m_Shader, "viewPos"), Engine::camera3d.getPosition().x, Engine::camera3d.getPosition().y, Engine::camera3d.getPosition().z);
-    glUniform3f(glGetUniformLocation(m_Shader, "lightColor"), 1.0f, 1.0f, 1.0f);
+    glUniform1f(glGetUniformLocation(m_Shader, "lightCutoff"), 20.0f);
+    glUniform1f(glGetUniformLocation(m_Shader, "lightOuterCutoff"), 30.0f);
+    glUniform3f(glGetUniformLocation(m_Shader, "lightColor"), 10.0f, 10.0f, 10.0f);
     
     
     MainTextureAtlas.Bind();
@@ -319,7 +340,6 @@ void Renderer3D::Render(){
     
     glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, NULL);
     
-    //glMakeTextureHandleNonResidentARB(texHandle);
     m_fence= glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     glBindVertexArray(0);
     MainTextureAtlas.Unbind();

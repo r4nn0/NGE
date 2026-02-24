@@ -162,14 +162,16 @@ std::vector<glm::vec4> Object3D::readVecFloat(const tinygltf::Primitive& primiti
     return vecOut;
 }
 void Object3D::LoadTextures(){
+    
     hasTexture = false;
     std::vector<glm::vec2> imageOffsets(model.images.size());
     std::vector<glm::vec2> imageScaleFactors(model.images.size());
     for (size_t i = 0; i < model.images.size(); i++) {
         const auto& image = model.images[i];
         imageScaleFactors[i] = glm::vec2(image.width, image.height)/MainTextureAtlas.GetAtlasSize();
-        //std::cout << "Loading image " << i << " (" << image.width << "x" << image.height << ")" << std::endl;
         imageOffsets[i] = MainTextureAtlas.TextureAdd(image.image, image.width, image.height);
+
+        //std::cout << "Loaded image at offset: " << i << " (" << imageOffsets[i].x << "," << imageOffsets[i].y << ")" << std::endl;
         hasTexture=true;
     }
     
@@ -178,27 +180,61 @@ void Object3D::LoadTextures(){
     }
     
     //materialTextureOffsets.resize(model.materials.size());
-    
+    materials.resize(model.materials.size());
     for (size_t i = 0; i < model.materials.size(); i++) {
         const tinygltf::Material& material = model.materials[i];
         const auto& pbr = material.pbrMetallicRoughness;
-        
-        if (pbr.baseColorTexture.index >= 0 && (unsigned)pbr.baseColorTexture.index < model.textures.size()) {
+        Material& m = materials[i];
+        m.baseColorFactor = glm::vec4(
+        pbr.baseColorFactor[0], pbr.baseColorFactor[1],
+        pbr.baseColorFactor[2], pbr.baseColorFactor[3]);
+        m.metallicFactor  = (float)pbr.metallicFactor;
+        m.roughnessFactor = (float)pbr.roughnessFactor;
+
+        /*m.baseColorTexture          = pbr.baseColorTexture.index;
+        m.metallicRoughnessTexture  = pbr.metallicRoughnessTexture.index;
+        m.normalTexture             = material.normalTexture.index;
+        m.occlusionTexture          = material.occlusionTexture.index;
+        m.emissiveTexture           = material.emissiveTexture.index;*/
+
+        m.emissiveFactor  = glm::vec4(material.emissiveFactor[0], material.emissiveFactor[1], material.emissiveFactor[2], 0.0f);
+        m.normalScale         = (float)material.normalTexture.scale;
+        m.occlusionStrength   = (float)material.occlusionTexture.strength;
+        m.alphaMode           = (material.alphaMode=="OPAQUE") ? 0: (material.alphaMode=="MASK") ? 1 : 2;
+        m.alphaCutoff         = (float)material.alphaCutoff;
+        m.doubleSided         = material.doubleSided;
+
+
+        if (pbr.baseColorTexture.index >= 0 /*&& (unsigned)pbr.baseColorTexture.index < model.textures.size()*/) {
             
-            const auto& texture = model.textures[pbr.baseColorTexture.index];
-            if (texture.source >= 0 && (unsigned)texture.source < imageOffsets.size()) {
-                texOffset[i] = imageOffsets[texture.source];
-                texScaleFactor[i] = imageScaleFactors[texture.source];
-            } else {
-                texOffset[i] = glm::vec2(0.0f);
-                texScaleFactor[i] = glm::vec2(0.0f);
-            }
-        } else {
-            texOffset[i] = glm::vec2(0.0f);
-            texScaleFactor[i] = glm::vec2(0.0f);
+            int imgIndex = model.textures[pbr.baseColorTexture.index].source;
+            texOffset[imgIndex] = imageOffsets[imgIndex];
+            texScaleFactor[imgIndex] = imageScaleFactors[imgIndex];
+
+            /*printf("Material %zu -> imageIndex %d -> offset (%.3f, %.3f) scale (%.3f, %.3f)\n",
+            i, imgIndex,
+            imageOffsets[imgIndex].x, imageOffsets[imgIndex].y,
+            imageScaleFactors[imgIndex].x, imageScaleFactors[imgIndex].y);*/
         }
+        
+        if(pbr.metallicRoughnessTexture.index >= 0){
+            int imgIndex = model.textures[pbr.metallicRoughnessTexture.index].source;
+            m.metallicRoughnessOffset = imageOffsets[imgIndex];
+        }
+        if(material.normalTexture.index >= 0){
+            int imgIndex = model.textures[material.normalTexture.index].source;
+            m.normalOffset = imageOffsets[imgIndex];
+        }
+        if(material.occlusionTexture.index >= 0){
+            int imgIndex = model.textures[material.occlusionTexture.index].source;
+            m.occlusionOffset = imageOffsets[imgIndex];
+        }
+        if(material.emissiveTexture.index >= 0){
+            int imgIndex = model.textures[material.emissiveTexture.index].source;
+            m.emissiveOffset = imageOffsets[imgIndex];
+        }
+
     }
-    
 }
 void Object3D::LoadVertices(const tinygltf::Primitive& primitive, Primitive& outPrimitive){
     /*const float* positions = nullptr;
@@ -229,8 +265,10 @@ void Object3D::LoadVertices(const tinygltf::Primitive& primitive, Primitive& out
             vertex.color = (colors.size()>i) ? colors[getIndexFromAccessor(mdl, primitive, "COLOR_0", i)] : glm::vec4(1.0f);
             vertex.texCoords = (texCoords.size()>i) ? texCoords[getIndexFromAccessor(mdl, primitive, "TEXCOORD_0", i)] : glm::vec2(0.0);*/
 
+            vertex.texCoords = glm::vec2(glm::fract(vertex.texCoords.x), glm::fract(vertex.texCoords.y));
             if(!texOffset.empty())
                 vertex.texCoords = (vertex.texCoords*texScaleFactor[primitive.material])+texOffset[primitive.material];
+                //printf("%f : %f\n", texOffset[primitive.material].x, texOffset[primitive.material].y);
             vertex.texCoords = glm::clamp(vertex.texCoords, glm::vec2(0.0f), glm::vec2(1.0f));
             //std::cout << vertex.texCoords.x << " " << vertex.texCoords.y << std::endl;
             if(hasTexture)
@@ -238,134 +276,8 @@ void Object3D::LoadVertices(const tinygltf::Primitive& primitive, Primitive& out
             else
                 vertex.textureSlot = -1;
             outPrimitive.vertices[i] = vertex;
-        }
-    /*
-    // POSITION
-    {
-        const tinygltf::Accessor& accessor =
-            model.accessors[primitive.attributes.find("POSITION")->second];
-
-        vertexCount = accessor.count;
-
-        const tinygltf::BufferView& view =
-            model.bufferViews[accessor.bufferView];
-
-        const tinygltf::Buffer& buffer =
-            model.buffers[view.buffer];
-        stride = accessor.ByteStride(view);
-        positions = reinterpret_cast<const float*>(
-            &buffer.data[accessor.byteOffset + view.byteOffset]);
     }
     
-    // NORMAL
-    if (primitive.attributes.find("NORMAL")!=primitive.attributes.end())
-    {
-        const tinygltf::Accessor& accessor =
-            model.accessors[primitive.attributes.find("NORMAL")->second];
-
-        const tinygltf::BufferView& view =
-            model.bufferViews[accessor.bufferView];
-
-        const tinygltf::Buffer& buffer =
-            model.buffers[view.buffer];
-        normalStride = accessor.ByteStride(view);
-        normals = reinterpret_cast<const float*>(
-            &buffer.data[accessor.byteOffset + view.byteOffset]);
-    }
-
-    // TEXCOORD_0
-    if (primitive.attributes.find("TEXCOORD_0")!=primitive.attributes.end())
-    {
-        const tinygltf::Accessor& accessor =
-            model.accessors[primitive.attributes.find("TEXCOORD_0")->second];
-
-        const tinygltf::BufferView& view =
-            model.bufferViews[accessor.bufferView];
-
-        const tinygltf::Buffer& buffer =
-            model.buffers[view.buffer];
-        texStride = accessor.ByteStride(view);
-        texcoords = reinterpret_cast<const float*>(
-            &buffer.data[accessor.byteOffset + view.byteOffset]);
-    }
-
-    // JOINTS_0
-    if (primitive.attributes.find("JOINTS_0")!=primitive.attributes.end())
-    {
-        const tinygltf::Accessor& accessor =
-            model.accessors[primitive.attributes.find("JOINTS_0")->second];
-
-        const tinygltf::BufferView& view =
-            model.bufferViews[accessor.bufferView];
-
-        const tinygltf::Buffer& buffer =
-            model.buffers[view.buffer];
-        jointStride = accessor.ByteStride(view);
-        joints = reinterpret_cast<const uint16_t*>(
-            &buffer.data[accessor.byteOffset + view.byteOffset]);
-    }
-
-    // WEIGHTS_0
-    if (primitive.attributes.find("WEIGHTS_0")!=primitive.attributes.end())
-    {
-        const tinygltf::Accessor& accessor =
-            model.accessors[primitive.attributes.find("WEIGHTS_0")->second];
-
-        const tinygltf::BufferView& view =
-            model.bufferViews[accessor.bufferView];
-
-        const tinygltf::Buffer& buffer =
-            model.buffers[view.buffer];
-        weightStride = accessor.ByteStride(view);
-        weights = reinterpret_cast<const float*>(
-            &buffer.data[accessor.byteOffset + view.byteOffset]);
-    }
-
-    outPrimitive.vertices.resize(vertexCount);
-    std::cout << outPrimitive.vertices.size() << std::endl;
-    for (int i = 0; i < vertexCount; i++)
-    {
-        Vertex3D v{};
-
-        v.pos = glm::vec3(
-            positions[i*stride+0],
-            positions[i*stride+1],
-            positions[i*stride+2]);
-        if (normals)
-        {
-            v.normal = glm::vec3(
-                normals[i*normalStride+0],
-                normals[i*normalStride+1],
-                normals[i*normalStride+2]);
-        }
-
-        if (texcoords)
-        {
-            v.texCoords = glm::vec2(
-                texcoords[i*texStride+0],
-                texcoords[i*texStride+1]);
-        }
-
-        if (joints)
-        {
-            v.joints = glm::uvec4(
-                joints[i*jointStride+0],
-                joints[i*jointStride+1],
-                joints[i*jointStride+2],
-                joints[i*jointStride+3]);
-        }
-
-        if (weights)
-        {
-            v.weights = glm::vec4(
-                weights[i*weightStride+0],
-                weights[i*weightStride+1],
-                weights[i*weightStride+2],
-                weights[i*weightStride+3]);
-        }
-
-        outPrimitive.vertices[i] = v;
-    }*/
 }
 void Object3D::LoadIndices(const tinygltf::Primitive& primitive, Primitive& outPrimitive) {
     if (primitive.indices < 0)

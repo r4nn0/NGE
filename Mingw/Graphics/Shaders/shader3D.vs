@@ -19,10 +19,12 @@ layout(location = 11) in uint jointOffset;
 layout(location = 12) in uint vertextIndex;
 layout(location = 13) in uint vertexCount;
 layout(location = 14) in uint nodeMatrixIndex;
+layout(location = 15) in int materialIndex;
 
 uniform mat4 proj_matrix;
 uniform mat4 vw_matrix;
-//uniform mat4 ml_matrix=mat4(1.0);
+
+
 
 layout(binding = 0, std430) readonly buffer modelMatrices {
     mat4 ml_matrix[];
@@ -47,6 +49,7 @@ out DATA{
     vec4 color;
     vec2 texCoords;
     int textureSlot;
+    int materialIndex;
 }vs_out;
 
 void main() {
@@ -60,7 +63,7 @@ void main() {
         morphedPosition += delta * weight;
     }
     
-    vec4 finalPosition;
+    vec4 finalPosition = vec4(1.0);
     
     if (aWeights.x + aWeights.y + aWeights.z + aWeights.w > 0.0) {
         mat4 skinMatrix =
@@ -82,10 +85,10 @@ void main() {
     }
 
     gl_Position = proj_matrix * vw_matrix * ml_matrix[modelID] * nodeMatrix * finalPosition;
-    //gl_Position = proj_matrix * vw_matrix * ml_matrix[modelID] * vec4(pos, 1.0f);
-    vs_out.FragPos = vec3(ml_matrix[modelID] * finalPosition);
-    vs_out.vNormals = mat3(transpose(inverse(ml_matrix[modelID]))) * vNormals;
+    vs_out.FragPos = vec3(ml_matrix[modelID] * nodeMatrix * finalPosition);
+    vs_out.vNormals = mat3(transpose(inverse(ml_matrix[modelID] * nodeMatrix))) * vNormals;
     vs_out.color = color;
     vs_out.texCoords = texCoords;
     vs_out.textureSlot = textureSlot;
+    vs_out.materialIndex = materialIndex;
 }
