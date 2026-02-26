@@ -327,11 +327,11 @@ void Renderer3D::Render(){
 
 
     glUniform1i(glGetUniformLocation(m_Shader, "texture[0]"), MainTextureAtlas.GetTextureSlot());
-    glUniform3f(glGetUniformLocation(m_Shader, "lightPos"), Engine::camera3d.getPosition().x, Engine::camera3d.getPosition().y, Engine::camera3d.getPosition().z);
-    glUniform3f(glGetUniformLocation(m_Shader, "lightDir"), camForward.x, camForward.y, camForward.z);
+    glUniform3f(glGetUniformLocation(m_Shader, "lightPos"), 0, 0, 0);
+    glUniform3f(glGetUniformLocation(m_Shader, "lightDir"), -0.5f, 1.f, -0.5f);
     glUniform3f(glGetUniformLocation(m_Shader, "viewPos"), Engine::camera3d.getPosition().x, Engine::camera3d.getPosition().y, Engine::camera3d.getPosition().z);
-    glUniform1f(glGetUniformLocation(m_Shader, "lightCutoff"), 20.0f);
-    glUniform1f(glGetUniformLocation(m_Shader, "lightOuterCutoff"), 30.0f);
+    glUniform1f(glGetUniformLocation(m_Shader, "lightCutoff"), 0.0f);
+    glUniform1f(glGetUniformLocation(m_Shader, "lightOuterCutoff"), 0.0f);
     glUniform3f(glGetUniformLocation(m_Shader, "lightColor"), 10.0f, 10.0f, 10.0f);
     
     

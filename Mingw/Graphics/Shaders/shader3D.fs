@@ -130,7 +130,8 @@ void main() {
         }
     }
     vec3 V  = normalize(viewPos - fs_in.FragPos);
-    vec3 L  = normalize(lightPos - fs_in.FragPos);
+    //vec3 L  = normalize(lightPos - fs_in.FragPos);
+    vec3 L  = normalize(-lightDir);
     vec3 H  = normalize(V + L);
 
     vec3 F0 = mix(vec3(0.04), baseColor.rgb, metallic);
@@ -154,7 +155,8 @@ void main() {
     float coneIntensity = clamp((theta - outer) / epsilon, 0.0, 1.0);
     float dist = length(lightPos - fs_in.FragPos);
     float attenuation = 1.0 / (1.0 + 0.09 * dist + 0.032 * dist * dist);
-    vec3 Lo = (kD * baseColor.rgb / PI + specular) * lightColor * NdotL * coneIntensity * attenuation;
+    //vec3 Lo = (kD * baseColor.rgb / PI + specular) * lightColor * NdotL * coneIntensity * attenuation;
+    vec3 Lo = (kD * baseColor.rgb / PI + specular) * lightColor * NdotL;
     vec3 result = ambient + Lo + emissiveFactor;
 
     result = result / (result + vec3(1.0)); 
