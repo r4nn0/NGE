@@ -194,7 +194,8 @@ void LoadModelsToMemory(){
     DIR *dr;
     dirent *en;
     dr = opendir("3DObjects");
-    std::regex ext(".*\\.glb$");
+    std::regex ext(".*\\.gltf$");
+    
     if (dr) {
         while ((en = readdir(dr)) != NULL) {
             std::string objPath="3DObjects/";

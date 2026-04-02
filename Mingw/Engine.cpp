@@ -3,6 +3,8 @@ glm::mat4 Engine::projMat=glm::mat4(0.f);
 glm::mat4 Engine::viewMat=glm::mat4(0.f);
 glm::mat4 Engine::orthoMat=glm::mat4(0.f);
 glm::mat4 Engine::viewMat2D=glm::mat4(0.f);
+glm::vec2 Engine::window_size = glm::vec2(0,0);
+GLFWwindow* Engine::window = nullptr;
 float Engine::znear2D=-128;
 float Engine::zfar2D=127;
 Camera3D Engine::camera3d;
@@ -24,6 +26,7 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
         std::cout << "Error Initializing GLFW" << std::endl;
         return false;
     }
+    window_size = glm::vec2(_window_width, _window_height);
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 5);
     //glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
@@ -51,6 +54,7 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
     glfwSetMouseButtonCallback(window,mouseButtonCallback);
 	glfwSetJoystickCallback(joystickCallback);
     const GLFWvidmode* mode= glfwGetVideoMode(glfwGetPrimaryMonitor());
+    std::cout << mode->refreshRate << "hz" << std::endl;
     int xPos=(mode->width - _window_width)/2;
     int yPos=(mode->height - _window_height)/2;
     glfwSetWindowPos(window, xPos, yPos);
@@ -67,10 +71,11 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
     glFrontFace(GL_CCW); // Or GL_CW depending on your model's winding order
     */
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_DEPTH_WRITEMASK);
+    glDepthFunc(GL_LESS);
+    //glEnable(GL_DEPTH_WRITEMASK);
 
     
-    projMat=glm::perspective(45.0f, (float)_window_width/_window_height,0.1f,1000.0f);
+    projMat=glm::perspective(45.0f, (float)_window_width/_window_height,0.1f,100000.0f);
     orthoMat=glm::ortho(0.f, (float)_window_width, (float)_window_height, 0.f, -znear2D, -(zfar2D+1));
     
     return true;
@@ -85,8 +90,9 @@ void Engine::ToggleCursorVisibility(){
 void windowSizeCallback(GLFWwindow* window, int width, int height){
     //view_width = width;
     //view_height = height;
+    Engine::window_size = glm::vec2(width, height);
     glViewport(0, 0, width, height);
-    Engine::setProjMatrix(glm::perspective(45.0f,(float)width/height,0.1f,1000.0f));
+    Engine::setProjMatrix(glm::perspective(45.0f,(float)width/height,0.1f,100000.0f));
     Engine::setOrthoMatrix(glm::ortho(0.f, (float)width, (float)height, 0.f, -Engine::znear2D, -(Engine::zfar2D+1)));
 }
 void windowFocusCallback(GLFWwindow* window, int focus){
@@ -170,9 +176,7 @@ void Engine::setBackgroundColor(glm::vec3 bg){
  * @return glm::vec2 Size in glm::vec2 (width, height)
  */
 glm::vec2 Engine::getWindowSize(){
-    int width, height;
-    glfwGetWindowSize(window, &width, &height);
-    return glm::vec2(width, height);
+    return window_size;
 }
 /**
  * @brief Get current view width

@@ -4,21 +4,26 @@ std::map<std::string, Object3D*> ObjectsTotal;
 Object3D::Object3D(){
     
 }
-Object3D::Object3D(const char* file) : modelMatrix(glm::mat4(1.0f)){
+Object3D::Object3D(const char* file) : wasRendered(false), modelMatrix(glm::mat4(1.0f)){
     LoadModel(file);
 }
 bool Object3D::LoadModel(const char* file){
     tinygltf::TinyGLTF loader;
     std::string err;
     std::string warn;
-    loader.LoadBinaryFromFile(&model, &err, &warn, file);
+    loader.LoadASCIIFromFile(&model, &err, &warn, file);
+    if(err!=""){
+        std::cout << "Error Loading: " << err << "\nWarning: "<< warn << std::endl;
+        return false;
+    }
     scene = &model.scenes[model.defaultScene];
-
     
 
     // Initialize nodes
     InitializeNodes();
+    
     LoadTextures();
+    
     // Load meshes
     LoadMeshes();
 
@@ -41,7 +46,7 @@ void Object3D::InitializeNodes(){
     nodeScale.resize(nodeCount);
 
     nodeLocalMatrix.resize(nodeCount);
-    nodeGlobalMatrix.resize(nodeCount);
+    nodeGlobalMatrix.resize(nodeCount, glm::mat4(1.0f));
 
     morphWeights.resize(nodeCount);
 
@@ -105,13 +110,10 @@ void Object3D::LoadMeshes()
 }
 void Object3D::LoadNode(int nodeIndex){
     const tinygltf::Node& node = model.nodes[nodeIndex];
-
-    if (node.mesh >= 0)
-    {
+    
+    if (node.mesh >= 0){
         const tinygltf::Mesh& mesh = model.meshes[node.mesh];
-
-        for (const tinygltf::Primitive& primitive : mesh.primitives)
-        {
+        for (const tinygltf::Primitive& primitive : mesh.primitives){
             LoadPrimitive(primitive, nodeIndex, node.skin);
         }
     }
@@ -127,7 +129,7 @@ void Object3D::LoadPrimitive(const tinygltf::Primitive& primitive, int nodeIndex
     newPrimitive.nodeIndex = nodeIndex;
     newPrimitive.skinIndex = skinIndex;
     newPrimitive.materialIndex = primitive.material;
-
+    
     LoadVertices(primitive, newPrimitive);
     LoadIndices(primitive, newPrimitive);
     LoadMorphTargets(primitive, newPrimitive);
@@ -164,6 +166,75 @@ std::vector<glm::vec4> Object3D::readVecFloat(const tinygltf::Primitive& primiti
 void Object3D::LoadTextures(){
     
     hasTexture = false;
+    std::string basePath = "3DObjects/";
+    textureRefs.resize(model.images.size());
+    for (size_t i = 0; i < model.images.size(); i++) {
+        const auto& image = model.images[i];
+        textureRefs[i].vtId = GTextureRegistry.registerTexture(
+            basePath + image.uri,
+            image.width,
+            image.height
+        );
+        hasTexture = true;
+    }
+    materials.resize(model.materials.size());
+    for (size_t i = 0; i < model.materials.size(); i++) {
+        const auto& mat = model.materials[i];
+        const auto& pbr = mat.pbrMetallicRoughness;
+        Material& m = materials[i];
+
+        // PBR factors (same as before)
+        m.baseColorFactor = glm::vec4(pbr.baseColorFactor[0], pbr.baseColorFactor[1],
+                                      pbr.baseColorFactor[2], pbr.baseColorFactor[3]);
+        m.metallicFactor  = (float)pbr.metallicFactor;
+        m.roughnessFactor = (float)pbr.roughnessFactor;
+            
+        // Store IMAGE INDEX instead of atlas offset
+        if (pbr.baseColorTexture.index >= 0){
+            int imgId = model.textures[pbr.baseColorTexture.index].source;
+            m.albedoImageIndex = textureRefs[imgId].vtId;
+            const VTexEntry& e = GTextureRegistry.get(m.albedoImageIndex);
+            GTextureRegistry.setLayer(textureRefs[imgId].vtId, 0);
+            m.albedoRegionOrigin = glm::vec2(e.region.originX, e.region.originY);
+            m.regionSize         = glm::vec2(e.region.tilesW,  e.region.tilesH);
+        }
+        if (mat.normalTexture.index >= 0){
+            int imgId = model.textures[mat.normalTexture.index].source;
+            m.normalImageIndex = textureRefs[imgId].vtId;
+            const VTexEntry& e = GTextureRegistry.get(m.normalImageIndex);
+            GTextureRegistry.setLayer(textureRefs[imgId].vtId, 1);
+            m.normalRegionOrigin = glm::vec2(e.region.originX, e.region.originY);
+            if (m.regionSize == glm::vec2(0.0f))
+                m.regionSize = glm::vec2(e.region.tilesW, e.region.tilesH);
+        }
+        if (pbr.metallicRoughnessTexture.index >= 0){
+            int imgId = model.textures[pbr.metallicRoughnessTexture.index].source;
+            m.metallicRoughnessImageIndex = textureRefs[imgId].vtId;
+            const VTexEntry& e = GTextureRegistry.get(m.metallicRoughnessImageIndex);
+            GTextureRegistry.setLayer(textureRefs[imgId].vtId, 2);
+            m.metallicRegionOrigin = glm::vec2(e.region.originX, e.region.originY);
+            if (m.regionSize == glm::vec2(0.0f))
+                m.regionSize = glm::vec2(e.region.tilesW, e.region.tilesH);
+        }
+
+        if (mat.emissiveTexture.index >= 0){
+            int imgId = model.textures[mat.emissiveTexture.index].source;
+            m.emissiveImageIndex = textureRefs[imgId].vtId;
+            const VTexEntry& e = GTextureRegistry.get(m.emissiveImageIndex);
+            GTextureRegistry.setLayer(textureRefs[imgId].vtId, 3);
+            m.emissiveRegionOrigin = glm::vec2(e.region.originX, e.region.originY);
+            if (m.regionSize == glm::vec2(0.0f))
+                m.regionSize = glm::vec2(e.region.tilesW, e.region.tilesH);
+        }
+        m.emissiveFactor  = glm::vec4(mat.emissiveFactor[0], mat.emissiveFactor[1], mat.emissiveFactor[2], 0.0f);
+        m.normalScale         = (float)mat.normalTexture.scale;
+        m.occlusionStrength   = (float)mat.occlusionTexture.strength;
+        m.alphaMode           = (mat.alphaMode=="OPAQUE") ? 0: (mat.alphaMode=="MASK") ? 1 : 2;
+        m.alphaCutoff         = (float)mat.alphaCutoff;
+        m.doubleSided         = mat.doubleSided;
+    }
+    
+    /*
     std::vector<glm::vec2> imageOffsets(model.images.size());
     std::vector<glm::vec2> imageScaleFactors(model.images.size());
     for (size_t i = 0; i < model.images.size(); i++) {
@@ -171,7 +242,6 @@ void Object3D::LoadTextures(){
         imageScaleFactors[i] = glm::vec2(image.width, image.height)/MainTextureAtlas.GetAtlasSize();
         imageOffsets[i] = MainTextureAtlas.TextureAdd(image.image, image.width, image.height);
 
-        //std::cout << "Loaded image at offset: " << i << " (" << imageOffsets[i].x << "," << imageOffsets[i].y << ")" << std::endl;
         hasTexture=true;
     }
     
@@ -179,7 +249,6 @@ void Object3D::LoadTextures(){
         return;
     }
     
-    //materialTextureOffsets.resize(model.materials.size());
     materials.resize(model.materials.size());
     for (size_t i = 0; i < model.materials.size(); i++) {
         const tinygltf::Material& material = model.materials[i];
@@ -191,12 +260,6 @@ void Object3D::LoadTextures(){
         m.metallicFactor  = (float)pbr.metallicFactor;
         m.roughnessFactor = (float)pbr.roughnessFactor;
 
-        /*m.baseColorTexture          = pbr.baseColorTexture.index;
-        m.metallicRoughnessTexture  = pbr.metallicRoughnessTexture.index;
-        m.normalTexture             = material.normalTexture.index;
-        m.occlusionTexture          = material.occlusionTexture.index;
-        m.emissiveTexture           = material.emissiveTexture.index;*/
-
         m.emissiveFactor  = glm::vec4(material.emissiveFactor[0], material.emissiveFactor[1], material.emissiveFactor[2], 0.0f);
         m.normalScale         = (float)material.normalTexture.scale;
         m.occlusionStrength   = (float)material.occlusionTexture.strength;
@@ -205,16 +268,12 @@ void Object3D::LoadTextures(){
         m.doubleSided         = material.doubleSided;
 
 
-        if (pbr.baseColorTexture.index >= 0 /*&& (unsigned)pbr.baseColorTexture.index < model.textures.size()*/) {
+        if (pbr.baseColorTexture.index >= 0) {
             
             int imgIndex = model.textures[pbr.baseColorTexture.index].source;
             texOffset[imgIndex] = imageOffsets[imgIndex];
             texScaleFactor[imgIndex] = imageScaleFactors[imgIndex];
 
-            /*printf("Material %zu -> imageIndex %d -> offset (%.3f, %.3f) scale (%.3f, %.3f)\n",
-            i, imgIndex,
-            imageOffsets[imgIndex].x, imageOffsets[imgIndex].y,
-            imageScaleFactors[imgIndex].x, imageScaleFactors[imgIndex].y);*/
         }
         
         if(pbr.metallicRoughnessTexture.index >= 0){
@@ -234,14 +293,11 @@ void Object3D::LoadTextures(){
             m.emissiveOffset = imageOffsets[imgIndex];
         }
 
-    }
+    }*/
 }
 void Object3D::LoadVertices(const tinygltf::Primitive& primitive, Primitive& outPrimitive){
-    /*const float* positions = nullptr;
-    const float* normals = nullptr;
-    const float* texcoords = nullptr;
-    const float* weights = nullptr;
-    const uint16_t* joints = nullptr;*/
+
+
     std::vector<glm::vec4> pos = readVecFloat(primitive, "POSITION", 3);
     std::vector<glm::vec4> normals = readVecFloat(primitive, "NORMAL", 3);
     std::vector<glm::vec4> texCoords = readVecFloat(primitive, "TEXCOORD_0", 2);
@@ -253,28 +309,48 @@ void Object3D::LoadVertices(const tinygltf::Primitive& primitive, Primitive& out
     for(unsigned i =0;i<pos.size();i++){
             Vertex3D vertex;
             vertex.pos = pos[i];
-            //std::cout << pos[i].x << ",\t" << pos[i].y << ",\t" << pos[i].z << std::endl;
-            vertex.normal = (normals.size() > i) ? normals[i] : glm::vec4(0.0f);
-            vertex.color = (colors.size() > i) ? colors[i] : glm::vec4(1.0f);
             vertex.texCoords = (texCoords.size() > i) ? glm::vec2(texCoords[i]) : glm::vec2(0.0f);
-            vertex.joints = (joints.size()>i) ? glm::uvec4(joints[i]) : glm::uvec4(0);
-            vertex.weights = (weights.size()>i) ? weights[i] : glm::vec4(0);
+            vertex.texCoords = glm::vec2(glm::fract(vertex.texCoords.x), glm::fract(vertex.texCoords.y));
+            auto packNormal = [](glm::vec3 n) -> unsigned {
+                n = glm::normalize(n);
+                unsigned x = (unsigned)((n.x * 0.5f + 0.5f) * 65535.0f) & 0xFFFF;
+                unsigned y = (unsigned)((n.y * 0.5f + 0.5f) * 65535.0f) & 0xFFFF;
+                return (x << 16) | y;
+            };
+            vertex.normal = (normals.size() > i) ? packNormal(normals[i]) : 0;
+            auto packColor = [](glm::vec4 c) -> unsigned {
+                return ((unsigned)(c.r * 255) & 0xFF) << 24 |
+                    ((unsigned)(c.g * 255) & 0xFF) << 16 |
+                    ((unsigned)(c.b * 255) & 0xFF) << 8  |
+                    ((unsigned)(c.a * 255) & 0xFF);
+            };
+            vertex.color = (colors.size() > i) ? packColor(colors[i]) : 0xffffffff;
+            auto packJoints = [](glm::uvec4 j) -> unsigned {
+                return ((j.x & 0xFF) << 24) | ((j.y & 0xFF) << 16) |
+                       ((j.z & 0xFF) <<  8) |  (j.w & 0xFF);
+            };
+            vertex.joints = (joints.size()>i) ? packJoints(joints[i]) : 0;
+            auto packWeights = [](glm::vec4 w) -> unsigned {
+                return ((unsigned)(w.x * 255) << 24) | ((unsigned)(w.y * 255) << 16) |
+                       ((unsigned)(w.z * 255) <<  8) |  (unsigned)(w.w * 255);
+            };
+            vertex.weights = (weights.size()>i) ? packWeights(weights[i]) : 0;
             /*
             vertex.pos = pos[getIndexFromAccessor(mdl, primitive, "POSITION", i)];
             vertex.normal = (normals.size()>i) ? normals[getIndexFromAccessor(mdl, primitive, "NORMAL", i)] : glm::vec3(0.0f);
             vertex.color = (colors.size()>i) ? colors[getIndexFromAccessor(mdl, primitive, "COLOR_0", i)] : glm::vec4(1.0f);
             vertex.texCoords = (texCoords.size()>i) ? texCoords[getIndexFromAccessor(mdl, primitive, "TEXCOORD_0", i)] : glm::vec2(0.0);*/
 
-            vertex.texCoords = glm::vec2(glm::fract(vertex.texCoords.x), glm::fract(vertex.texCoords.y));
-            if(!texOffset.empty())
+            
+            /*if(!texOffset.empty())
                 vertex.texCoords = (vertex.texCoords*texScaleFactor[primitive.material])+texOffset[primitive.material];
                 //printf("%f : %f\n", texOffset[primitive.material].x, texOffset[primitive.material].y);
-            vertex.texCoords = glm::clamp(vertex.texCoords, glm::vec2(0.0f), glm::vec2(1.0f));
+            vertex.texCoords = glm::clamp(vertex.texCoords, glm::vec2(0.0f), glm::vec2(1.0f));*/
             //std::cout << vertex.texCoords.x << " " << vertex.texCoords.y << std::endl;
-            if(hasTexture)
+            /*if(hasTexture)
                 vertex.textureSlot=MainTextureAtlas.GetTextureSlot();
             else
-                vertex.textureSlot = -1;
+                vertex.textureSlot = -1;*/
             outPrimitive.vertices[i] = vertex;
     }
     
@@ -594,15 +670,15 @@ void Object3D::UpdateNodeMatrices(){
 
         nodeLocalMatrix[i] = T * R * S;
     }
-
+    
     for (int rootNode : scene->nodes)
     {
-        UpdateNodeRecursive(rootNode, glm::mat4(1));
+        
+        UpdateNodeRecursive(rootNode, glm::mat4(1.0f));
     }
 }
 void Object3D::UpdateNodeRecursive(int nodeIndex, const glm::mat4& parent){
     nodeGlobalMatrix[nodeIndex] = parent * nodeLocalMatrix[nodeIndex];
-
     for (int child : model.nodes[nodeIndex].children)
     {
         UpdateNodeRecursive(child, nodeGlobalMatrix[nodeIndex]);
@@ -628,20 +704,21 @@ void Object3D::UpdateSkinMatrices()
 }
 void Object3D::samplePlane2D(){
     Vertex3D botLeft, botRight, topRight, topLeft;
-    botLeft.textureSlot = botRight.textureSlot=topRight.textureSlot=topLeft.textureSlot=0;
+    //botLeft.textureSlot = botRight.textureSlot=topRight.textureSlot=topLeft.textureSlot=0;
     botLeft.pos = glm::vec3(-5.f, 0,-5.f );
     botRight.pos = glm::vec3(5.f, 0,-5.f );
     topRight.pos = glm::vec3(5.f, 0, 5.f );
     topLeft.pos = glm::vec3(-5.f, 0, 5.f);
-    botLeft.normal = botRight.normal = topLeft.normal = topRight.normal = glm::vec3(0,1.0f,0);
-    botLeft.color = botRight.color = topLeft.color = topRight.color = glm::vec4(1,1,1,1);
     botLeft.texCoords = glm::vec2(0,0);
     botRight.texCoords = glm::vec2(1,0);
     topRight.texCoords = glm::vec2(1,1);
     topLeft.texCoords = glm::vec2(0,1);
+    botLeft.normal = botRight.normal = topLeft.normal = topRight.normal = 0;
+    botLeft.color = botRight.color = topLeft.color = topRight.color = 0xffffffff;
+    
 
-    botLeft.joints = botRight.joints=topRight.joints=topLeft.joints=glm::uvec4(0);
-    botLeft.weights = botRight.weights=topRight.weights=topLeft.weights=glm::vec4(0.0f);
+    botLeft.joints = botRight.joints=topRight.joints=topLeft.joints=0;
+    botLeft.weights = botRight.weights=topRight.weights=topLeft.weights=0;
 
     Primitive temp;
     temp.vertices.push_back(botLeft);

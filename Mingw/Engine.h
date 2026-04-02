@@ -45,17 +45,19 @@ public:
     static const float* getViewMatrix2D();
     Engine();
     void setBackgroundColor(glm::vec3);
-    glm::vec2 getWindowSize();
+    static glm::vec2 getWindowSize();
     int getViewWidth();
     int getViewHeight();
     int getViewX();
     int getViewY();
 private:
     int view_xview, view_yview;
+    static glm::vec2 window_size;
     glm::vec3 background_color;
 
+    friend void windowSizeCallback(GLFWwindow* window, int width, int height);
 
-    GLFWwindow* window;
+    static GLFWwindow* window;
     static unsigned int CompileShader(unsigned int type, const char*source);
     static glm::mat4 projMat;
     static glm::mat4 viewMat;

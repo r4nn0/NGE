@@ -32,21 +32,39 @@ int main (){
     glm::vec3 BACKGROUND_COLOR(25.f/255.f);
     Engine gameEngine;
     
-    gameEngine.init("NGE", 1000,500);
-    LoadSpritesToMemroy();
+    gameEngine.init("NGE", 1600,900);
+    //LoadSpritesToMemroy();
     LoadModelsToMemory();
     
     //If the app crashes try using a font that is located in the same directory as the app
     //FTGLPixmapFont font("C:/Windows/Fonts/arial.ttf");
     Skybox skybox;
-	Renderer2D renderer;
+	//Renderer2D renderer;
     Renderer3D renderer3D;
+    static bool tilesRequested = false;
+    if (!tilesRequested) {
+        tilesRequested = true;
+        for (int t = 0; t < GTextureRegistry.count(); t++) {
+            const VTexEntry& e = GTextureRegistry.get(t);
+            for (int y = 0; y < e.region.tilesH; y++) {
+                for (int x = 0; x < e.region.tilesW; x++) {
+                    TileID id;
+                    id.x     = e.region.originX + x;
+                    id.y     = e.region.originY + y;
+                    id.mip   = 0;
+                    id.layer = e.layer;
+                    GVirtualTextureSystem.requestTile(id, 0);
+                }
+            }
+        }
+    }
     TextRenderer tr;
-    TestPlayer obj2D("sonic_run");
+    //TestPlayer obj2D("sonic_run");
     //testObject.color = glm::vec4(1,0,0,1);
 
-    Entity obj3D("Duck");
-
+    //Entity obj3D("SciFiHelmet");
+    //Entity obj2("SciFiHelmet");
+    Entity Sponza("Sponza");
     //Entity sec ("AnimatedMorphSphere");
     //Entity floor;
     double prevTime = glfwGetTime();
@@ -54,14 +72,13 @@ int main (){
     std::wstring fpsString = L"0";
     float actdir= -60;
     float actpitch=60;
-    float hsp=-10, vsp=-10, zsp=-2;
+    float hsp=-10, vsp=-10, zsp=-1;
     float sense = 0.1f;
     float truckRot =0;
-    
     gameEngine.setBackgroundColor(BACKGROUND_COLOR);
     
     while(!glfwWindowShouldClose(gameEngine.get_window())){
-        //auto t1 = std::chrono::high_resolution_clock::now();
+        
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
             break;
         double currTime = glfwGetTime();
@@ -89,10 +106,10 @@ int main (){
         gameEngine.camera3d.setOrbit(glm::vec3(hsp,zsp,vsp));
 
 
-        float moveSpeed = 0.05;
+        float moveSpeed = 10;
         float turnSpeed = 1.2;
         if(keyboard_check(GLFW_KEY_LEFT_SHIFT) || keyboard_check(GLFW_KEY_RIGHT_SHIFT))
-            moveSpeed=0.5;
+            moveSpeed=50;
         int moving = keyboard_check('W') - keyboard_check('S');
 
         hsp -= ((keyboard_check('D') - keyboard_check('A')) * glm::cos(dir)
@@ -103,30 +120,36 @@ int main (){
         //hsp -= moving *glm::sin(truckRot)* moveSpeed;
         zsp +=(keyboard_check('E') - keyboard_check('Q')) * moveSpeed;
         
-        
         truckRot += glm::radians((keyboard_check('D') - keyboard_check('A'))*turnSpeed * moving);
-        obj3D.UpdateAnimation(moving*0.005f);
+        //obj3D.UpdateAnimation(moving*0.005f);
         
-        obj3D.rotation=glm::vec3(glm::radians(180.0f), 0,0);
-        //obj3D.position=glm::vec3(-15,-15,-15);
+        //obj3D.rotation=glm::vec3(glm::radians(90.0f), 0,0);
+        Sponza.rotation=glm::vec3(glm::radians(180.0f),0,0);
+        //obj3D.position=glm::vec3(-10,0,-10);
         //sec.UpdateAnimation(0.001);
         //sec.position = glm::vec3(50,0,50);*/
         //floor.scale = glm::vec3(5,0,5);
 
         gameEngine.StepEvent();
-
         
-        obj2D.Update();
+        
+        //obj2D.Update();
         //testObject2.Update();
         
         gameEngine.BeginDraw();
+        
         skybox.Render();
+        
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
         
         
-        obj2D.Render();
-        obj3D.Render();
+        //obj2D.Render();
+        //obj3D.Render();
+        //obj2.Render();
+        Sponza.Render();
+        //Topaki.Render();
         tr.renderText(fpsString, 5, 15, 0);
+        
         //sec.Render();
         //floor.Render();
 
@@ -137,12 +160,12 @@ int main (){
         //tr.renderText(ar_fix(L"مرحبا هذه تجربة"), 100,  100, -1);
         
         renderer3D.Render();
+        
         glClear(GL_DEPTH_BUFFER_BIT);
-        renderer.Render();
+        
+        //renderer.Render();
         tr.flush();
         gameEngine.EndDraw();
-
-        //auto t2 = std::chrono::high_resolution_clock::now();
         //auto ms_int = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
         //std::cout << ms_int.count() << std::endl;
     }

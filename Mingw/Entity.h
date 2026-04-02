@@ -11,6 +11,7 @@ public:
     void UpdateAnimation(float);
     void Render();
     void modelSet(std::string);
+    Object3D& getModel();
     const std::string& getModelName()const { return objectName;} 
     glm::vec3 scale, rotation, position;
 private:

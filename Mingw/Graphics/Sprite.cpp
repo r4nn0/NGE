@@ -1,6 +1,6 @@
 #include "Sprite.h"
 std::map<std::string, Sprite*> SpritesTotal;
-TexturePage MainTextureAtlas(8000,8000,4,0);
+TexturePage MainTextureAtlas(8192,8192,4,0);
 
 /**
  * @brief Create a sprite without texture
