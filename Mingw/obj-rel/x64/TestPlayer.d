@@ -187,8 +187,7 @@ obj-rel/x64/TestPlayer.o: TestPlayer.cpp TestPlayer.h Object2D.h \
  include/glm/gtx/../gtx/dual_quaternion.hpp \
  include/glm/gtx/../gtx/dual_quaternion.inl \
  include/glm/gtx/string_cast.inl include/tiny_gltf.h \
- include/../Graphics/Sprite.h include/../Graphics/VTexRegistery.h \
- include/../Graphics/VRegAllocator.h
+ include/../Graphics/Sprite.h
 TestPlayer.h:
 Object2D.h:
 Graphics/Renderers/Renderer2D.h:
@@ -405,5 +404,3 @@ include/glm/gtx/../gtx/dual_quaternion.inl:
 include/glm/gtx/string_cast.inl:
 include/tiny_gltf.h:
 include/../Graphics/Sprite.h:
-include/../Graphics/VTexRegistery.h:
-include/../Graphics/VRegAllocator.h:

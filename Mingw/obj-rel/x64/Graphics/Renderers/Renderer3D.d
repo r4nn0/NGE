@@ -192,11 +192,7 @@ obj-rel/x64/Graphics/Renderers/Renderer3D.o: \
  include/glm/gtx/../gtx/dual_quaternion.hpp \
  include/glm/gtx/../gtx/dual_quaternion.inl \
  include/glm/gtx/string_cast.inl include/tiny_gltf.h \
- Graphics/Renderers/../../Graphics/Sprite.h \
- Graphics/Renderers/../../Graphics/VTexRegistery.h \
- Graphics/Renderers/../../Graphics/VRegAllocator.h \
- Graphics/Renderers/../VTexSystem.h Graphics/Renderers/../VTexReader.h \
- Graphics/Renderers/../VTexRegistery.h
+ Graphics/Renderers/../../Graphics/Sprite.h
 Graphics/Renderers/Renderer3D.h:
 Graphics/Renderers/../../ngestd.h:
 Graphics/Renderers/../../Graphics/Sprite.h:
@@ -411,8 +407,3 @@ include/glm/gtx/../gtx/dual_quaternion.inl:
 include/glm/gtx/string_cast.inl:
 include/tiny_gltf.h:
 Graphics/Renderers/../../Graphics/Sprite.h:
-Graphics/Renderers/../../Graphics/VTexRegistery.h:
-Graphics/Renderers/../../Graphics/VRegAllocator.h:
-Graphics/Renderers/../VTexSystem.h:
-Graphics/Renderers/../VTexReader.h:
-Graphics/Renderers/../VTexRegistery.h:

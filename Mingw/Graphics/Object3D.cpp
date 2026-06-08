@@ -167,22 +167,13 @@ void Object3D::LoadTextures(){
     
     hasTexture = false;
     std::string basePath = "3DObjects/";
-    textureRefs.resize(model.images.size());
-    for (size_t i = 0; i < model.images.size(); i++) {
-        const auto& image = model.images[i];
-        textureRefs[i].vtId = GTextureRegistry.registerTexture(
-            basePath + image.uri,
-            image.width,
-            image.height
-        );
-        hasTexture = true;
-    }
+    
     materials.resize(model.materials.size());
     for (size_t i = 0; i < model.materials.size(); i++) {
         const auto& mat = model.materials[i];
         const auto& pbr = mat.pbrMetallicRoughness;
         Material& m = materials[i];
-
+        /*
         // PBR factors (same as before)
         m.baseColorFactor = glm::vec4(pbr.baseColorFactor[0], pbr.baseColorFactor[1],
                                       pbr.baseColorFactor[2], pbr.baseColorFactor[3]);
@@ -226,6 +217,7 @@ void Object3D::LoadTextures(){
             if (m.regionSize == glm::vec2(0.0f))
                 m.regionSize = glm::vec2(e.region.tilesW, e.region.tilesH);
         }
+        */
         m.emissiveFactor  = glm::vec4(mat.emissiveFactor[0], mat.emissiveFactor[1], mat.emissiveFactor[2], 0.0f);
         m.normalScale         = (float)mat.normalTexture.scale;
         m.occlusionStrength   = (float)mat.occlusionTexture.strength;

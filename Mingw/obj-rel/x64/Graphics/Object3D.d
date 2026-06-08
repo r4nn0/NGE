@@ -187,8 +187,7 @@ obj-rel/x64/Graphics/Object3D.o: Graphics/Object3D.cpp \
  include/GLFW/glfw3.h Graphics/../Input.h Graphics/../gmath.h \
  Graphics/../Graphics/Camera3D.h include/glm/gtc/type_ptr.hpp \
  include/glm/gtc/type_ptr.inl include/stb_image.h \
- include/stb_image_write.h Graphics/VTexRegistery.h \
- Graphics/VRegAllocator.h
+ include/stb_image_write.h
 Graphics/Object3D.h:
 Graphics/../Ngetype.h:
 include/glm/glm.hpp:
@@ -400,5 +399,3 @@ include/glm/gtc/type_ptr.hpp:
 include/glm/gtc/type_ptr.inl:
 include/stb_image.h:
 include/stb_image_write.h:
-Graphics/VTexRegistery.h:
-Graphics/VRegAllocator.h:

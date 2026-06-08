@@ -187,8 +187,7 @@ obj-rel/x64/Object2D.o: Object2D.cpp Object2D.h \
  include/glm/gtx/../gtx/dual_quaternion.hpp \
  include/glm/gtx/../gtx/dual_quaternion.inl \
  include/glm/gtx/string_cast.inl include/tiny_gltf.h \
- include/../Graphics/Sprite.h include/../Graphics/VTexRegistery.h \
- include/../Graphics/VRegAllocator.h
+ include/../Graphics/Sprite.h
 Object2D.h:
 Graphics/Renderers/Renderer2D.h:
 include/../ngestd.h:
@@ -404,5 +403,3 @@ include/glm/gtx/../gtx/dual_quaternion.inl:
 include/glm/gtx/string_cast.inl:
 include/tiny_gltf.h:
 include/../Graphics/Sprite.h:
-include/../Graphics/VTexRegistery.h:
-include/../Graphics/VRegAllocator.h:

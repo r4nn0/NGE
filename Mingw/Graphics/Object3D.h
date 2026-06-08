@@ -8,7 +8,6 @@
 #include "../Ngetype.h"
 #include "tiny_gltf.h"
 #include "Sprite.h"
-#include "VTexRegistery.h"
 class Object3D
 {
 public:
@@ -61,11 +60,6 @@ public:
     bool playing = true;
 
     bool hasTexture;
-    struct TextureRef {
-        
-        int vtId = -1;
-    };
-    std::vector<TextureRef> textureRefs;
     /*
     std::map<int ,glm::vec2> texScaleFactor;
     std::map<int, glm::vec2> texOffset;

@@ -187,19 +187,16 @@ obj-rel/x64/main.o: main.cpp Graphics/Renderers/Renderer2D.h \
  include/glm/gtx/../gtx/dual_quaternion.hpp \
  include/glm/gtx/../gtx/dual_quaternion.inl \
  include/glm/gtx/string_cast.inl include/tiny_gltf.h \
- include/../Graphics/Sprite.h include/../Graphics/VTexRegistery.h \
- include/../Graphics/VRegAllocator.h Graphics/Renderers/Renderer3D.h \
- Graphics/Renderers/../../ngestd.h Graphics/Renderers/../VTexSystem.h \
- Graphics/Renderers/../VTexReader.h Graphics/Renderers/../VTexRegistery.h \
- Graphics/Renderers/TextRenderer.h Graphics/Renderers/../Sprite.h \
- include/ft2build.h include/freetype/config/ftheader.h \
- include/freetype/freetype.h include/freetype/config/ftconfig.h \
- include/freetype/config/ftoption.h include/freetype/config/ftstdlib.h \
- include/freetype/fttypes.h include/freetype/ftsystem.h \
- include/freetype/ftimage.h include/freetype/fterrors.h \
- include/freetype/ftmoderr.h include/freetype/fterrdef.h \
- Graphics/Renderers/SkyboxRenderer.h ngestd.h TestPlayer.h Object2D.h \
- Entity.h
+ include/../Graphics/Sprite.h Graphics/Renderers/Renderer3D.h \
+ Graphics/Renderers/../../ngestd.h Graphics/Renderers/TextRenderer.h \
+ Graphics/Renderers/../Sprite.h include/ft2build.h \
+ include/freetype/config/ftheader.h include/freetype/freetype.h \
+ include/freetype/config/ftconfig.h include/freetype/config/ftoption.h \
+ include/freetype/config/ftstdlib.h include/freetype/fttypes.h \
+ include/freetype/ftsystem.h include/freetype/ftimage.h \
+ include/freetype/fterrors.h include/freetype/ftmoderr.h \
+ include/freetype/fterrdef.h Graphics/Renderers/SkyboxRenderer.h ngestd.h \
+ TestPlayer.h Object2D.h Entity.h
 Graphics/Renderers/Renderer2D.h:
 include/../ngestd.h:
 include/../Graphics/Sprite.h:
@@ -414,13 +411,8 @@ include/glm/gtx/../gtx/dual_quaternion.inl:
 include/glm/gtx/string_cast.inl:
 include/tiny_gltf.h:
 include/../Graphics/Sprite.h:
-include/../Graphics/VTexRegistery.h:
-include/../Graphics/VRegAllocator.h:
 Graphics/Renderers/Renderer3D.h:
 Graphics/Renderers/../../ngestd.h:
-Graphics/Renderers/../VTexSystem.h:
-Graphics/Renderers/../VTexReader.h:
-Graphics/Renderers/../VTexRegistery.h:
 Graphics/Renderers/TextRenderer.h:
 Graphics/Renderers/../Sprite.h:
 include/ft2build.h:

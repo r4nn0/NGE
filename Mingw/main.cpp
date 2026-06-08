@@ -41,7 +41,9 @@ int main (){
     Skybox skybox;
 	//Renderer2D renderer;
     Renderer3D renderer3D;
-    static bool tilesRequested = false;
+    
+    /*static bool tilesRequested = false;
+    
     if (!tilesRequested) {
         tilesRequested = true;
         for (int t = 0; t < GTextureRegistry.count(); t++) {
@@ -57,46 +59,60 @@ int main (){
                 }
             }
         }
-    }
+    }*/
     TextRenderer tr;
     //TestPlayer obj2D("sonic_run");
     //testObject.color = glm::vec4(1,0,0,1);
 
     //Entity obj3D("SciFiHelmet");
     //Entity obj2("SciFiHelmet");
-    Entity Sponza("Sponza");
+    Entity Model("Char");
     //Entity sec ("AnimatedMorphSphere");
     //Entity floor;
-    double prevTime = glfwGetTime();
-    unsigned short FPS = 0;
+    //double prevTime = glfwGetTime();
     std::wstring fpsString = L"0";
     float actdir= -60;
     float actpitch=60;
     float hsp=-10, vsp=-10, zsp=-1;
-    float sense = 0.1f;
+    float sense = 0.12f;
     float truckRot =0;
+
+    
     gameEngine.setBackgroundColor(BACKGROUND_COLOR);
     
+    float fpsReal=0;
+    auto prevTime=std::chrono::steady_clock::now();
     while(!glfwWindowShouldClose(gameEngine.get_window())){
-        
+        float LX = gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_X) > 0.5 ? 1 : gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_X) <-0.5 ? -1 : 0;
+        float LY = gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_Y) > 0.5 ? 1 : gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_Y) <-0.5 ? -1 : 0;
+
+        float RX = gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_RIGHT_X) > 0.5 ? 1 : gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_RIGHT_X) <-0.5 ? -1 : 0;
+        float RY = gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER) > 0.5 ? 1 : gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER) <-0.5 ? -1 : 0;
+        //std::cout << "LX: " << LX << "\nLY: " << LY << "\nRX: " << RX << "\nRY: " << RY << std::endl;
+        auto currTime=std::chrono::steady_clock::now();
+        std::chrono::duration<float> dt = currTime-prevTime;
+        prevTime=currTime;
+        fpsReal = 1.f / dt.count();
+
+        // Render fps text every half a second
+        static double updatestrFPS = 0;
+        updatestrFPS++;
+        if(updatestrFPS>=(fpsReal/2.0)){
+            fpsString = std::to_wstring((int)gmath::round(fpsReal));
+            updatestrFPS=0;
+        }
+        //std::cout << "FPS: " <<fpsReal <<  std::endl;
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
             break;
-        double currTime = glfwGetTime();
-        FPS++;
-        if ( currTime - prevTime >= 1.0 ){
-            fpsString=std::to_wstring(FPS);
-            FPS=0;
-            prevTime=currTime;
-            
-        }
+        
         if(keyboard_check_pressed('L'))
             gameEngine.ToggleCursorVisibility();
         glfwSetCursorPos(gameEngine.get_window(),gameEngine.getViewWidth()/2, gameEngine.getViewHeight()/2);
-        actdir+=(mouse_x-gameEngine.getViewWidth()/2) * sense;
+        actdir+=(mouse_x-gameEngine.getViewWidth()/2) * sense + (RX);
         if(actdir>360) actdir -= 360;
         if(actdir<0) actdir += 360;
         float dir = glm::radians(actdir);
-        actpitch+=(mouse_y-gameEngine.getViewHeight()/2) * sense;
+        actpitch+=(mouse_y-gameEngine.getViewHeight()/2) * sense + (RY);
         if (actpitch > 60.0f) actpitch = 60.0f;
         if (actpitch < -60.0f) actpitch = -60.0f;
         float pitch = glm::radians(actpitch);
@@ -106,16 +122,17 @@ int main (){
         gameEngine.camera3d.setOrbit(glm::vec3(hsp,zsp,vsp));
 
 
-        float moveSpeed = 10;
+        float moveSpeed = 0.03 * (200/fpsReal);
         float turnSpeed = 1.2;
         if(keyboard_check(GLFW_KEY_LEFT_SHIFT) || keyboard_check(GLFW_KEY_RIGHT_SHIFT))
-            moveSpeed=50;
+            moveSpeed=0.1 * (200/fpsReal);
         int moving = keyboard_check('W') - keyboard_check('S');
-
-        hsp -= ((keyboard_check('D') - keyboard_check('A')) * glm::cos(dir)
-             +(keyboard_check('W') - keyboard_check('S')) * glm::sin(dir)) * moveSpeed;
-        vsp += ((keyboard_check('D') - keyboard_check('A')) * glm::sin(dir)
-             -(keyboard_check('W') - keyboard_check('S')) * glm::cos(dir)) * moveSpeed;
+        
+        
+        hsp -= (((keyboard_check('D') - keyboard_check('A')) * glm::cos(dir)
+             +(keyboard_check('W') - keyboard_check('S')) * glm::sin(dir)) + (LX * glm::cos(dir) - LY*glm::sin(dir))) * moveSpeed;
+        vsp += (((keyboard_check('D') - keyboard_check('A')) * glm::sin(dir)
+             -(keyboard_check('W') - keyboard_check('S')) * glm::cos(dir))  + (LX * glm::sin(dir) + LY*glm::cos(dir)))* moveSpeed;
         //vsp -= moving *glm::cos(truckRot)* moveSpeed;
         //hsp -= moving *glm::sin(truckRot)* moveSpeed;
         zsp +=(keyboard_check('E') - keyboard_check('Q')) * moveSpeed;
@@ -124,7 +141,7 @@ int main (){
         //obj3D.UpdateAnimation(moving*0.005f);
         
         //obj3D.rotation=glm::vec3(glm::radians(90.0f), 0,0);
-        Sponza.rotation=glm::vec3(glm::radians(180.0f),0,0);
+        Model.rotation=glm::vec3(glm::radians(-90.0f),0,0);
         //obj3D.position=glm::vec3(-10,0,-10);
         //sec.UpdateAnimation(0.001);
         //sec.position = glm::vec3(50,0,50);*/
@@ -146,7 +163,7 @@ int main (){
         //obj2D.Render();
         //obj3D.Render();
         //obj2.Render();
-        Sponza.Render();
+        Model.Render();
         //Topaki.Render();
         tr.renderText(fpsString, 5, 15, 0);
         

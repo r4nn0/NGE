@@ -2,7 +2,6 @@
 #define RENDERER3D_H
 
 #include "../../ngestd.h"
-#include "../VTexSystem.h"
 
 class Renderer3D{
 public:
@@ -29,17 +28,9 @@ private:
     void *m_vboBase, *m_indexBase, *m_mmSSBOBase, *m_mpSSBOBase, *m_jmSSBOBase, *m_mwSSBOBase, *m_nmSSBOBase, *m_materialSSBOBase, *m_ddSSBOBase;
     GLsync m_fence;
 
-    GLuint m_feedbackFBO     = 0;
-    GLuint m_feedbackTex     [4];  // color attachment
-    GLuint m_feedbackDepth   = 0;  // depth attachment
-    unsigned int m_feedbackShader = 0;
 
-    GLuint m_shadowFBO      = 0;
-    GLuint m_shadowMap      = 0; // depth texture
-    GLuint m_shadowShader   = 0;
     glm::mat4 m_lightSpaceMatrix;
 
-    static constexpr int SHADOW_MAP_SIZE = 2048;
 
     // Window size — needed to size the feedback FBO at 1/4 resolution
     glm::vec2 window_size;
@@ -52,22 +43,7 @@ private:
     GLint m_uLightColor = -1;
     GLint m_uLightInnerCutoff = -1;
     GLint m_uLightOuterCutoff = -1;
-    GLint m_uPhysicalAlbedo = -1;
-    GLint m_uPhysicalNormal = -1;
-    GLint m_uPhysicalRoughness = -1;
-    GLint m_uPhysicalEmissive = -1;
-    GLint m_uPageTableAlbedo = -1;
-    GLint m_uPageTableNormal = -1;
-    GLint m_uPageTableRoughness = -1;
-    GLint m_uPageTableEmissive = -1;
-    GLint m_uPhysicalSize = -1;
-    GLint m_uTileSize = -1;
-    GLint m_uPageTableSize = -1;
-
-    // Cached uniform locations — feedback shader
-    GLint m_fbProjMatrix = -1;
-    GLint m_fbVwMatrix = -1;
-    GLint m_fbPageTableSize = -1;
+    
 };
 
 #endif // RENDERER2D_H

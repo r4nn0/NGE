@@ -184,8 +184,7 @@ obj-rel/x64/ngestd.o: ngestd.cpp ngestd.h Graphics/Sprite.h \
  include/glm/gtx/../gtc/type_precision.inl \
  include/glm/gtx/../gtx/dual_quaternion.hpp \
  include/glm/gtx/../gtx/dual_quaternion.inl \
- include/glm/gtx/string_cast.inl include/tiny_gltf.h Graphics/Sprite.h \
- Graphics/VTexRegistery.h Graphics/VRegAllocator.h
+ include/glm/gtx/string_cast.inl include/tiny_gltf.h Graphics/Sprite.h
 ngestd.h:
 Graphics/Sprite.h:
 Graphics/../Engine.h:
@@ -399,5 +398,3 @@ include/glm/gtx/../gtx/dual_quaternion.inl:
 include/glm/gtx/string_cast.inl:
 include/tiny_gltf.h:
 Graphics/Sprite.h:
-Graphics/VTexRegistery.h:
-Graphics/VRegAllocator.h:
