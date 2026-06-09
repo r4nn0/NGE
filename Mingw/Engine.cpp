@@ -44,6 +44,7 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
         std::cout << "Error Initializing GLEW" << std::endl;
         return false;
     }
+    
     // Toggle VSYNC
     glfwSwapInterval(1);
 	
