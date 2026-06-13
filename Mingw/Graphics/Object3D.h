@@ -14,6 +14,7 @@ public:
     Object3D();
     Object3D(const char*);
     bool wasRendered;
+    int instanceID;
     tinygltf::Model model;
     const tinygltf::Scene* scene = nullptr;
     struct Primitive
@@ -85,7 +86,9 @@ public:
     void UpdateSkinMatrices();
     std::vector<float> animationDurations;
     std::vector<glm::vec4> readVecFloat(const tinygltf::Primitive& prim, const std::string& attr, int expectedComponents);
+    /// Debug Functions
     void samplePlane2D();
+    void switchTexture(int texID);
 };
 extern std::map<std::string, Object3D*> ObjectsTotal;
 #endif // OBJECT3D_H

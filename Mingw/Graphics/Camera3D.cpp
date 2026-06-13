@@ -21,6 +21,17 @@ glm::vec3 Camera3D::getRotation() const {
 glm::vec3 Camera3D::getOrbit() const {
     return orbit;
 }
+glm::vec3 Camera3D::getForward() const {
+    // Build the rotation matrix from your Euler angles
+    glm::mat4 _rotation = glm::mat4(1.0f);
+    _rotation = glm::rotate(_rotation, rotation.x, glm::vec3(0, 1, 0)); // Yaw
+    _rotation = glm::rotate(_rotation, rotation.y, glm::vec3(1, 0, 0)); // Pitch
+    _rotation = glm::rotate(_rotation, rotation.z, glm::vec3(0, 0, 1)); // Roll
+    
+    // Forward is -Z in camera space
+    glm::vec3 forward = glm::normalize(glm::vec3(_rotation * glm::vec4(0, 0, -1, 0)));
+    return forward;
+}
 glm::mat4 Camera3D::getMatrix() const {
     glm::mat4 cT = glm::mat4(1.0f);
     float relPos = glm::length(position-orbit);

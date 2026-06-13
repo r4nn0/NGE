@@ -28,32 +28,21 @@ struct Material {
 
     glm::vec4 baseColorFactor = glm::vec4(1.0f);            // 16 bytes
     glm::vec4 emissiveFactor = glm::vec4(1.0f);             // 16 bytes
-
-    glm::vec2 regionSize              = glm::vec2(0.0f);
-    glm::vec2 albedoRegionOrigin      = glm::vec2(0.0f);
-    glm::vec2 normalRegionOrigin      = glm::vec2(0.0f);
-    glm::vec2 metallicRegionOrigin   = glm::vec2(0.0f);
-    glm::vec2 emissiveRegionOrigin    = glm::vec2(0.0f);
-
-    float metallicFactor = 1.0f;                            //  4 bytes
-    float roughnessFactor = 1.0f;                           //  4 bytes
-    float normalScale = 1.0f;                               //  4 bytes
-    float occlusionStrength = 1.0f;                         //  4 bytes
-    float alphaCutoff = 0.5f;                               //  4 bytes
-
     
-    /*glm::vec2 metallicRoughnessOffset = glm::vec2(-1.0f);   //  8 bytes
-    glm::vec2 normalOffset = glm::vec2(-1.0f);              //  8 bytes
-    glm::vec2 occlusionOffset = glm::vec2(-1.0f);           //  8 bytes
-    glm::vec2 emissiveOffset = glm::vec2(-1.0f);            //  8 bytes*/
-    int albedoImageIndex            = -1;
-    int metallicRoughnessImageIndex = -1;
-    int normalImageIndex            = -1;
-    int emissiveImageIndex          = -1;
-    int doubleSided = 0;                                    //  4 bytes
-    int alphaMode = 0;                                      //  4 bytes (0=OPAQUE, 1=MASK, 2=BLEND)
-    int pad1;
-    int pad2;
-    int pad3;
+    // Bindless texture handles (stored as low/high 32-bit pairs for GLSL uvec2 compatibility)
+    uint64_t albedoHandle   = 0;
+    uint64_t metallicHandle   = 0;
+    uint64_t normalHandle   = 0;
+    uint64_t emissiveHandle   = 0;
+
+    float metallicFactor = 1.0f;                            
+    float roughnessFactor = 1.0f;                           
+    float normalScale = 1.0f;                               
+    float occlusionStrength = 1.0f;                         
+    float alphaCutoff = 0.5f;                               
+    
+    int doubleSided = 0;                                    
+    int alphaMode = 0;
+    int hasTexture;
 };
 #endif

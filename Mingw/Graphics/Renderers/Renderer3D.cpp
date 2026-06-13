@@ -2,14 +2,14 @@
 #include <glm/gtx/string_cast.hpp>
 #define MEGABYTE 1048576
 #define VERTEX_SIZE3D sizeof(Vertex3D)
-#define BUFFER_SIZE3D 130*MEGABYTE
-#define INDICES_SIZE3D BUFFER_SIZE3D/10
-#define MODEL_MATRICES_SSBO_SIZE3D 5*MEGABYTE
-#define MORPH_POSITIONS_SSBO_SIZE3D 5*MEGABYTE
-#define JOINT_MATRICES_SSBO_SIZE3D 5*MEGABYTE
-#define MORPH_WEIGHTS_SSBO_SIZE3D 5*MEGABYTE
-#define NODE_MATRICES_SSBO_SIZE3D 5*MEGABYTE
-#define MATERIAL_SSBO_SIZE_3D 5*MEGABYTE
+#define BUFFER_SIZE3D 1024*MEGABYTE
+#define INDICES_SIZE3D BUFFER_SIZE3D/4
+#define MODEL_MATRICES_SSBO_SIZE3D 128*MEGABYTE
+#define MORPH_POSITIONS_SSBO_SIZE3D 128*MEGABYTE
+#define JOINT_MATRICES_SSBO_SIZE3D 64*MEGABYTE
+#define MORPH_WEIGHTS_SSBO_SIZE3D 32*MEGABYTE
+#define NODE_MATRICES_SSBO_SIZE3D 128*MEGABYTE
+#define MATERIAL_SSBO_SIZE_3D 64*MEGABYTE
 
 /**
  * @brief Initialize batch renderer to pass correct values to shaders
@@ -82,12 +82,14 @@ Renderer3D::Renderer3D() : vboOffset(0), m_indexCount(0), m_instanceCount(0),m_m
     
     m_uProjMatrix      = glGetUniformLocation(m_Shader, "proj_matrix");
     m_uVwMatrix        = glGetUniformLocation(m_Shader, "vw_matrix");
-    m_uLightDir        = glGetUniformLocation(m_Shader, "lightDir");
-    m_uViewPos         = glGetUniformLocation(m_Shader, "viewPos");
-    m_uLightPos        = glGetUniformLocation(m_Shader, "lightPos");
-    m_uLightColor      = glGetUniformLocation(m_Shader, "lightColor");
-    m_uLightInnerCutoff = glGetUniformLocation(m_Shader, "lightCutoff");
-    m_uLightOuterCutoff = glGetUniformLocation(m_Shader, "lightOuterCutoff");
+    
+    m_uViewPos         = glGetUniformLocation(m_Shader, "uViewPos");
+    m_uLightColor      = glGetUniformLocation(m_Shader, "uLightColor");
+    m_uLightPos        = glGetUniformLocation(m_Shader, "uLightPos");
+    m_uLightDir        = glGetUniformLocation(m_Shader, "uLightDir");
+    m_uLightIntensity = glGetUniformLocation(m_Shader, "uLightIntensity");
+    m_uAmbientStrength = glGetUniformLocation(m_Shader, "uAmbientStrength");
+    m_uLightMode       = glGetUniformLocation(m_Shader, "uLightMode");
 
 }
 /**
@@ -106,6 +108,8 @@ Renderer3D::~Renderer3D() {
     glDeleteBuffers(1, &m_DrawDataSSBO);
     glDeleteProgram(m_Shader);
     
+    // Shutdown TextureManager
+    TextureManager::getInstance().shutdown();
 }
 
 /**
@@ -116,7 +120,7 @@ void Renderer3D::Render(){
     
     window_size = Engine::getWindowSize();
     static bool firstFlush = true;
-
+    std::vector<unsigned> OpaqueMask, blend;
     glm::vec3 minPos(FLT_MAX), maxPos(-FLT_MAX);
     //GLsizei instanceCount=0, jointOffset=0, morphWeightsOffset=0, morphPositionsOffset=0, drawDataOffset = 0;
     
@@ -133,6 +137,8 @@ void Renderer3D::Render(){
     if (!m_Buff || !indexPtr || !mmSSBOptr || !mpSSBOptr || !jmSSBOptr || !mwSSBOptr || !nmSSBOptr || !materialSSBOptr || !ddSSBOptr) {
         //printf("%p\n", indexPtr );
         std::cerr << "Failed to map one of the buffer!" << std::endl;
+        printf("VBO: %p\nIBO: %p\nModelMatrixSSBO: %p\nMorphPositionsSSBO: %p\nJointMatrixSSBO: %p\nMorphWeightsSSBO: %p\nNodeMatrixSSBO: %p\nMaterialSSBO: %p\nDrawDataSSBO: %p\n"
+               ,m_Buff, indexPtr, mmSSBOptr, mpSSBOptr, jmSSBOptr, mwSSBOptr, nmSSBOptr, nmSSBOptr, materialSSBOptr, ddSSBOptr);
         return;
     }
     
@@ -144,15 +150,15 @@ void Renderer3D::Render(){
     
     Material defaultMat{};
     materialSSBOptr[0] = defaultMat;
-    
+    vboOffset = m_indexCount = m_instanceCount = m_morphPositionsOffset = m_jointOffset = m_morphWeightsOffset =  m_nodeMatrixOffset = m_materialOffset = m_drawDataOffset = 0;
     for(Object3D& obj:ObjectsToRender){
-        if(obj.wasRendered) continue;
-        else obj.wasRendered=true;
-        firstFlush=true;
+        if(obj.instanceID==-1) obj.instanceID=m_instanceCount;
+        mmSSBOptr[obj.instanceID] = obj.modelMatrix; 
+        
         std::map<int, int> skinOffsets;
         std::vector<int> morphWeightsOffsets;
         //GLsizei localJointOffset=0;
-        mmSSBOptr[m_instanceCount] = obj.modelMatrix;
+        
         unsigned nodeMatrixBaseOffset = m_nodeMatrixOffset;
         memcpy(nmSSBOptr + m_nodeMatrixOffset, obj.nodeGlobalMatrix.data(), obj.nodeGlobalMatrix.size() * sizeof(glm::mat4));
         m_nodeMatrixOffset += obj.nodeGlobalMatrix.size();
@@ -180,26 +186,38 @@ void Renderer3D::Render(){
         for(Object3D::Primitive& prim : obj.primitives){
             int materialDefaultSlot = -1;
             if(prim.materialIndex>=0 && prim.materialIndex<(int)obj.materials.size()){
-                //printf("Materials Size: %d, Material Index: %d\n", obj.materials.size(), prim.materialIndex);
+                if(obj.materials[prim.materialIndex].alphaMode != 2) {
+                    for(auto idx : prim.indices) OpaqueMask.push_back(idx + vboOffset);
+                }
+                else{
+                    for(auto idx : prim.indices) blend.push_back(idx + vboOffset);
+                }
                 materialDefaultSlot = m_materialOffset;
                 materialSSBOptr[m_materialOffset++] = obj.materials[prim.materialIndex];
+            }else{
+                for(auto idx : prim.indices) OpaqueMask.push_back(idx + vboOffset); 
             }
-            glm::mat4 normalMat = glm::transpose(glm::inverse(obj.modelMatrix*obj.nodeGlobalMatrix[prim.nodeIndex]));
-            ddSSBOptr[m_drawDataOffset]={m_instanceCount, prim.morphPositions.size(), 
-                                         morphWeightsOffsets[prim.nodeIndex], m_morphPositionsOffset,
-                                         skinOffsets[prim.skinIndex], prim.vertices.size(),
+            glm::mat4 normalMat = glm::transpose(glm::inverse(obj.nodeGlobalMatrix[prim.nodeIndex]));
+            
+            ddSSBOptr[m_drawDataOffset]={obj.instanceID, prim.morphPositions.size(), 
+                                         (morphWeightsOffsets.size()>prim.nodeIndex) ? morphWeightsOffsets[prim.nodeIndex] : -1,
+                                         m_morphPositionsOffset,
+                                         (skinOffsets.size()>prim.nodeIndex) ?  skinOffsets[prim.skinIndex] : -1,
+                                         prim.vertices.size(),
                                          nodeMatrixBaseOffset+prim.nodeIndex, materialDefaultSlot, normalMat
                                         };
-
+            
 
             for(std::vector<glm::vec3>& morphPositions : prim.morphPositions){
                 memcpy(mpSSBOptr + m_morphPositionsOffset, morphPositions.data(), morphPositions.size()* sizeof(glm::vec3));
                 m_morphPositionsOffset+=morphPositions.size();
             }
+            /*
             std::vector<unsigned int> ind = prim.indices;
             for(unsigned i = 0; i<ind.size();i++){
                 indexPtr[m_indexCount++] = ind[i] + vboOffset;
-            }
+            }*/
+            
             unsigned localVertexIndex = 0;
             
             for(const Vertex3D& vertex: prim.vertices){
@@ -215,6 +233,8 @@ void Renderer3D::Render(){
         }
         m_instanceCount++;
     }
+    indexPtr = std::copy(OpaqueMask.begin(), OpaqueMask.end(),indexPtr);
+    indexPtr = std::copy(blend.begin(), blend.end(),indexPtr);
     // After fill loop, before feedback draw:
 
     //std::cout << "Vertex buffer size: " << (vboOffset)*sizeof(Vertex3D) <<std::endl;
@@ -230,7 +250,7 @@ void Renderer3D::Render(){
     
     /////////////////////
     
-    if(firstFlush){
+    /*if(firstFlush){
         std::cout << "sizeof(Vertex3D) = " << sizeof(Vertex3D) << "\n";
         std::cout << "Total VBO data = " << (float)vboOffset * sizeof(Vertex3D) / (1024*1024) << "MB\n";
         std::cout << "Total IBO data = " << (float)m_indexCount * sizeof(unsigned) / (1024*1024) << "MB\n";
@@ -239,31 +259,20 @@ void Renderer3D::Render(){
         std::cout << "Ratio: " << (float)m_indexCount / vboOffset << "\n";
         firstFlush=false;
         std::cout << "Flushed Once" << std::endl;
-        glFlushMappedNamedBufferRange(m_VBO, 0, vboOffset * sizeof(Vertex3D));
-        glFlushMappedNamedBufferRange(m_IBO, 0, m_indexCount * sizeof(unsigned int));
-        glFlushMappedNamedBufferRange(m_ModelMatricesSSBO, 0, m_instanceCount * sizeof(glm::mat4));
-        glFlushMappedNamedBufferRange(m_MorphPositionsSSBO, 0, m_morphPositionsOffset * sizeof(glm::vec3));
-        glFlushMappedNamedBufferRange(m_JointMatricesSSBO, 0, m_jointOffset * sizeof(glm::mat4));
-        glFlushMappedNamedBufferRange(m_MorphWeightsSSBO, 0, m_morphWeightsOffset * sizeof(float));
-        glFlushMappedNamedBufferRange(m_NodeMatricesSSBO, 0, m_nodeMatrixOffset * sizeof(glm::mat4));
-        glFlushMappedNamedBufferRange(m_MaterialsSSBO, 0, m_materialOffset * sizeof(Material));
-        glFlushMappedNamedBufferRange(m_DrawDataSSBO, 0, m_drawDataOffset * sizeof(DrawData));
-    }
+        
+    }*/
+    glFlushMappedNamedBufferRange(m_VBO, 0, vboOffset * sizeof(Vertex3D));
+    glFlushMappedNamedBufferRange(m_IBO, 0, (OpaqueMask.size()+blend.size()) * sizeof(unsigned int));
+    glFlushMappedNamedBufferRange(m_ModelMatricesSSBO, 0, m_instanceCount * sizeof(glm::mat4));
+    glFlushMappedNamedBufferRange(m_MorphPositionsSSBO, 0, m_morphPositionsOffset * sizeof(glm::vec3));
+    glFlushMappedNamedBufferRange(m_JointMatricesSSBO, 0, m_jointOffset * sizeof(glm::mat4));
+    glFlushMappedNamedBufferRange(m_MorphWeightsSSBO, 0, m_morphWeightsOffset * sizeof(float));
+    glFlushMappedNamedBufferRange(m_NodeMatricesSSBO, 0, m_nodeMatrixOffset * sizeof(glm::mat4));
+    glFlushMappedNamedBufferRange(m_MaterialsSSBO, 0, m_materialOffset * sizeof(Material));
+    glFlushMappedNamedBufferRange(m_DrawDataSSBO, 0, m_drawDataOffset * sizeof(DrawData));
 
     // Compute light space matrix
-    glm::vec3 sceneCenter = (minPos+maxPos)*0.5f;
-    glm::vec3 size = maxPos-minPos;
-    float sceneRadius     = glm::max(size.x, glm::max(size.y, size.z));
-    //float angle = glfwGetTime() * 0.1f;
-    glm::vec3 lightDir = glm::normalize(glm::vec3(0.5f, 0.8f, 0.0f));
-    glm::vec3 lightPos = sceneCenter - lightDir * sceneRadius * 2.0f;
-
-    glm::mat4 lightView = glm::lookAt(lightPos, sceneCenter, 
-                                    glm::vec3(0.0f, -1.0f, 0.0f));
-
-    glm::mat4 lightProj = glm::ortho(-sceneRadius, sceneRadius,
-                                    -sceneRadius, sceneRadius,
-                                    0.1f, sceneRadius * 4.0f);
+    
 
     
     glUseProgram(m_Shader);
@@ -278,18 +287,36 @@ void Renderer3D::Render(){
     
     glUniformMatrix4fv(m_uProjMatrix, 1,GL_FALSE,Engine::getProjMatrix());
     glUniformMatrix4fv(m_uVwMatrix,1,GL_FALSE, Engine::getViewMatrix());
-    glm::mat4 viewMat = Engine::camera3d.getMatrix();
-    glm::vec3 camForward = -glm::vec3(viewMat[0][2],viewMat[1][2],viewMat[2][2]);
 
-     
-    glm::vec3 lighBrightness =  glm::vec3(0.1f);
-    glUniform3f(m_uLightPos, 0, 0, 0);
-    glUniform3f(m_uLightDir, lightDir.x, lightDir.y, lightDir.z);
-    glUniform3f(m_uViewPos, Engine::camera3d.getPosition().x, Engine::camera3d.getPosition().y, Engine::camera3d.getPosition().z);
-    glUniform1f(m_uLightInnerCutoff, 0.0f);
-    glUniform1f(m_uLightOuterCutoff, 0.0f);
-    glUniform3f(m_uLightColor, lighBrightness.x, lighBrightness.y, lighBrightness.z); 
-    
+    glm::mat4 viewMat = Engine::camera3d.getMatrix();
+    glm::vec3 camForward = Engine::camera3d.getForward();
+
+
+    glm::vec3 lightDir = glm::normalize(glm::mat3(viewMat) * camForward);
+    glm::vec3 lightColor =  glm::vec3(1.f, 1.f, 1.f);
+
+
+    glm::vec3 sceneCenter = (minPos+maxPos)*0.5f;
+    glm::vec3 size = maxPos-minPos;
+    float sceneRadius     = glm::max(size.x, glm::max(size.y, size.z));
+    glm::vec3 lightPos = glm::vec3(viewMat * glm::vec4(Engine::camera3d.getPosition(), 1.0f));
+
+    /*glm::mat4 lightView = glm::lookAt(lightPos, sceneCenter, 
+                                    glm::vec3(0.0f, -1.0f, 0.0f));
+    glm::mat4 lightProj = glm::ortho(-sceneRadius, sceneRadius,
+                                    -sceneRadius, sceneRadius,
+                                    0.1f, sceneRadius * 4.0f);
+    */
+
+    //printf("%f %f %f\n", camForward.x, camForward.y, camForward.z);
+
+    glUniform3fv(m_uLightPos,   1, glm::value_ptr(lightPos));
+    glUniform3fv(m_uLightDir,   1, glm::value_ptr(lightDir));
+    glUniform3fv(m_uViewPos,    1, glm::value_ptr(Engine::camera3d.getPosition()));
+    glUniform3fv(m_uLightColor, 1, glm::value_ptr(lightColor));
+    glUniform1f(m_uLightIntensity, 1.f);
+    glUniform1f(m_uAmbientStrength, 0.01f);
+    glUniform1i(m_uLightMode, 1);
     
     glBindVertexArray(m_appSurface);
     /*if (m_timerQueryReady) {
@@ -301,7 +328,19 @@ void Renderer3D::Render(){
         //    std::cout << "GPU draw time: " << elapsed / 1000000.0f << "ms\n";
     }*/
     //glBeginQuery(GL_TIME_ELAPSED, m_timerQuery[m_timerQueryIndex]);
-    glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, NULL);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glDepthMask(GL_TRUE);
+    glDisable(GL_BLEND);
+    glDrawElements(GL_TRIANGLES, OpaqueMask.size(), GL_UNSIGNED_INT, NULL);
+    
+    //glDepthMask(GL_FALSE);
+    glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+    glDisable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    glDrawElements(GL_TRIANGLES, blend.size(), GL_UNSIGNED_INT, (void*)(OpaqueMask.size()*sizeof(unsigned)));
     
     
     m_fence= glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);

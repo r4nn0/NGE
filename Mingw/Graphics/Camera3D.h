@@ -13,6 +13,7 @@ public:
     glm::vec3 getPosition() const;
     glm::vec3 getRotation() const;
     glm::vec3 getOrbit() const;
+    glm::vec3 getForward() const;
     glm::mat4 getMatrix() const;
 private:
     glm::vec3 position;

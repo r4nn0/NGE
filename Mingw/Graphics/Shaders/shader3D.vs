@@ -77,7 +77,7 @@ void main() {
     
 
     gl_Position = proj_matrix * vw_matrix * ml_matrix[uDrawData[drawID].modelID] * nodeMatrix * finalPosition;
-    vs_out.FragPos = vec3(ml_matrix[uDrawData[drawID].modelID] * nodeMatrix * finalPosition);
+    vs_out.FragPos = vec3(vw_matrix * ml_matrix[uDrawData[drawID].modelID] * nodeMatrix * finalPosition);
     vec2 nXY = normal * 2.0 - 1.0;
     float nZ = sqrt(max(0.0, 1.0 - dot(nXY, nXY)));
     vec3 decodedNormal = normalize(vec3(nXY, nZ));

@@ -1,10 +1,11 @@
 #include "Object3D.h"
+#include "TextureManager.h"
 std::map<std::string, Object3D*> ObjectsTotal;
 //TexutrePage TextureAtlas3D;
 Object3D::Object3D(){
     
 }
-Object3D::Object3D(const char* file) : wasRendered(false), modelMatrix(glm::mat4(1.0f)){
+Object3D::Object3D(const char* file) : wasRendered(false), instanceID(-1), modelMatrix(glm::mat4(1.0f)){
     LoadModel(file);
 }
 bool Object3D::LoadModel(const char* file){
@@ -14,6 +15,7 @@ bool Object3D::LoadModel(const char* file){
     loader.LoadASCIIFromFile(&model, &err, &warn, file);
     if(err!=""){
         std::cout << "Error Loading: " << err << "\nWarning: "<< warn << std::endl;
+        samplePlane2D();
         return false;
     }
     scene = &model.scenes[model.defaultScene];
@@ -23,7 +25,6 @@ bool Object3D::LoadModel(const char* file){
     InitializeNodes();
     
     LoadTextures();
-    
     // Load meshes
     LoadMeshes();
 
@@ -36,6 +37,7 @@ bool Object3D::LoadModel(const char* file){
     
 
     CalculateAnimationDuration();
+    
     return true;
 }
 void Object3D::InitializeNodes(){
@@ -101,8 +103,7 @@ void Object3D::InitializeNodes(){
         morphWeights[i].assign( node.weights.begin(), node.weights.end());
     }
 }
-void Object3D::LoadMeshes()
-{
+void Object3D::LoadMeshes() {
     for (int nodeIndex : scene->nodes)
     {
         LoadNode(nodeIndex);
@@ -113,11 +114,11 @@ void Object3D::LoadNode(int nodeIndex){
     
     if (node.mesh >= 0){
         const tinygltf::Mesh& mesh = model.meshes[node.mesh];
+        
         for (const tinygltf::Primitive& primitive : mesh.primitives){
             LoadPrimitive(primitive, nodeIndex, node.skin);
         }
     }
-
     for (int child : node.children)
     {
         LoadNode(child);
@@ -133,6 +134,7 @@ void Object3D::LoadPrimitive(const tinygltf::Primitive& primitive, int nodeIndex
     LoadVertices(primitive, newPrimitive);
     LoadIndices(primitive, newPrimitive);
     LoadMorphTargets(primitive, newPrimitive);
+    
 
     primitives.push_back(std::move(newPrimitive));
 }
@@ -163,130 +165,7 @@ std::vector<glm::vec4> Object3D::readVecFloat(const tinygltf::Primitive& primiti
     }
     return vecOut;
 }
-void Object3D::LoadTextures(){
-    
-    hasTexture = false;
-    std::string basePath = "3DObjects/";
-    
-    materials.resize(model.materials.size());
-    for (size_t i = 0; i < model.materials.size(); i++) {
-        const auto& mat = model.materials[i];
-        const auto& pbr = mat.pbrMetallicRoughness;
-        Material& m = materials[i];
-        /*
-        // PBR factors (same as before)
-        m.baseColorFactor = glm::vec4(pbr.baseColorFactor[0], pbr.baseColorFactor[1],
-                                      pbr.baseColorFactor[2], pbr.baseColorFactor[3]);
-        m.metallicFactor  = (float)pbr.metallicFactor;
-        m.roughnessFactor = (float)pbr.roughnessFactor;
-            
-        // Store IMAGE INDEX instead of atlas offset
-        if (pbr.baseColorTexture.index >= 0){
-            int imgId = model.textures[pbr.baseColorTexture.index].source;
-            m.albedoImageIndex = textureRefs[imgId].vtId;
-            const VTexEntry& e = GTextureRegistry.get(m.albedoImageIndex);
-            GTextureRegistry.setLayer(textureRefs[imgId].vtId, 0);
-            m.albedoRegionOrigin = glm::vec2(e.region.originX, e.region.originY);
-            m.regionSize         = glm::vec2(e.region.tilesW,  e.region.tilesH);
-        }
-        if (mat.normalTexture.index >= 0){
-            int imgId = model.textures[mat.normalTexture.index].source;
-            m.normalImageIndex = textureRefs[imgId].vtId;
-            const VTexEntry& e = GTextureRegistry.get(m.normalImageIndex);
-            GTextureRegistry.setLayer(textureRefs[imgId].vtId, 1);
-            m.normalRegionOrigin = glm::vec2(e.region.originX, e.region.originY);
-            if (m.regionSize == glm::vec2(0.0f))
-                m.regionSize = glm::vec2(e.region.tilesW, e.region.tilesH);
-        }
-        if (pbr.metallicRoughnessTexture.index >= 0){
-            int imgId = model.textures[pbr.metallicRoughnessTexture.index].source;
-            m.metallicRoughnessImageIndex = textureRefs[imgId].vtId;
-            const VTexEntry& e = GTextureRegistry.get(m.metallicRoughnessImageIndex);
-            GTextureRegistry.setLayer(textureRefs[imgId].vtId, 2);
-            m.metallicRegionOrigin = glm::vec2(e.region.originX, e.region.originY);
-            if (m.regionSize == glm::vec2(0.0f))
-                m.regionSize = glm::vec2(e.region.tilesW, e.region.tilesH);
-        }
 
-        if (mat.emissiveTexture.index >= 0){
-            int imgId = model.textures[mat.emissiveTexture.index].source;
-            m.emissiveImageIndex = textureRefs[imgId].vtId;
-            const VTexEntry& e = GTextureRegistry.get(m.emissiveImageIndex);
-            GTextureRegistry.setLayer(textureRefs[imgId].vtId, 3);
-            m.emissiveRegionOrigin = glm::vec2(e.region.originX, e.region.originY);
-            if (m.regionSize == glm::vec2(0.0f))
-                m.regionSize = glm::vec2(e.region.tilesW, e.region.tilesH);
-        }
-        */
-        m.emissiveFactor  = glm::vec4(mat.emissiveFactor[0], mat.emissiveFactor[1], mat.emissiveFactor[2], 0.0f);
-        m.normalScale         = (float)mat.normalTexture.scale;
-        m.occlusionStrength   = (float)mat.occlusionTexture.strength;
-        m.alphaMode           = (mat.alphaMode=="OPAQUE") ? 0: (mat.alphaMode=="MASK") ? 1 : 2;
-        m.alphaCutoff         = (float)mat.alphaCutoff;
-        m.doubleSided         = mat.doubleSided;
-    }
-    
-    /*
-    std::vector<glm::vec2> imageOffsets(model.images.size());
-    std::vector<glm::vec2> imageScaleFactors(model.images.size());
-    for (size_t i = 0; i < model.images.size(); i++) {
-        const auto& image = model.images[i];
-        imageScaleFactors[i] = glm::vec2(image.width, image.height)/MainTextureAtlas.GetAtlasSize();
-        imageOffsets[i] = MainTextureAtlas.TextureAdd(image.image, image.width, image.height);
-
-        hasTexture=true;
-    }
-    
-    if (model.materials.empty()) {
-        return;
-    }
-    
-    materials.resize(model.materials.size());
-    for (size_t i = 0; i < model.materials.size(); i++) {
-        const tinygltf::Material& material = model.materials[i];
-        const auto& pbr = material.pbrMetallicRoughness;
-        Material& m = materials[i];
-        m.baseColorFactor = glm::vec4(
-        pbr.baseColorFactor[0], pbr.baseColorFactor[1],
-        pbr.baseColorFactor[2], pbr.baseColorFactor[3]);
-        m.metallicFactor  = (float)pbr.metallicFactor;
-        m.roughnessFactor = (float)pbr.roughnessFactor;
-
-        m.emissiveFactor  = glm::vec4(material.emissiveFactor[0], material.emissiveFactor[1], material.emissiveFactor[2], 0.0f);
-        m.normalScale         = (float)material.normalTexture.scale;
-        m.occlusionStrength   = (float)material.occlusionTexture.strength;
-        m.alphaMode           = (material.alphaMode=="OPAQUE") ? 0: (material.alphaMode=="MASK") ? 1 : 2;
-        m.alphaCutoff         = (float)material.alphaCutoff;
-        m.doubleSided         = material.doubleSided;
-
-
-        if (pbr.baseColorTexture.index >= 0) {
-            
-            int imgIndex = model.textures[pbr.baseColorTexture.index].source;
-            texOffset[imgIndex] = imageOffsets[imgIndex];
-            texScaleFactor[imgIndex] = imageScaleFactors[imgIndex];
-
-        }
-        
-        if(pbr.metallicRoughnessTexture.index >= 0){
-            int imgIndex = model.textures[pbr.metallicRoughnessTexture.index].source;
-            m.metallicRoughnessOffset = imageOffsets[imgIndex];
-        }
-        if(material.normalTexture.index >= 0){
-            int imgIndex = model.textures[material.normalTexture.index].source;
-            m.normalOffset = imageOffsets[imgIndex];
-        }
-        if(material.occlusionTexture.index >= 0){
-            int imgIndex = model.textures[material.occlusionTexture.index].source;
-            m.occlusionOffset = imageOffsets[imgIndex];
-        }
-        if(material.emissiveTexture.index >= 0){
-            int imgIndex = model.textures[material.emissiveTexture.index].source;
-            m.emissiveOffset = imageOffsets[imgIndex];
-        }
-
-    }*/
-}
 void Object3D::LoadVertices(const tinygltf::Primitive& primitive, Primitive& outPrimitive){
 
 
@@ -326,26 +205,9 @@ void Object3D::LoadVertices(const tinygltf::Primitive& primitive, Primitive& out
                 return ((unsigned)(w.x * 255) << 24) | ((unsigned)(w.y * 255) << 16) |
                        ((unsigned)(w.z * 255) <<  8) |  (unsigned)(w.w * 255);
             };
-            vertex.weights = (weights.size()>i) ? packWeights(weights[i]) : 0;
-            /*
-            vertex.pos = pos[getIndexFromAccessor(mdl, primitive, "POSITION", i)];
-            vertex.normal = (normals.size()>i) ? normals[getIndexFromAccessor(mdl, primitive, "NORMAL", i)] : glm::vec3(0.0f);
-            vertex.color = (colors.size()>i) ? colors[getIndexFromAccessor(mdl, primitive, "COLOR_0", i)] : glm::vec4(1.0f);
-            vertex.texCoords = (texCoords.size()>i) ? texCoords[getIndexFromAccessor(mdl, primitive, "TEXCOORD_0", i)] : glm::vec2(0.0);*/
-
-            
-            /*if(!texOffset.empty())
-                vertex.texCoords = (vertex.texCoords*texScaleFactor[primitive.material])+texOffset[primitive.material];
-                //printf("%f : %f\n", texOffset[primitive.material].x, texOffset[primitive.material].y);
-            vertex.texCoords = glm::clamp(vertex.texCoords, glm::vec2(0.0f), glm::vec2(1.0f));*/
-            //std::cout << vertex.texCoords.x << " " << vertex.texCoords.y << std::endl;
-            /*if(hasTexture)
-                vertex.textureSlot=MainTextureAtlas.GetTextureSlot();
-            else
-                vertex.textureSlot = -1;*/
-            outPrimitive.vertices[i] = vertex;
+        vertex.weights = (weights.size()>i) ? packWeights(weights[i]) : 0;
+        outPrimitive.vertices[i] = vertex;
     }
-    
 }
 void Object3D::LoadIndices(const tinygltf::Primitive& primitive, Primitive& outPrimitive) {
     if (primitive.indices < 0)
@@ -398,44 +260,41 @@ void Object3D::LoadMorphTargets(const tinygltf::Primitive& primitive, Primitive&
 
     if (morphTargetCount == 0)
         return;
-
     outPrimitive.morphPositions.resize(morphTargetCount);
-
-    for (size_t targetIndex = 0; targetIndex < morphTargetCount; targetIndex++)
-    {
+    for (size_t targetIndex = 0; targetIndex < morphTargetCount; targetIndex++) {
+        
+        
         const auto& target = primitive.targets[targetIndex];
-
         if (target.find("POSITION")==target.end())
             continue;
 
         int accessorIndex = target.at("POSITION");
 
-        const tinygltf::Accessor& accessor =
-            model.accessors[accessorIndex];
-
-        const tinygltf::BufferView& view =
-            model.bufferViews[accessor.bufferView];
-
-        const tinygltf::Buffer& buffer =
-            model.buffers[view.buffer];
-        size_t vertexCount = accessor.count;
-        outPrimitive.morphPositions[targetIndex].resize(vertexCount);
-        /*const float* data =
-            reinterpret_cast<const float*>(
-                &buffer.data[accessor.byteOffset + view.byteOffset]);
-
-        size_t vertexCount = accessor.count;
-
-        outPrimitive.morphPositions[targetIndex].resize(vertexCount);
-
-        for (size_t i = 0; i < vertexCount; i++)
+        const tinygltf::Accessor& accessor = model.accessors[accessorIndex];
+        
+        if (accessor.bufferView < 0 || accessor.bufferView >= model.bufferViews.size()){
+            std::cerr << "Invalid bufferView index: " << accessor.bufferView << std::endl;
+            return;
+        }
+        const tinygltf::BufferView& view = model.bufferViews[accessor.bufferView];
+        
+        if (view.buffer < 0 ||
+            view.buffer >= model.buffers.size())
         {
-            outPrimitive.morphPositions[targetIndex][i] =
-                glm::vec3(
-                    data[i*3+0],
-                    data[i*3+1],
-                    data[i*3+2]);
-        }*/
+            std::cerr << "Invalid buffer index: "
+                    << view.buffer << std::endl;
+
+            std::cerr << "bufferViews.size() = "
+                    << model.bufferViews.size() << std::endl;
+
+            std::cerr << "buffers.size() = "
+                    << model.buffers.size() << std::endl;
+
+            return;
+        }
+        const tinygltf::Buffer& buffer = model.buffers[view.buffer];
+        size_t vertexCount = accessor.count;
+        outPrimitive.morphPositions[targetIndex].resize(vertexCount);
         if (accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT) {
             const float* data = reinterpret_cast<const float*>(
                 &buffer.data[accessor.byteOffset + view.byteOffset]);
@@ -456,6 +315,123 @@ void Object3D::LoadMorphTargets(const tinygltf::Primitive& primitive, Primitive&
                     static_cast<float>(data[i*3+2]));
             }
         }
+    }
+}
+void Object3D::LoadTextures(){
+    std::string basePath = "3DObjects/";
+    TextureManager& texManager = TextureManager::getInstance();
+    // First, load all images from the glTF model
+    std::vector<int> textureIDs(model.images.size(), -1);
+    for (size_t i = 0; i < model.images.size(); i++) {
+        
+        const auto& image = model.images[i];
+        
+        if (!image.image.empty()) {
+            // Embedded image data (already decoded by tinygltf)
+            std::string key = image.uri;
+            std::cout << image.image.size() << std::endl;
+            // tinygltf has already decoded the image, use it directly
+            textureIDs[i] = texManager.loadTextureFromMemory(
+                image.image.data(), 
+                image.image.size(), 
+                key, 
+                false, // disable mipmaps
+                image.width,
+                image.height,
+                image.component
+            );
+        } else if (image.bufferView >= 0) {
+            // Image stored in a buffer view - tinygltf should have decoded it
+            std::string key = image.uri;
+            
+            if (!image.image.empty()) {
+                textureIDs[i] = texManager.loadTextureFromMemory(
+                    image.image.data(), 
+                    image.image.size(), 
+                    key, 
+                    false,
+                    image.width,
+                    image.height,
+                    image.component
+                );
+            } else {
+                std::cout << "Buffer view image is empty, skipping" << std::endl;
+            }
+        } else if (!image.uri.empty()) {
+            // External image file
+            std::string imagePath = basePath + image.uri;
+            textureIDs[i] = texManager.loadTexture(imagePath.c_str(), false);
+        } else {
+            std::cout << "Image " << i << " has no data and no URI, skipping" << std::endl;
+        }
+    }
+    
+    materials.resize(model.materials.size());
+    for (size_t i = 0; i < model.materials.size(); i++) {
+        const auto& mat = model.materials[i];
+        const auto& pbr = mat.pbrMetallicRoughness;
+        Material& m = materials[i];
+        
+        // PBR factors
+        m.baseColorFactor = glm::vec4(pbr.baseColorFactor[0], pbr.baseColorFactor[1],
+                                      pbr.baseColorFactor[2], pbr.baseColorFactor[3]);
+        m.metallicFactor  = (float)pbr.metallicFactor;
+        m.roughnessFactor = (float)pbr.roughnessFactor;
+        
+        if (mat.extensions.find("KHR_materials_pbrSpecularGlossiness") != mat.extensions.end()) {
+            // Access the extension data
+            const auto& ext = mat.extensions.at("KHR_materials_pbrSpecularGlossiness");
+            
+            // Get diffuseTexture (equivalent to baseColorTexture)
+            if (ext.Has("diffuseTexture")) {
+                const auto& diffuseTexObj = ext.Get("diffuseTexture");
+                if (diffuseTexObj.Has("index")) {
+                    int texIdx = diffuseTexObj.Get("index").GetNumberAsInt();
+                    if (texIdx >= 0 && texIdx < (int)model.textures.size()) {
+                        int imgId = model.textures[texIdx].source;
+                        if (imgId >= 0 && imgId < (int)textureIDs.size() && textureIDs[imgId] >= 0) {
+                            m.albedoHandle = texManager.getTextureHandle(textureIDs[imgId]);
+                            m.hasTexture |= 1;
+                        }
+                    }
+                }
+            }
+        }
+        else if (pbr.baseColorTexture.index >= 0 && pbr.baseColorTexture.index < (int)model.textures.size()) {
+            int imgId = model.textures[pbr.baseColorTexture.index].source;
+            if (imgId >= 0 && imgId < (int)textureIDs.size() && textureIDs[imgId] >= 0) {
+                m.albedoHandle = texManager.getTextureHandle(textureIDs[imgId]);
+                m.hasTexture |= 1;
+            }
+        }
+        if (pbr.metallicRoughnessTexture.index >= 0 && pbr.metallicRoughnessTexture.index < (int)model.textures.size()) {
+            int imgId = model.textures[pbr.metallicRoughnessTexture.index].source;
+            if (imgId >= 0 && imgId < (int)textureIDs.size() && textureIDs[imgId] >= 0) {
+                m.metallicHandle = texManager.getTextureHandle(textureIDs[imgId]);
+                m.hasTexture |= 2;
+            }
+        }
+        if (mat.normalTexture.index >= 0 && mat.normalTexture.index < (int)model.textures.size()) {
+            int imgId = model.textures[mat.normalTexture.index].source;
+            if (imgId >= 0 && imgId < (int)textureIDs.size() && textureIDs[imgId] >= 0) {
+                m.normalHandle = texManager.getTextureHandle(textureIDs[imgId]);
+                m.hasTexture |= 4;
+            }
+        }
+        if (mat.emissiveTexture.index >= 0 && mat.emissiveTexture.index < (int)model.textures.size()) {
+            int imgId = model.textures[mat.emissiveTexture.index].source;
+            if (imgId >= 0 && imgId < (int)textureIDs.size() && textureIDs[imgId] >= 0) {
+                m.emissiveHandle = texManager.getTextureHandle(textureIDs[imgId]);
+                m.hasTexture |= 8;
+            }
+        }
+        
+        m.emissiveFactor  = glm::vec4(mat.emissiveFactor[0], mat.emissiveFactor[1], mat.emissiveFactor[2], 0.0f);
+        m.normalScale         = (float)mat.normalTexture.scale;
+        m.occlusionStrength   = (float)mat.occlusionTexture.strength;
+        m.alphaMode           = (mat.alphaMode=="OPAQUE") ? 0: (mat.alphaMode=="MASK") ? 1 : 2;
+        m.alphaCutoff         = (float)mat.alphaCutoff;
+        m.doubleSided         = mat.doubleSided;
     }
 }
 void Object3D::LoadSkins(){
@@ -725,7 +701,19 @@ void Object3D::samplePlane2D(){
     temp.indices.push_back(2);
     temp.indices.push_back(3);
     temp.nodeIndex=0;
+    temp.materialIndex=0;
     primitives.push_back(temp);
     nodeLocalMatrix.push_back(glm::mat4(1.0f));
     nodeGlobalMatrix.push_back(glm::mat4(1.0f));
+    
+    Material mat;
+    mat.hasTexture = 1;
+    mat.baseColorFactor = glm::vec4(1.0f);
+    TextureManager& texManager = TextureManager::getInstance();
+    mat.albedoHandle = texManager.getTextureHandle(0);
+    materials.push_back(mat);
+}
+void Object3D::switchTexture(int texID){
+    TextureManager& texManager = TextureManager::getInstance();
+    materials[0].albedoHandle = texManager.getTextureHandle(texID);
 }

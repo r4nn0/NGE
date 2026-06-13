@@ -12,6 +12,7 @@ public:
     void Render();
     void modelSet(std::string);
     Object3D& getModel();
+    void setTexture(int texID);
     const std::string& getModelName()const { return objectName;} 
     glm::vec3 scale, rotation, position;
 private:

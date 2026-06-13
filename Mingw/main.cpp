@@ -42,31 +42,14 @@ int main (){
 	//Renderer2D renderer;
     Renderer3D renderer3D;
     
-    /*static bool tilesRequested = false;
     
-    if (!tilesRequested) {
-        tilesRequested = true;
-        for (int t = 0; t < GTextureRegistry.count(); t++) {
-            const VTexEntry& e = GTextureRegistry.get(t);
-            for (int y = 0; y < e.region.tilesH; y++) {
-                for (int x = 0; x < e.region.tilesW; x++) {
-                    TileID id;
-                    id.x     = e.region.originX + x;
-                    id.y     = e.region.originY + y;
-                    id.mip   = 0;
-                    id.layer = e.layer;
-                    GVirtualTextureSystem.requestTile(id, 0);
-                }
-            }
-        }
-    }*/
     TextRenderer tr;
     //TestPlayer obj2D("sonic_run");
     //testObject.color = glm::vec4(1,0,0,1);
 
     //Entity obj3D("SciFiHelmet");
     //Entity obj2("SciFiHelmet");
-    Entity Model("Char");
+    Entity Model("test");
     //Entity sec ("AnimatedMorphSphere");
     //Entity floor;
     //double prevTime = glfwGetTime();
@@ -77,11 +60,14 @@ int main (){
     float sense = 0.12f;
     float truckRot =0;
 
+    const float desiredFPS = 200;
     
     gameEngine.setBackgroundColor(BACKGROUND_COLOR);
     
     float fpsReal=0;
     auto prevTime=std::chrono::steady_clock::now();
+    TextureManager& texManager = TextureManager::getInstance();
+    int debugTexID = 0;
     while(!glfwWindowShouldClose(gameEngine.get_window())){
         float LX = gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_X) > 0.5 ? 1 : gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_X) <-0.5 ? -1 : 0;
         float LY = gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_Y) > 0.5 ? 1 : gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_Y) <-0.5 ? -1 : 0;
@@ -93,7 +79,9 @@ int main (){
         std::chrono::duration<float> dt = currTime-prevTime;
         prevTime=currTime;
         fpsReal = 1.f / dt.count();
-
+        static float deltaTime = 1;
+        if(fpsReal>0)
+            deltaTime = desiredFPS/fpsReal;
         // Render fps text every half a second
         static double updatestrFPS = 0;
         updatestrFPS++;
@@ -122,10 +110,10 @@ int main (){
         gameEngine.camera3d.setOrbit(glm::vec3(hsp,zsp,vsp));
 
 
-        float moveSpeed = 0.03 * (200/fpsReal);
+        float moveSpeed = 0.03 * deltaTime;
         float turnSpeed = 1.2;
         if(keyboard_check(GLFW_KEY_LEFT_SHIFT) || keyboard_check(GLFW_KEY_RIGHT_SHIFT))
-            moveSpeed=0.1 * (200/fpsReal);
+            moveSpeed=0.1 * deltaTime;
         int moving = keyboard_check('W') - keyboard_check('S');
         
         
@@ -137,16 +125,25 @@ int main (){
         //hsp -= moving *glm::sin(truckRot)* moveSpeed;
         zsp +=(keyboard_check('E') - keyboard_check('Q')) * moveSpeed;
         
-        truckRot += glm::radians((keyboard_check('D') - keyboard_check('A'))*turnSpeed * moving);
+        truckRot += glm::radians((keyboard_check('Z') - keyboard_check('X'))*0.1f);
         //obj3D.UpdateAnimation(moving*0.005f);
         
         //obj3D.rotation=glm::vec3(glm::radians(90.0f), 0,0);
-        Model.rotation=glm::vec3(glm::radians(-90.0f),0,0);
+        
+
+        if(keyboard_check_pressed(GLFW_KEY_KP_ADD)){
+            debugTexID++;
+            if(debugTexID>=texManager.getTextureCount()) debugTexID=0;
+        }
+        Model.rotation=glm::vec3(glm::radians(-180.0f),truckRot,0);
+        //Model.setTexture(debugTexID);
+        Model.scale = glm::vec3(10.f);
         //obj3D.position=glm::vec3(-10,0,-10);
         //sec.UpdateAnimation(0.001);
         //sec.position = glm::vec3(50,0,50);*/
         //floor.scale = glm::vec3(5,0,5);
-
+        
+        
         gameEngine.StepEvent();
         
         
@@ -154,7 +151,6 @@ int main (){
         //testObject2.Update();
         
         gameEngine.BeginDraw();
-        
         skybox.Render();
         
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
@@ -164,6 +160,7 @@ int main (){
         //obj3D.Render();
         //obj2.Render();
         Model.Render();
+        
         //Topaki.Render();
         tr.renderText(fpsString, 5, 15, 0);
         
@@ -178,7 +175,7 @@ int main (){
         
         renderer3D.Render();
         
-        glClear(GL_DEPTH_BUFFER_BIT);
+        
         
         //renderer.Render();
         tr.flush();

@@ -2,6 +2,7 @@
 #define RENDERER3D_H
 
 #include "../../ngestd.h"
+#include "../TextureManager.h"
 
 class Renderer3D{
 public:
@@ -36,12 +37,13 @@ private:
 
     GLint m_uProjMatrix = -1;
     GLint m_uVwMatrix = -1;
+    GLint m_uLightMode = -1;
     GLint m_uLightPos = -1;
     GLint m_uLightDir = -1;
     GLint m_uViewPos = -1;
     GLint m_uLightColor = -1;
-    GLint m_uLightInnerCutoff = -1;
-    GLint m_uLightOuterCutoff = -1;
+    GLint m_uLightIntensity = -1;
+    GLint m_uAmbientStrength = -1;
     
 };
 

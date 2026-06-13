@@ -17,8 +17,8 @@ buildFlags	:= 	$(patsubst %, -D%, $(Macros))\
 				$(patsubst %, -I%, $(Includedirs))\
 				$(patsubst %, -L%, $(Libdirs))
 CXX			:= C:/mingw${TARGET}/bin/g++
-buildDBG	:= $(CXX) -std=c++1y -Wall -g
-buildREL	:= $(CXX) -std=c++1y -Wall -O2 -s
+buildDBG	:= $(CXX) -std=c++20 -Wall -g
+buildREL	:= $(CXX) -std=c++20 -Wall -O2 -s
 SHELL		:= cmd.exe
 relEXE		:= $(OutFolder)/Nge-rel.exe
 dbgEXE		:= $(OutFolder)/Nge-dbg.exe
