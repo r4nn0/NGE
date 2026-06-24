@@ -10,7 +10,7 @@ TextureManager& TextureManager::getInstance() {
 
 TextureManager::TextureManager() 
     : m_nextID(0)
-    , m_memoryBudget(2048 * 1024 * 1024) // 512MB default
+    , m_memoryBudget(100 * 1024 * 1024) // 512MB default
     , m_currentMemoryUsage(0) {
 }
 

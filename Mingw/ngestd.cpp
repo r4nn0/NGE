@@ -155,7 +155,7 @@ void LoadSpritesToMemroy(){
     dr = opendir("Sprites");
     std::regex ext(".*\\.ngesprite$");
     std::vector<std::vector<unsigned char*>> t_Pixels;
-    glm::vec2 t_TextureAtlasSize(0);
+    
     if (dr) {
         while ((en = readdir(dr)) != NULL) {
             std::string sname="Sprites/";
@@ -175,20 +175,18 @@ void LoadSpritesToMemroy(){
     //MainTextureAtlas.ImageResizeCanvas(t_TextureAtlasSize.x, t_TextureAtlasSize.y);
     
     std::map<std::string, Sprite*>::iterator sprIT = SpritesTotal.begin();
+    
     for(std::vector<unsigned char*> pixels: t_Pixels){
         Sprite* spr = sprIT->second;
         int t_Frame=0;
         for(unsigned char* p: pixels){
-            MainTextureAtlas.ImageAdd(p, spr, t_Frame);
+            MainTextureAtlas.maxRect(p, spr, t_Frame);
             t_Frame++;
             delete p;
         }
         sprIT++;
         
     }
-    
-    
-    
 }
 void LoadModelsToMemory(){
     DIR *dr;

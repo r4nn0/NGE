@@ -225,8 +225,8 @@ void main() {
     vec3 finalColor = ambient + (radiance * attenuation) + emissive;
     
     // Tone mapping
-    finalColor = finalColor / (finalColor + vec3(1.0));
-    finalColor = pow(finalColor, vec3(1.0 / 2.2));
+    //finalColor = finalColor / (finalColor + vec3(1.0));
+    //finalColor = pow(finalColor, vec3(1.0 / 2.2));
     
     FragColor = vec4(finalColor, finalAlbedo.a);
 }

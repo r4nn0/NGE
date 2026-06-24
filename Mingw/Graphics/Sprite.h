@@ -13,8 +13,14 @@ public:
     void setColor(glm::vec4);
     void setFrameIndex(unsigned);
     void setOrigin(glm::vec2);
-    inline unsigned getFrameCount(){return m_Frames;}
-    inline int getTextureSlot(){return m_texSlot;}
+    void setPosition(glm::vec3);
+    void setScale(glm::vec2);
+    void setRotation(float);
+    inline glm::vec3& getPosition(){return m_Position;}
+    inline glm::vec2& getScale(){return m_Scale;}
+    inline float& getRotation(){return m_Rotation;}
+    inline unsigned& getFrameCount(){return m_Frames;}
+    inline int& getTextureSlot(){return m_texSlot;}
 	inline glm::vec2& getOrigin(){return m_Origin;}
     inline glm::vec2& getSize(){return m_CurrentFrameSize[m_FrameIndex];}
     inline glm::vec2 getLargestFrame(){return glm::vec2(m_Widest, m_Heighest);}
@@ -40,8 +46,6 @@ public:
         return *this;
     
     }
-    
-    glm::mat4 modelMatrix = glm::mat4(1.0f);
     /*void setUV(){
         std::vector<glm::vec2> UV;
         UV.push_back(glm::vec2(0));
@@ -64,20 +68,32 @@ protected:
     
     std::vector<std::vector<glm::vec2>> m_UV;
     unsigned long long m_Widest, m_Heighest, m_WidthCombined, m_HeightCombined;
-	
+	glm::vec2 m_Scale;
+    float m_Rotation;
+    glm::vec3 m_Position;
+    
 };
 class TexturePage{
 private:
-	float m_xOffset, m_yOffset ,m_Width, m_Height, m_ChannelNum, m_lastYOffset;
+	int m_Width, m_Height, m_ChannelNum;
 	const int m_Slot;
 	unsigned char* m_TexturePage;
 	unsigned int m_Texture;
+    bool m_Initiated;
+    struct Rect{
+        int x, y, width, height;
+    };
+    std::vector<Rect> m_FreeRects;
+    std::vector<Rect> newRects;
 public:
 	TexturePage(int=0);
 	TexturePage(int, int, int=4, int=0);
-	void ImageResizeCanvas(int, int, int=4);
-    void ImageAdd(unsigned char*, Sprite*, int);
-    glm::vec2 TextureAdd (std::vector<unsigned char>, unsigned, unsigned);
+    void maxRect(unsigned char*, Sprite*, int);
+    glm::vec2 maxRect(unsigned char*, int, int);
+    bool Intersects(const Rect&, const Rect&);
+    bool Contains(const Rect&, const Rect&);
+    void PruneFreeRects();
+    void SplitFreeRect(const Rect&, const Rect&);
 	void Bind();
 	void Unbind();
 	int GetTextureSlot();

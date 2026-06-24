@@ -314,7 +314,7 @@ void Renderer3D::Render(){
     glUniform3fv(m_uLightDir,   1, glm::value_ptr(lightDir));
     glUniform3fv(m_uViewPos,    1, glm::value_ptr(Engine::camera3d.getPosition()));
     glUniform3fv(m_uLightColor, 1, glm::value_ptr(lightColor));
-    glUniform1f(m_uLightIntensity, 1.f);
+    glUniform1f(m_uLightIntensity, 5.f);
     glUniform1f(m_uAmbientStrength, 0.01f);
     glUniform1i(m_uLightMode, 1);
     

@@ -10,8 +10,9 @@ public:
     void Render();
     void SpriteSet(std::string);
     glm::vec3 position;
+    glm::vec2 origin;
     glm::vec2 scale;
-    glm::vec3 rotation;
+    float rotation;
     glm::vec4 color;
     float frame_index, anim_speed;
     const std::string getSpriteName() const {return sprite_name;}

@@ -7,9 +7,7 @@ void TestPlayer::Update(){
     //if(hsp==0 && vsp==0) {idle_time++;state=0;}
     //else idle_time=0;
     position+=glm::vec3(hsp,vsp,0);
-    
-    sprite->setOrigin(glm::vec2(16,16));
-    
+
     scale=glm::vec2(3);
     anim_speed=0.1;
     frame_index+=anim_speed;

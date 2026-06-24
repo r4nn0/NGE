@@ -96,7 +96,8 @@ TextRenderer::Glyph& TextRenderer::loadChar(FT_ULong c){
         Glyph& g = it->second;
         
         if(!g.bitmap.empty() && g.width > 0 && g.height > 0){
-            g.uv = fontTexPage.TextureAdd(g.bitmap, g.width, g.height);
+            
+            g.uv = fontTexPage.maxRect(g.bitmap.data(), g.width, g.height);
             g.bitmap.clear();
             g.bitmap.shrink_to_fit();
             g.texturePage = fontTexPage.GetTextureSlot();
@@ -116,6 +117,7 @@ void TextRenderer::renderText(std::wstring str, float x, float y, float z){
         glDeleteSync(m_fence);
         m_fence=nullptr;
     }
+    
     for(wchar_t c : str){
         
         Glyph& g = loadChar(c);

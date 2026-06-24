@@ -25,31 +25,30 @@
  * + Open a terminal window in the same folder and run "make" or "make run"\n
  * Note: Check out the makefile to know if you want to compile a debug or a release version.
 */
-unsigned skyboxTexture();
+
 
 int main (){
-    
     glm::vec3 BACKGROUND_COLOR(25.f/255.f);
     Engine gameEngine;
     
     gameEngine.init("NGE", 1600,900);
-    //LoadSpritesToMemroy();
-    LoadModelsToMemory();
+    LoadSpritesToMemroy();
+    //LoadModelsToMemory();
     
-    //If the app crashes try using a font that is located in the same directory as the app
-    //FTGLPixmapFont font("C:/Windows/Fonts/arial.ttf");
-    Skybox skybox;
-	//Renderer2D renderer;
-    Renderer3D renderer3D;
+    //Skybox skybox;
+	Renderer2D renderer;
+    //Renderer3D renderer3D;
     
     
     TextRenderer tr;
-    //TestPlayer obj2D("sonic_run");
+    TestPlayer obj2D("sonic_roll");
+    
+    
     //testObject.color = glm::vec4(1,0,0,1);
 
     //Entity obj3D("SciFiHelmet");
     //Entity obj2("SciFiHelmet");
-    Entity Model("test");
+    //Entity Model("test");
     //Entity sec ("AnimatedMorphSphere");
     //Entity floor;
     //double prevTime = glfwGetTime();
@@ -131,13 +130,9 @@ int main (){
         //obj3D.rotation=glm::vec3(glm::radians(90.0f), 0,0);
         
 
-        if(keyboard_check_pressed(GLFW_KEY_KP_ADD)){
-            debugTexID++;
-            if(debugTexID>=texManager.getTextureCount()) debugTexID=0;
-        }
-        Model.rotation=glm::vec3(glm::radians(-180.0f),truckRot,0);
+        //Model.rotation=glm::vec3(glm::radians(-180.0f),truckRot,0);
         //Model.setTexture(debugTexID);
-        Model.scale = glm::vec3(10.f);
+        //Model.scale = glm::vec3(10.f);
         //obj3D.position=glm::vec3(-10,0,-10);
         //sec.UpdateAnimation(0.001);
         //sec.position = glm::vec3(50,0,50);*/
@@ -145,23 +140,24 @@ int main (){
         
         
         gameEngine.StepEvent();
+        obj2D.rotation = truckRot;
         
-        
-        //obj2D.Update();
+        obj2D.Update();
         //testObject2.Update();
         
         gameEngine.BeginDraw();
-        skybox.Render();
+        //skybox.Render();
         
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
         
         
-        //obj2D.Render();
+        obj2D.Render();
         //obj3D.Render();
         //obj2.Render();
-        Model.Render();
+        //Model.Render();
         
         //Topaki.Render();
+        
         tr.renderText(fpsString, 5, 15, 0);
         
         //sec.Render();
@@ -173,11 +169,10 @@ int main (){
         
         //tr.renderText(ar_fix(L"مرحبا هذه تجربة"), 100,  100, -1);
         
-        renderer3D.Render();
+        //renderer3D.Render();
         
         
-        
-        //renderer.Render();
+        renderer.Render();
         tr.flush();
         gameEngine.EndDraw();
         //auto ms_int = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
