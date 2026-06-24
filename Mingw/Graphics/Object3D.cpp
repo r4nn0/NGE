@@ -272,14 +272,14 @@ void Object3D::LoadMorphTargets(const tinygltf::Primitive& primitive, Primitive&
 
         const tinygltf::Accessor& accessor = model.accessors[accessorIndex];
         
-        if (accessor.bufferView < 0 || accessor.bufferView >= model.bufferViews.size()){
+        if (accessor.bufferView < 0 || (unsigned)accessor.bufferView >= model.bufferViews.size()){
             std::cerr << "Invalid bufferView index: " << accessor.bufferView << std::endl;
             return;
         }
         const tinygltf::BufferView& view = model.bufferViews[accessor.bufferView];
         
         if (view.buffer < 0 ||
-            view.buffer >= model.buffers.size())
+            (unsigned)view.buffer >= model.buffers.size())
         {
             std::cerr << "Invalid buffer index: "
                     << view.buffer << std::endl;
@@ -329,7 +329,7 @@ void Object3D::LoadTextures(){
         if (!image.image.empty()) {
             // Embedded image data (already decoded by tinygltf)
             std::string key = image.uri;
-            std::cout << image.image.size() << std::endl;
+            //std::cout << image.image.size() << std::endl;
             // tinygltf has already decoded the image, use it directly
             textureIDs[i] = texManager.loadTextureFromMemory(
                 image.image.data(), 

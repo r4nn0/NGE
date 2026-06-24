@@ -5,7 +5,6 @@
 class TestPlayer : public Object2D{
 public:
     using Object2D::Object2D;
-    void Update () override;
 }; 
 
 #endif

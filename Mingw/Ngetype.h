@@ -13,11 +13,11 @@ struct Vertex3D{
     unsigned drawID;
 };
 struct DrawData{
-    unsigned modelID;
+    int modelID;
     unsigned mtc;
-    unsigned mwo;
+    int mwo;
     unsigned mpo;
-    unsigned jo;
+    int jo;
     unsigned vertexCount;
     unsigned nodeMatrixIndex;
     int      materialIndex;

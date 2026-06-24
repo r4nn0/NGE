@@ -207,7 +207,7 @@ int TextureManager::createTexture(GLuint glTexture, int width, int height, int m
     m_textures[textureID] = info;
     m_currentMemoryUsage += memorySize;
     
-    std::cout << "Texture created with ID: " << textureID << ", total memory usage: " << (m_currentMemoryUsage / 1024 / 1024) << " MB" << std::endl;
+    //std::cout << "Texture created with ID: " << textureID << ", total memory usage: " << (m_currentMemoryUsage / 1024 / 1024) << " MB" << std::endl;
     
     return textureID;
 }

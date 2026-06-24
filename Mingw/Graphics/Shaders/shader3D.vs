@@ -13,11 +13,11 @@ uniform mat4 proj_matrix;
 uniform mat4 vw_matrix;
 
 struct DrawData{
-    uint modelID;
+    int modelID;
     uint mtc;
-    uint mwo;
+    int mwo;
     uint mpo;
-    uint jo;
+    int jo;
     uint vertexCount;
     uint nodeMatrixIndex;
     int  materialIndex;

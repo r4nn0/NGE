@@ -23,7 +23,7 @@ private:
 
     
     unsigned int vboOffset, m_indexCount, m_instanceCount, m_morphPositionsOffset, m_jointOffset, m_morphWeightsOffset, m_nodeMatrixOffset, m_materialOffset, m_drawDataOffset;
-    unsigned int m_appSurface, m_VBO, m_IBO, m_Shader, m_ModelMatricesSSBO, m_MorphPositionsSSBO,m_JointMatricesSSBO, m_MorphWeightsSSBO, m_NodeMatricesSSBO, m_MaterialsSSBO, m_DrawDataSSBO;
+    unsigned int m_VAO, m_VBO, m_IBO, m_Shader, m_ModelMatricesSSBO, m_MorphPositionsSSBO,m_JointMatricesSSBO, m_MorphWeightsSSBO, m_NodeMatricesSSBO, m_MaterialsSSBO, m_DrawDataSSBO;
     
     void *m_vboBase, *m_indexBase, *m_mmSSBOBase, *m_mpSSBOBase, *m_jmSSBOBase, *m_mwSSBOBase, *m_nmSSBOBase, *m_materialSSBOBase, *m_ddSSBOBase;
     GLsync m_fence;

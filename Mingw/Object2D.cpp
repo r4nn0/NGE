@@ -30,17 +30,16 @@ void Object2D::Update(){
     bbox.right=position.x;
     bbox.bottom=position.y;
     if(sprite!=nullptr){
-        
         sprite->setFrameIndex(frame_index);
         sprite->setColor(color);
         sprite->setOrigin(origin);
         sprite->setPosition(position);
         sprite->setScale(scale);
         sprite->setRotation(rotation);
-
         bbox.right+=sprite->getSize().x;
         bbox.bottom+=sprite->getSize().y;
     }
+    frame_index+=anim_speed;
 }
 /**
  * @brief Add the sprite of the object to the rendering list
@@ -64,6 +63,8 @@ void Object2D::SpriteSet(std::string sprName){
     
     if(pos==SpritesTotal.end()){
         std::cout << "Sprite not found or not loaded to memory!" << std::endl;
+        delete sprite;
+        sprite = nullptr;
         return;
     }
     

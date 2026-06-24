@@ -1,6 +1,10 @@
 ### Add soundplaying to engine using OpenAL: https://github.com/kcat/openal-soft
 
 
+### Add 2D camera
+### Fix so that there is only one renderer for sprites and fonts
+### OR Implement rendering to framebuffer (created texture) instead of rendering to the main render target immediately
+### Add primitive renderer + ploygon class to render any object of your choice
 
 
 
@@ -8,7 +12,7 @@
 
 ### Fix Skybox (Currently using obselete functions, use modern GL calls instead)
 
-### Add primitive renderer + ploygon class to render any object of your choice
+
 
 ### Add tripple buffering (better performance)
 
@@ -19,7 +23,7 @@
 
 ### Avoid unnecessary buffer mapping / unmapping (Map only once and keep using the mapped storage) Implemented in text renderer (2D and 3D left) (Redo it)
 
-### Fix so that there is only one renderer for both 2D and 3D (Ignore maybe later?)
+
 
 
 

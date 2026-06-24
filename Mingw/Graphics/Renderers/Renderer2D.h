@@ -12,7 +12,7 @@ public:
 protected:
 
 private:
-    unsigned int m_appSurface, m_VBO, m_Shader, m_IBO;
+    unsigned int m_VAO, m_VBO, m_Shader, m_IBO;
     void* m_vboBase;
     struct vboData{
         glm::vec3 pos;

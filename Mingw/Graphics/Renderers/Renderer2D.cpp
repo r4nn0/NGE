@@ -8,11 +8,11 @@
  * 
  */
 Renderer2D::Renderer2D() : m_fence(nullptr){
-    glCreateVertexArrays(1, &m_appSurface);
+    glCreateVertexArrays(1, &m_VAO);
 
     glCreateBuffers(1, &m_VBO);
     glNamedBufferStorage(m_VBO, BUFFER_SIZE2D, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
-    glVertexArrayVertexBuffer(m_appSurface,0,m_VBO,0, VERTEX_SIZE2D);
+    glVertexArrayVertexBuffer(m_VAO,0,m_VBO,0, VERTEX_SIZE2D);
 
     m_vboBase = glMapNamedBufferRange(m_VBO, 0, BUFFER_SIZE2D, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 
@@ -29,21 +29,21 @@ Renderer2D::Renderer2D() : m_fence(nullptr){
     }
     glCreateBuffers(1, &m_IBO);
     glNamedBufferStorage(m_IBO, INDICES_SIZE2D*sizeof(short), indices, 0);
-    glVertexArrayElementBuffer(m_appSurface, m_IBO);
+    glVertexArrayElementBuffer(m_VAO, m_IBO);
 
 
     for(int i=0;i<7;i++){
-        glEnableVertexArrayAttrib(m_appSurface,i);
-        glVertexArrayAttribBinding(m_appSurface,i,0);
+        glEnableVertexArrayAttrib(m_VAO,i);
+        glVertexArrayAttribBinding(m_VAO,i,0);
     }
 
-    glVertexArrayAttribFormat(m_appSurface, 0, 3, GL_FLOAT, GL_FALSE, offsetof(vboData, pos));
-    glVertexArrayAttribFormat(m_appSurface, 1, 3, GL_FLOAT, GL_FALSE, offsetof(vboData, lpos));
-    glVertexArrayAttribFormat(m_appSurface, 2, 1, GL_FLOAT, GL_FALSE, offsetof(vboData, rot));
-    glVertexArrayAttribFormat(m_appSurface, 3, 2, GL_FLOAT, GL_FALSE, offsetof(vboData, scale));
-    glVertexArrayAttribFormat(m_appSurface, 4, 4, GL_FLOAT, GL_FALSE, offsetof(vboData, color));
-    glVertexArrayAttribFormat(m_appSurface, 5, 2, GL_FLOAT, GL_FALSE, offsetof(vboData, texCoords));
-    glVertexArrayAttribIFormat(m_appSurface, 6, 1, GL_INT, offsetof(vboData, textureSlot));
+    glVertexArrayAttribFormat(m_VAO, 0, 3, GL_FLOAT, GL_FALSE, offsetof(vboData, pos));
+    glVertexArrayAttribFormat(m_VAO, 1, 3, GL_FLOAT, GL_FALSE, offsetof(vboData, lpos));
+    glVertexArrayAttribFormat(m_VAO, 2, 1, GL_FLOAT, GL_FALSE, offsetof(vboData, rot));
+    glVertexArrayAttribFormat(m_VAO, 3, 2, GL_FLOAT, GL_FALSE, offsetof(vboData, scale));
+    glVertexArrayAttribFormat(m_VAO, 4, 4, GL_FLOAT, GL_FALSE, offsetof(vboData, color));
+    glVertexArrayAttribFormat(m_VAO, 5, 2, GL_FLOAT, GL_FALSE, offsetof(vboData, texCoords));
+    glVertexArrayAttribIFormat(m_VAO, 6, 1, GL_INT, offsetof(vboData, textureSlot));
     
     m_Shader=Engine::CreateShader(Engine::LoadShaderFromFile("./Graphics/Shaders/shader.vs").c_str(),
                                   Engine::LoadShaderFromFile("./Graphics/Shaders/shader.fs").c_str());
@@ -75,8 +75,6 @@ void Renderer2D::Render(){
 
     for(Sprite& spr:SpritesToRender){
         float textureSlot =spr.getTextureSlot();
-        if(!spr.hasTexture())
-            textureSlot=-1;
         glm::vec3& _pos = spr.getPosition();
         glm::vec2& _origin = spr.getOrigin();
         float& _rot = spr.getRotation();
@@ -85,11 +83,7 @@ void Renderer2D::Render(){
         glm::vec4& _col = spr.getColor();
         std::vector<glm::vec2> uvs = spr.getUV();
         std::vector<glm::vec3> _lpos;
-        /*
-        uvs.push_back(glm::vec2(0,0));
-        uvs.push_back(glm::vec2(1,0));
-        uvs.push_back(glm::vec2(1,1));
-        uvs.push_back(glm::vec2(0,1));*/
+        
         _lpos.push_back(glm::vec3(-_origin,0));
         _lpos.push_back(glm::vec3(_size.x-_origin.x,-_origin.y,0));
         _lpos.push_back(glm::vec3(_size - _origin, 0));
@@ -116,7 +110,7 @@ void Renderer2D::Render(){
     glUniformMatrix4fv(glGetUniformLocation(m_Shader, "vw_matrix"),1,GL_FALSE,Engine::getViewMatrix2D());
     glUniform1i(glGetUniformLocation(m_Shader, "texture[0]"), MainTextureAtlas.GetTextureSlot());
     MainTextureAtlas.Bind();
-    glBindVertexArray(m_appSurface);
+    glBindVertexArray(m_VAO);
     
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

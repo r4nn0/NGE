@@ -17,7 +17,7 @@
  */
 Renderer3D::Renderer3D() : vboOffset(0), m_indexCount(0), m_instanceCount(0),m_morphPositionsOffset(0), m_jointOffset(0), m_morphWeightsOffset(0), m_nodeMatrixOffset(0), m_materialOffset(1), m_drawDataOffset(0) , m_fence(nullptr), window_size(Engine::getWindowSize()){
     glGenQueries(2, m_timerQuery);
-    glCreateVertexArrays(1, &m_appSurface);
+    glCreateVertexArrays(1, &m_VAO);
 
     glCreateBuffers(1, &m_VBO);
     glNamedBufferStorage(m_VBO, BUFFER_SIZE3D, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
@@ -46,8 +46,8 @@ Renderer3D::Renderer3D() : vboOffset(0), m_indexCount(0), m_instanceCount(0),m_m
     glCreateBuffers(1, &m_DrawDataSSBO);
     glNamedBufferStorage(m_DrawDataSSBO, 5*MEGABYTE, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 
-    glVertexArrayVertexBuffer(m_appSurface,0,m_VBO,0, VERTEX_SIZE3D);
-    glVertexArrayElementBuffer(m_appSurface, m_IBO);
+    glVertexArrayVertexBuffer(m_VAO,0,m_VBO,0, VERTEX_SIZE3D);
+    glVertexArrayElementBuffer(m_VAO, m_IBO);
 
 
 
@@ -62,20 +62,20 @@ Renderer3D::Renderer3D() : vboOffset(0), m_indexCount(0), m_instanceCount(0),m_m
     m_ddSSBOBase = glMapNamedBufferRange(m_DrawDataSSBO, 0, 2*MEGABYTE, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT | GL_MAP_FLUSH_EXPLICIT_BIT);
     
     for(int i=0;i<=7;i++){
-        glEnableVertexArrayAttrib(m_appSurface,i);
-        glVertexArrayAttribBinding(m_appSurface,i,0);
+        glEnableVertexArrayAttrib(m_VAO,i);
+        glVertexArrayAttribBinding(m_VAO,i,0);
     }
     
-    glVertexArrayAttribFormat(m_appSurface, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, pos));
-    glVertexArrayAttribFormat(m_appSurface, 1, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, texCoords));
-    glVertexArrayAttribFormat(m_appSurface, 2, 4, GL_UNSIGNED_BYTE, GL_TRUE, offsetof(Vertex3D, color));
-    glVertexArrayAttribFormat(m_appSurface, 3, 2, GL_UNSIGNED_SHORT, GL_TRUE, offsetof(Vertex3D, normal));
+    glVertexArrayAttribFormat(m_VAO, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, pos));
+    glVertexArrayAttribFormat(m_VAO, 1, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, texCoords));
+    glVertexArrayAttribFormat(m_VAO, 2, 4, GL_UNSIGNED_BYTE, GL_TRUE, offsetof(Vertex3D, color));
+    glVertexArrayAttribFormat(m_VAO, 3, 2, GL_UNSIGNED_SHORT, GL_TRUE, offsetof(Vertex3D, normal));
 
-    glVertexArrayAttribIFormat(m_appSurface, 4, 4, GL_UNSIGNED_BYTE, offsetof(Vertex3D, joints));
-    glVertexArrayAttribFormat(m_appSurface,  5, 4, GL_UNSIGNED_BYTE, GL_TRUE, offsetof(Vertex3D, weights));
+    glVertexArrayAttribIFormat(m_VAO, 4, 4, GL_UNSIGNED_BYTE, offsetof(Vertex3D, joints));
+    glVertexArrayAttribFormat(m_VAO,  5, 4, GL_UNSIGNED_BYTE, GL_TRUE, offsetof(Vertex3D, weights));
 
-    glVertexArrayAttribIFormat(m_appSurface, 6, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, vertexIndex));
-    glVertexArrayAttribIFormat(m_appSurface, 7, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, drawID));
+    glVertexArrayAttribIFormat(m_VAO, 6, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, vertexIndex));
+    glVertexArrayAttribIFormat(m_VAO, 7, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, drawID));
 
     m_Shader=Engine::CreateShader(Engine::LoadShaderFromFile("./Graphics/Shaders/shader3D.vs").c_str(),
                                   Engine::LoadShaderFromFile("./Graphics/Shaders/shader3D.fs").c_str());
@@ -119,7 +119,7 @@ Renderer3D::~Renderer3D() {
 void Renderer3D::Render(){
     
     window_size = Engine::getWindowSize();
-    static bool firstFlush = true;
+    //static bool firstFlush = true;
     std::vector<unsigned> OpaqueMask, blend;
     glm::vec3 minPos(FLT_MAX), maxPos(-FLT_MAX);
     //GLsizei instanceCount=0, jointOffset=0, morphWeightsOffset=0, morphPositionsOffset=0, drawDataOffset = 0;
@@ -199,11 +199,11 @@ void Renderer3D::Render(){
             }
             glm::mat4 normalMat = glm::transpose(glm::inverse(obj.nodeGlobalMatrix[prim.nodeIndex]));
             
-            ddSSBOptr[m_drawDataOffset]={obj.instanceID, prim.morphPositions.size(), 
-                                         (morphWeightsOffsets.size()>prim.nodeIndex) ? morphWeightsOffsets[prim.nodeIndex] : -1,
+            ddSSBOptr[m_drawDataOffset]={obj.instanceID, (unsigned)prim.morphPositions.size(), 
+                                         (morphWeightsOffsets.size()>(unsigned)prim.nodeIndex) ? morphWeightsOffsets[prim.nodeIndex] : -1,
                                          m_morphPositionsOffset,
-                                         (skinOffsets.size()>prim.nodeIndex) ?  skinOffsets[prim.skinIndex] : -1,
-                                         prim.vertices.size(),
+                                         (skinOffsets.size()>(unsigned)prim.nodeIndex) ?  skinOffsets[prim.skinIndex] : -1,
+                                         (unsigned)prim.vertices.size(),
                                          nodeMatrixBaseOffset+prim.nodeIndex, materialDefaultSlot, normalMat
                                         };
             
@@ -295,10 +295,7 @@ void Renderer3D::Render(){
     glm::vec3 lightDir = glm::normalize(glm::mat3(viewMat) * camForward);
     glm::vec3 lightColor =  glm::vec3(1.f, 1.f, 1.f);
 
-
-    glm::vec3 sceneCenter = (minPos+maxPos)*0.5f;
-    glm::vec3 size = maxPos-minPos;
-    float sceneRadius     = glm::max(size.x, glm::max(size.y, size.z));
+    
     glm::vec3 lightPos = glm::vec3(viewMat * glm::vec4(Engine::camera3d.getPosition(), 1.0f));
 
     /*glm::mat4 lightView = glm::lookAt(lightPos, sceneCenter, 
@@ -318,7 +315,7 @@ void Renderer3D::Render(){
     glUniform1f(m_uAmbientStrength, 0.01f);
     glUniform1i(m_uLightMode, 1);
     
-    glBindVertexArray(m_appSurface);
+    glBindVertexArray(m_VAO);
     /*if (m_timerQueryReady) {
         GLuint64 elapsed;
         glGetQueryObjectui64v(m_timerQuery[1 - m_timerQueryIndex], 

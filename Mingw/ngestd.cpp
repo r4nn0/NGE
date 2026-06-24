@@ -136,10 +136,6 @@ std::vector<unsigned char*> LoadNGESprite(const char* path, Sprite* spr){
         i++;
     }
     
-    //spr->m_Size=glm::vec2(spr->m_Widest, spr->m_Heighest);
-    spr->m_hasTexture=true;
-    
-    
     SpritesTotal.insert({spr->m_Name, spr});
    
     return t_Pixels;

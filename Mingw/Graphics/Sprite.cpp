@@ -8,7 +8,11 @@ TexturePage MainTextureAtlas(4096,4096,4,0);
  * @param _pos position where to render the sprite
  * @param _size size of the sprite
  */
-Sprite::Sprite(): m_Name(""),m_Frames(0), m_FrameIndex(0),m_Origin(glm::vec2(0,0)), m_hasTexture(false), m_texSlot(-1), m_Widest(0), m_Heighest(0),m_WidthCombined(0), m_HeightCombined(0), m_Scale(glm::vec2(1.0f)), m_Rotation(0.f), m_Position(glm::vec3(0.0f)){
+Sprite::Sprite(): m_Name(""), m_Frames(0), m_FrameIndex(0),
+                  m_Origin(glm::vec2(0,0)), m_Color(glm::vec4(1.0f)), m_texSlot(-1),
+                  m_Widest(0), m_Heighest(0),
+                  m_WidthCombined(0), m_HeightCombined(0),
+                  m_Scale(glm::vec2(1.0f)), m_Rotation(0.f), m_Position(glm::vec3(0.0f)){
 }
 void Sprite::setOrigin(glm::vec2 origin){
     m_Origin = origin;
@@ -163,14 +167,12 @@ void TexturePage::maxRect(unsigned char* data, Sprite* spr, int t_Frame){
         memcpy(&m_TexturePage[dstIndex], &data[srcIndex], width*m_ChannelNum);
     }*/
 }
-glm::vec2 TexturePage::maxRect(unsigned char* data, int width, int height){
+std::vector<glm::vec2> TexturePage::maxRect(unsigned char* data, int width, int height){
     if(!m_Initiated){
         Bind();
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, m_Width, m_Height, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
         Unbind();
         m_Initiated=true;
     }
@@ -205,16 +207,17 @@ glm::vec2 TexturePage::maxRect(unsigned char* data, int width, int height){
           x2 = (float)(newTex.x + width) / m_Width,
           y2 = (float)(newTex.y + height) / m_Height;
     Bind();
-    glTexSubImage2D(GL_TEXTURE_2D, 0, newTex.x, newTex.y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, newTex.x, newTex.y, width, height, GL_RED, GL_UNSIGNED_BYTE, data);
     Unbind();
-    /*
+    
     std::vector<glm::vec2> UVs;
     UVs.push_back(glm::vec2(x1,y1));
     UVs.push_back(glm::vec2(x2,y1));
     UVs.push_back(glm::vec2(x2,y2));
     UVs.push_back(glm::vec2(x1,y2));
-    */
-    return glm::vec2(x1, y1);
+    
+    //return glm::vec2(x1, y1);
+    return UVs;
     /*for (unsigned int y = 0;y < height;y++) {
         int srcIndex = width * y * m_ChannelNum;
         int dstIndex = (newTex.x + m_Width *(y+newTex.y)) * m_ChannelNum;

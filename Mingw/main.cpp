@@ -34,7 +34,7 @@ int main (){
     gameEngine.init("NGE", 1600,900);
     LoadSpritesToMemroy();
     //LoadModelsToMemory();
-    
+
     //Skybox skybox;
 	Renderer2D renderer;
     //Renderer3D renderer3D;
@@ -42,31 +42,21 @@ int main (){
     
     TextRenderer tr;
     TestPlayer obj2D("sonic_roll");
+    //Entity obj("test");
     
-    
-    //testObject.color = glm::vec4(1,0,0,1);
-
-    //Entity obj3D("SciFiHelmet");
-    //Entity obj2("SciFiHelmet");
-    //Entity Model("test");
-    //Entity sec ("AnimatedMorphSphere");
-    //Entity floor;
-    //double prevTime = glfwGetTime();
     std::wstring fpsString = L"0";
-    float actdir= -60;
+    /*float actdir= -60;
     float actpitch=60;
     float hsp=-10, vsp=-10, zsp=-1;
-    float sense = 0.12f;
-    float truckRot =0;
-
+    float sense = 0.12f;*/
+    float hsp=0, vsp=0;
     const float desiredFPS = 200;
     
     gameEngine.setBackgroundColor(BACKGROUND_COLOR);
     
     float fpsReal=0;
     auto prevTime=std::chrono::steady_clock::now();
-    TextureManager& texManager = TextureManager::getInstance();
-    int debugTexID = 0;
+    
     while(!glfwWindowShouldClose(gameEngine.get_window())){
         float LX = gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_X) > 0.5 ? 1 : gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_X) <-0.5 ? -1 : 0;
         float LY = gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_Y) > 0.5 ? 1 : gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_Y) <-0.5 ? -1 : 0;
@@ -79,22 +69,23 @@ int main (){
         prevTime=currTime;
         fpsReal = 1.f / dt.count();
         static float deltaTime = 1;
-        if(fpsReal>0)
+        if(fpsReal>0.0f)
             deltaTime = desiredFPS/fpsReal;
         // Render fps text every half a second
         static double updatestrFPS = 0;
         updatestrFPS++;
-        if(updatestrFPS>=(fpsReal/2.0)){
+        if(updatestrFPS>=(fpsReal/5.0)){
             fpsString = std::to_wstring((int)gmath::round(fpsReal));
             updatestrFPS=0;
         }
         //std::cout << "FPS: " <<fpsReal <<  std::endl;
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
             break;
-        
+        /*
         if(keyboard_check_pressed('L'))
             gameEngine.ToggleCursorVisibility();
         glfwSetCursorPos(gameEngine.get_window(),gameEngine.getViewWidth()/2, gameEngine.getViewHeight()/2);
+        
         actdir+=(mouse_x-gameEngine.getViewWidth()/2) * sense + (RX);
         if(actdir>360) actdir -= 360;
         if(actdir<0) actdir += 360;
@@ -107,7 +98,7 @@ int main (){
         gameEngine.camera3d.setPosition(glm::vec3(hsp,zsp,vsp));
         gameEngine.camera3d.setRotation(glm::vec3(dir , pitch, glm::radians(180.f)));
         gameEngine.camera3d.setOrbit(glm::vec3(hsp,zsp,vsp));
-
+        
 
         float moveSpeed = 0.03 * deltaTime;
         float turnSpeed = 1.2;
@@ -120,63 +111,41 @@ int main (){
              +(keyboard_check('W') - keyboard_check('S')) * glm::sin(dir)) + (LX * glm::cos(dir) - LY*glm::sin(dir))) * moveSpeed;
         vsp += (((keyboard_check('D') - keyboard_check('A')) * glm::sin(dir)
              -(keyboard_check('W') - keyboard_check('S')) * glm::cos(dir))  + (LX * glm::sin(dir) + LY*glm::cos(dir)))* moveSpeed;
-        //vsp -= moving *glm::cos(truckRot)* moveSpeed;
-        //hsp -= moving *glm::sin(truckRot)* moveSpeed;
         zsp +=(keyboard_check('E') - keyboard_check('Q')) * moveSpeed;
         
         truckRot += glm::radians((keyboard_check('Z') - keyboard_check('X'))*0.1f);
-        //obj3D.UpdateAnimation(moving*0.005f);
-        
-        //obj3D.rotation=glm::vec3(glm::radians(90.0f), 0,0);
-        
-
-        //Model.rotation=glm::vec3(glm::radians(-180.0f),truckRot,0);
-        //Model.setTexture(debugTexID);
-        //Model.scale = glm::vec3(10.f);
-        //obj3D.position=glm::vec3(-10,0,-10);
-        //sec.UpdateAnimation(0.001);
-        //sec.position = glm::vec3(50,0,50);*/
-        //floor.scale = glm::vec3(5,0,5);
+        */
         
         
         gameEngine.StepEvent();
-        obj2D.rotation = truckRot;
-        
+        char hinput = (keyboard_check('D') - keyboard_check('A')) | (char)(LX);
+        char vinput = (keyboard_check('S') - keyboard_check('W')) | (char)(LY);
+        hsp = hinput * 3 * deltaTime;
+        vsp = vinput * 3 * deltaTime;
         obj2D.Update();
-        //testObject2.Update();
-        
+        obj2D.position += glm::vec3(hsp, vsp, 0.0f);
+        obj2D.scale = glm::vec2(3);
+        obj2D.anim_speed = 0.15;
         gameEngine.BeginDraw();
         //skybox.Render();
-        
+        //obj.Render();
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
         
         
         obj2D.Render();
-        //obj3D.Render();
-        //obj2.Render();
-        //Model.Render();
         
-        //Topaki.Render();
-        
-        tr.renderText(fpsString, 5, 15, 0);
-        
-        //sec.Render();
-        //floor.Render();
+        tr.setFontColor(glm::vec4(1.0,1.0,1.0,0.5));
+        tr.setFontSize(2);
+        tr.setValign(Align::CENTER);
+        tr.setHalign(Align::MIDDLE);
+        tr.renderText(ar_fix(L"مرحبا هذه تجربة"), 800, 450, 0);
 
-        
-
-
-        
-        //tr.renderText(ar_fix(L"مرحبا هذه تجربة"), 100,  100, -1);
-        
-        //renderer3D.Render();
         
         
         renderer.Render();
         tr.flush();
         gameEngine.EndDraw();
-        //auto ms_int = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
-        //std::cout << ms_int.count() << std::endl;
+        
     }
     
     glfwTerminate();

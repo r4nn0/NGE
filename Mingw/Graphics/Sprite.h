@@ -25,10 +25,8 @@ public:
     inline glm::vec2& getSize(){return m_CurrentFrameSize[m_FrameIndex];}
     inline glm::vec2 getLargestFrame(){return glm::vec2(m_Widest, m_Heighest);}
     inline glm::vec2 getSumSize(){return glm::vec2(m_WidthCombined, m_HeightCombined);}
-    //inline glm::vec2& getBaseSize(int _frameIndex=-1){if(_frameIndex==-1) _frameIndex=m_FrameIndex;return m_BaseSize[_frameIndex];}
     inline glm::vec4& getColor(){return m_Color;}
-    inline std::vector<glm::vec2>& getUV(int _frameIndex=-1){if(_frameIndex==-1) _frameIndex=m_FrameIndex;return m_UV[_frameIndex];}
-    inline bool& hasTexture(){return m_hasTexture;}
+    inline std::vector<glm::vec2>& getUV(){return m_UV[m_FrameIndex];}
 
     friend class TexturePage;
     friend std::vector<unsigned char*> LoadNGESprite(const char*, Sprite*);
@@ -39,9 +37,7 @@ public:
         this->m_FrameIndex = other.m_FrameIndex;
         this->m_CurrentFrameSize = other.m_CurrentFrameSize;
         this->m_Color = other.m_Color;
-        this->m_hasTexture = other.m_hasTexture;
         this->m_texSlot = other.m_texSlot;
-
         this->m_UV = other.m_UV;
         return *this;
     
@@ -63,7 +59,6 @@ protected:
     std::vector<glm::vec2> m_CurrentFrameSize;
     glm::vec2 m_Origin;
     glm::vec4 m_Color;
-    bool m_hasTexture;
     int m_texSlot;
     
     std::vector<std::vector<glm::vec2>> m_UV;
@@ -89,7 +84,7 @@ public:
 	TexturePage(int=0);
 	TexturePage(int, int, int=4, int=0);
     void maxRect(unsigned char*, Sprite*, int);
-    glm::vec2 maxRect(unsigned char*, int, int);
+    std::vector<glm::vec2> maxRect(unsigned char*, int, int);
     bool Intersects(const Rect&, const Rect&);
     bool Contains(const Rect&, const Rect&);
     void PruneFreeRects();
