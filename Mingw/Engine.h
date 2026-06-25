@@ -25,44 +25,40 @@ void windowSizeCallback(GLFWwindow*, int, int);
 void windowFocusCallback(GLFWwindow*, int);
 class Engine{
 public:
-    bool init(const char* window_title, int, int);
-
+    static Engine& getInstance(const char* = "NGE", int=800, int=600);
+    Engine(const char*, int, int);
     void StepEvent();
     void BeginDraw();
     void EndDraw();
     void ToggleCursorVisibility();
-    static float znear2D, zfar2D;
-    static Camera3D camera3d;
-    static bool isCursorHidden;
+    float znear2D, zfar2D;
+    Camera3D camera3d;
+    bool isCursorHidden;
     GLFWwindow* get_window();
-    static unsigned int CreateShader(const char*, const char*);
-    static std::string LoadShaderFromFile(const char*);
-    static const float* getProjMatrix();
-    static void setProjMatrix(glm::mat4);
-    static const float* getViewMatrix();
-    static const float* getOrthoMatrix();
-    static void setOrthoMatrix(glm::mat4);
-    static const float* getViewMatrix2D();
-    Engine();
+    
+    const float* getProjMatrix();
+    void setProjMatrix(glm::mat4);
+    const float* getOrthoMatrix();
+    void setOrthoMatrix(glm::mat4);
+    const float* getViewMatrix2D();
     void setBackgroundColor(glm::vec3);
-    static glm::vec2 getWindowSize();
+    glm::vec2 getWindowSize();
     int getViewWidth();
     int getViewHeight();
     int getViewX();
     int getViewY();
 private:
     int view_xview, view_yview;
-    static glm::vec2 window_size;
+    glm::vec2 window_size;
     glm::vec3 background_color;
 
     friend void windowSizeCallback(GLFWwindow* window, int width, int height);
 
-    static GLFWwindow* window;
-    static unsigned int CompileShader(unsigned int type, const char*source);
-    static glm::mat4 projMat;
-    static glm::mat4 viewMat;
-    static glm::mat4 orthoMat;
-    static glm::mat4 viewMat2D;
+    GLFWwindow* window;
+
+    glm::mat4 projMat;
+    glm::mat4 orthoMat;
+    glm::mat4 viewMat2D;
 
 };
 

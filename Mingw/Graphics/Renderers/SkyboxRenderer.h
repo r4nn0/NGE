@@ -1,6 +1,6 @@
 #ifndef SKYBOX_RENDERER_H
 #define SKYBOX_RENDERER_H
-#include "../Sprite.h"
+#include <ngestd.h>
 
 class Skybox{
 public:

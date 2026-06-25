@@ -15,7 +15,7 @@
  * @brief Initialize batch renderer to pass correct values to shaders
  * 
  */
-Renderer3D::Renderer3D() : vboOffset(0), m_indexCount(0), m_instanceCount(0),m_morphPositionsOffset(0), m_jointOffset(0), m_morphWeightsOffset(0), m_nodeMatrixOffset(0), m_materialOffset(1), m_drawDataOffset(0) , m_fence(nullptr), window_size(Engine::getWindowSize()){
+Renderer3D::Renderer3D() : vboOffset(0), m_indexCount(0), m_instanceCount(0),m_morphPositionsOffset(0), m_jointOffset(0), m_morphWeightsOffset(0), m_nodeMatrixOffset(0), m_materialOffset(1), m_drawDataOffset(0) , m_fence(nullptr), window_size(0){
     glGenQueries(2, m_timerQuery);
     glCreateVertexArrays(1, &m_VAO);
 
@@ -77,8 +77,8 @@ Renderer3D::Renderer3D() : vboOffset(0), m_indexCount(0), m_instanceCount(0),m_m
     glVertexArrayAttribIFormat(m_VAO, 6, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, vertexIndex));
     glVertexArrayAttribIFormat(m_VAO, 7, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, drawID));
 
-    m_Shader=Engine::CreateShader(Engine::LoadShaderFromFile("./Graphics/Shaders/shader3D.vs").c_str(),
-                                  Engine::LoadShaderFromFile("./Graphics/Shaders/shader3D.fs").c_str());
+    m_Shader=CreateShader(LoadShaderFromFile("./Graphics/Shaders/shader3D.vs").c_str(),
+                          LoadShaderFromFile("./Graphics/Shaders/shader3D.fs").c_str());
     
     m_uProjMatrix      = glGetUniformLocation(m_Shader, "proj_matrix");
     m_uVwMatrix        = glGetUniformLocation(m_Shader, "vw_matrix");
@@ -118,7 +118,7 @@ Renderer3D::~Renderer3D() {
  */
 void Renderer3D::Render(){
     
-    window_size = Engine::getWindowSize();
+    window_size = Engine::getInstance().getWindowSize();
     //static bool firstFlush = true;
     std::vector<unsigned> OpaqueMask, blend;
     glm::vec3 minPos(FLT_MAX), maxPos(-FLT_MAX);
@@ -285,18 +285,17 @@ void Renderer3D::Render(){
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, m_DrawDataSSBO);
     
     
-    glUniformMatrix4fv(m_uProjMatrix, 1,GL_FALSE,Engine::getProjMatrix());
-    glUniformMatrix4fv(m_uVwMatrix,1,GL_FALSE, Engine::getViewMatrix());
+    
 
-    glm::mat4 viewMat = Engine::camera3d.getMatrix();
-    glm::vec3 camForward = Engine::camera3d.getForward();
+    glm::mat4 viewMat = Engine::getInstance().camera3d.getMatrix();
+    glm::vec3 camForward = Engine::getInstance().camera3d.getForward();
 
 
     glm::vec3 lightDir = glm::normalize(glm::mat3(viewMat) * camForward);
     glm::vec3 lightColor =  glm::vec3(1.f, 1.f, 1.f);
 
     
-    glm::vec3 lightPos = glm::vec3(viewMat * glm::vec4(Engine::camera3d.getPosition(), 1.0f));
+    glm::vec3 lightPos = glm::vec3(viewMat * glm::vec4(Engine::getInstance().camera3d.getPosition(), 1.0f));
 
     /*glm::mat4 lightView = glm::lookAt(lightPos, sceneCenter, 
                                     glm::vec3(0.0f, -1.0f, 0.0f));
@@ -306,10 +305,11 @@ void Renderer3D::Render(){
     */
 
     //printf("%f %f %f\n", camForward.x, camForward.y, camForward.z);
-
+    glUniformMatrix4fv(m_uProjMatrix, 1,GL_FALSE,Engine::getInstance().getProjMatrix());
+    glUniformMatrix4fv(m_uVwMatrix,1,GL_FALSE, glm::value_ptr(viewMat));
     glUniform3fv(m_uLightPos,   1, glm::value_ptr(lightPos));
     glUniform3fv(m_uLightDir,   1, glm::value_ptr(lightDir));
-    glUniform3fv(m_uViewPos,    1, glm::value_ptr(Engine::camera3d.getPosition()));
+    glUniform3fv(m_uViewPos,    1, glm::value_ptr(Engine::getInstance().camera3d.getPosition()));
     glUniform3fv(m_uLightColor, 1, glm::value_ptr(lightColor));
     glUniform1f(m_uLightIntensity, 5.f);
     glUniform1f(m_uAmbientStrength, 0.01f);

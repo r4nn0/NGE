@@ -28,32 +28,35 @@
 
 
 int main (){
-    glm::vec3 BACKGROUND_COLOR(25.f/255.f);
-    Engine gameEngine;
-    
-    gameEngine.init("NGE", 1600,900);
+    glm::vec3 BACKGROUND_COLOR(0.25,0.0,0.25);
+    Engine& gameEngine = Engine::getInstance("NGE", 1600, 900);
+    gameEngine.setBackgroundColor(BACKGROUND_COLOR);
+
+
     LoadSpritesToMemroy();
     //LoadModelsToMemory();
 
-    //Skybox skybox;
+    
 	Renderer2D renderer;
+    
+
+    //Skybox skybox;
     //Renderer3D renderer3D;
     
     
     TextRenderer tr;
-    TestPlayer obj2D("sonic_run");
     TestPlayer obj("sonic_run");
-    //Entity obj("test");
+    //Entity test("test");
     
     std::wstring fpsString = L"0";
-    /*float actdir= -60;
+    /*
+    float actdir= -60;
     float actpitch=60;
-    float hsp=-10, vsp=-10, zsp=-1;
-    float sense = 0.12f;*/
-    
+    float sense = 0.12f;
+    float hsp = 0, vsp=0, zsp=0;*/
     const float desiredFPS = 200;
     
-    gameEngine.setBackgroundColor(BACKGROUND_COLOR);
+    
     
     float fpsReal=0;
     auto prevTime=std::chrono::steady_clock::now();
@@ -82,6 +85,7 @@ int main (){
         //std::cout << "FPS: " <<fpsReal <<  std::endl;
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
             break;
+        
         /*
         if(keyboard_check_pressed('L'))
             gameEngine.ToggleCursorVisibility();
@@ -113,48 +117,43 @@ int main (){
         vsp += (((keyboard_check('D') - keyboard_check('A')) * glm::sin(dir)
              -(keyboard_check('W') - keyboard_check('S')) * glm::cos(dir))  + (LX * glm::sin(dir) + LY*glm::cos(dir)))* moveSpeed;
         zsp +=(keyboard_check('E') - keyboard_check('Q')) * moveSpeed;
-        
-        truckRot += glm::radians((keyboard_check('Z') - keyboard_check('X'))*0.1f);
         */
+        
+        //truckRot += glm::radians((keyboard_check('Z') - keyboard_check('X'))*0.1f);
+        
         
         
         gameEngine.StepEvent();
-        char hinput = (keyboard_check('D') - keyboard_check('A')) | (char)(LX);
-        char vinput = (keyboard_check('S') - keyboard_check('W')) | (char)(LY);
+        
+        char hinput = (keyboard_check('D') - keyboard_check('A')) | (char)(LX) | (keyboard_check(GLFW_KEY_RIGHT) - keyboard_check(GLFW_KEY_LEFT)) | (char)(RX);
+        char vinput = (keyboard_check('S') - keyboard_check('W')) | (char)(LY) | (keyboard_check(GLFW_KEY_DOWN) - keyboard_check(GLFW_KEY_UP)) | (char)(RY);
         float hsp = hinput * 3 * deltaTime;
         float vsp = vinput * 3 * deltaTime;
-
-
-        char hinput2 = (keyboard_check(GLFW_KEY_RIGHT) - keyboard_check(GLFW_KEY_LEFT)) | (char)(RX);
-        char vinput2 = (keyboard_check(GLFW_KEY_DOWN) - keyboard_check(GLFW_KEY_UP)) | (char)(RY);
-        float hsp2 = hinput2 * 3 * deltaTime;
-        float vsp2 = vinput2 * 3 * deltaTime;
         float zsp = (keyboard_check('Z') - keyboard_check('X')) * 3 * deltaTime;
-        obj2D.Update();
-        obj2D.position += glm::vec3(hsp, vsp, 0.0f);
-        obj2D.scale = glm::vec2(3);
-        obj2D.anim_speed = 0.15;
+        
 
         obj.Update();
-        obj.position += glm::vec3(hsp2, vsp2, zsp);
+        obj.position += glm::vec3(hsp, vsp, zsp);
         obj.scale = glm::vec2(3);
         obj.anim_speed = 0.15;
 
 
-
         gameEngine.BeginDraw();
+        
+        //test.Render();
         //skybox.Render();
+        //renderer3D.Render();
         //
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
-        obj2D.Render();
+        
         obj.Render();
         
         tr.setValign(Align::CENTER);
-        tr.setHalign(Align::MIDDLE);
-        tr.setFontColor(glm::vec4(0.0,1.0,1.0,1.0));
+        tr.setHalign(Align::RIGHT);
+        tr.setFontColor(glm::vec4(0.0,1.0,0.0,1.0));
         tr.setFontSize(2);
         
-        tr.renderText(ar_fix(L"مرحباً"), 800, 450, 0);
+        tr.renderText(ar_fix(L"مرحباً"), gameEngine.getWindowSize().x/2.0, gameEngine.getWindowSize().y/2, 0);
 
         
         

@@ -174,8 +174,8 @@ void TextRenderer::initRenderer(){
     glVertexArrayAttribFormat(m_VAO, 3, 1, GL_FLOAT, GL_FALSE, offsetof(Glyph, scale));
     glVertexArrayAttribFormat(m_VAO, 4, 1, GL_FLOAT, GL_FALSE, offsetof(Glyph, rot));
     
-    m_Shader = Engine::CreateShader(Engine::LoadShaderFromFile("./Graphics/Shaders/fontShader.vs").c_str(),
-                                    Engine::LoadShaderFromFile("./Graphics/Shaders/fontShader.fs").c_str());
+    m_Shader = CreateShader(LoadShaderFromFile("./Graphics/Shaders/fontShader.vs").c_str(),
+                            LoadShaderFromFile("./Graphics/Shaders/fontShader.fs").c_str());
 
     vboBasePtr = glMapNamedBufferRange(m_VBO, 0, MAX_VERTICES * sizeof(Glyph), GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT );
     m_indexBase = glMapNamedBufferRange(m_IBO, 0, MAX_VERTICES * sizeof(Glyph), GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT );
@@ -231,8 +231,8 @@ void TextRenderer::renderText(std::wstring str, float x, float y, float z){
         minY = std::min(minY, gyMin);
         maxY = std::max(maxY, gyMax);
     }
-    xalign = (minX+maxX) * (1.0f + Halign) / 2.0f;
-    yalign = (minY+maxY) * (1.0f + Valign) / 2.0f - maxY;
+    xalign = (minX+maxX) * (1.0f + (float) Halign) / 2.0f;
+    yalign = (minY+maxY) * (1.0f + (float) Valign) / 2.0f - maxY;
     pen_x=0;
     for(wchar_t c : str){
         GlyphMesh& g = loadGlyph(c);
@@ -252,8 +252,8 @@ void TextRenderer::renderText(std::wstring str, float x, float y, float z){
 }
 void TextRenderer::flush(){
     glUseProgram(m_Shader);
-    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "proj_matrix"),1,GL_FALSE,Engine::getOrthoMatrix());
-    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "vw_matrix"),1,GL_FALSE,Engine::getViewMatrix2D());
+    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "proj_matrix"),1,GL_FALSE,Engine::getInstance().getOrthoMatrix());
+    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "vw_matrix"),1,GL_FALSE,Engine::getInstance().getViewMatrix2D());
     
     
     glBindVertexArray(m_VAO);

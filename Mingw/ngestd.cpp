@@ -206,57 +206,51 @@ void LoadModelsToMemory(){
         closedir(dr);
     }
 }
-/**
- * @brief Draw a single point on screen
- * 
- * @param x coordinates on x-axis
- * @param y coordinates on y-axis
- */
-void ngestd::DrawPoint(float x, float y){
-    glBegin(GL_POINTS);
-    glVertex2f(x,y);
-    glEnd();
+unsigned int CompileShader(unsigned int type, const char* source){
+    unsigned int id = glCreateShader(type);
+
+    glShaderSource(id, 1, &source, nullptr);
+    glCompileShader(id);
+    int result;
+    glGetShaderiv(id, GL_COMPILE_STATUS,&result);
+    if(!result){
+        int length;
+        glGetShaderiv(id,GL_INFO_LOG_LENGTH,&length);
+        //char *errMessage=(char*)malloc(length*sizeof(char));
+        char errMessage[length];
+        glGetShaderInfoLog(id, length,&length, errMessage);
+        std::cout << "Couldn't Load " << (type==GL_VERTEX_SHADER?"Vertex":"Fragment")<<"Shader"<< std::endl;
+        std::cout << errMessage << std::endl;
+        glDeleteShader(id);
+        return 0;
+    }
+    return id;
 }
-/**
- * @brief Draw a rectangle on screen
- * 
- * @param x1 coordinates of the top-left corner on the x-axis
- * @param y1 coordinates of the top-left corner on the y-axis
- * @param x2 coordinates of the bottom-right corner on the x-axis
- * @param y2 coordinates of the bottom-right corner on the y-axis
- * @param outline A flag to draw the rectangle as an outline (true) or as a filled rectangle(false)
- */
-void ngestd::DrawRectangle(glm::vec4 rect, bool outline){
-    float vp[4];
-    glGetFloatv(GL_VIEWPORT, vp);
-    float hw=vp[2];
-    float hh=vp[3];
-    //rect -= glm::vec4(hw,-hh,hw,-hh);
-    rect = ((rect*2.f)/glm::vec4(hw,hh,hw,hh))-1.f;
-    glBegin(GL_QUADS);
-    if(outline)
-        glBegin(GL_LINE_LOOP);
-    glVertex2f(rect.x, -rect.y);
-    glVertex2f(rect.z, -rect.y);
-    glVertex2f(rect.z, -rect.w);
-    glVertex2f(rect.x, -rect.w);
-    glEnd();
+
+unsigned int CreateShader(const char*vertexShader, const char*fragmentShader){
+
+    unsigned int program=glCreateProgram();
+
+    unsigned int vs=CompileShader(GL_VERTEX_SHADER,vertexShader);
+    unsigned int fs=CompileShader(GL_FRAGMENT_SHADER,fragmentShader);
+    glAttachShader(program,vs);
+    glAttachShader(program,fs);
+    glLinkProgram(program);
+    glValidateProgram(program);
+    glDeleteShader(vs);
+    glDeleteShader(fs);
+    return program;
 }
-/**
- * @brief Set the draw color for the engine
- * 
- * @param col color in vec3 (float values between 0 and 1)
- */
-void ngestd::DrawSetColor(glm::vec3 col){
-    glColor3f(col.x,col.y,col.z);
-}
-/**
- * @brief Get the current draw color of the engine
- * 
- * @return glm::vec3 float values between 0 and 1
- */
-glm::vec3 ngestd::DrawGetColor(){
-    float col[3];
-    glGetFloatv(GL_CURRENT_COLOR,col);
-    return glm::make_vec3(col);
+std::string LoadShaderFromFile(const char* ShaderPath){
+    FILE* file=fopen(ShaderPath,"rt");
+    fseek(file,0,SEEK_END);
+    unsigned long length=ftell(file);
+    char* data=new char[length+1];
+    memset(data,0,length+1);
+    fseek(file,0,SEEK_SET);
+    fread(data,1,length,file);
+    fclose(file);
+    std::string src(data);
+    delete [] data;
+    return src;
 }

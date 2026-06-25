@@ -1,7 +1,7 @@
 #ifndef TEXT_RENDERER_H
 #define TEXT_RENDERER_H
 #include <iostream>
-#include <Engine.h>
+#include <ngestd.h>
 #include <tesselator.h>
 #include <unordered_map>
 #include <ft2build.h>

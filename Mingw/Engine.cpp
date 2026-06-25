@@ -1,32 +1,27 @@
 #include "Engine.h"
-glm::mat4 Engine::projMat=glm::mat4(0.f);
-glm::mat4 Engine::viewMat=glm::mat4(0.f);
-glm::mat4 Engine::orthoMat=glm::mat4(0.f);
-glm::mat4 Engine::viewMat2D=glm::mat4(0.f);
-glm::vec2 Engine::window_size = glm::vec2(0,0);
-GLFWwindow* Engine::window = nullptr;
-float Engine::znear2D=-128;
-float Engine::zfar2D=127;
-Camera3D Engine::camera3d;
-bool Engine::isCursorHidden = false;
-Engine::Engine() : view_xview(0), view_yview(0),
-                   background_color(100,100,100){}
+Engine& Engine::getInstance(const char* window_title, int window_width, int window_height){
+    static Engine instance(window_title, window_width, window_height);
+    return instance;
+}
 /**
  * @brief Initialize the engine by creating a rendering window
  * 
  * @param window_title Window name
  * @param _window_width Window Width
  * @param _window_height Window Height
- * @return true Window Created successfully
- * @return false returns 0 and displays an error
+ * 
  */
+Engine::Engine(const char* window_title, int _window_width, int _window_height) :
+                   view_xview(0), view_yview(0),
+                   background_color(100,100,100),
+                   projMat(glm::mat4(0.f)),orthoMat(glm::mat4(0.f)),
+                   viewMat2D(glm::mat4(0.f)), window_size(glm::vec2(_window_width, _window_height)),
+                   window(nullptr), znear2D(-128), zfar2D(127), isCursorHidden(false){
 
-bool Engine::init(const char* window_title, int _window_width, int _window_height){
     if(!glfwInit()){
         std::cout << "Error Initializing GLFW" << std::endl;
-        return false;
+        return;
     }
-    window_size = glm::vec2(_window_width, _window_height);
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 5);
     //glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
@@ -36,13 +31,13 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
     
     if(window==NULL){
         std::cout << "Error Creating Window" << std::endl;
-        return false;
+        return;
     }
     
     glfwMakeContextCurrent(window);
     if(glewInit()!=GLEW_OK){
         std::cout << "Error Initializing GLEW" << std::endl;
-        return false;
+        return;
     }
     
     // Toggle VSYNC
@@ -80,9 +75,10 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
     
     projMat=glm::perspective(45.0f, (float)_window_width/_window_height,0.1f,100000.0f);
     orthoMat=glm::ortho(0.f, (float)_window_width, (float)_window_height, 0.f, -znear2D, -(zfar2D+1));
-    
-    return true;
 }
+
+
+
 void Engine::ToggleCursorVisibility(){
     if(isCursorHidden == true)
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -93,15 +89,15 @@ void Engine::ToggleCursorVisibility(){
 void windowSizeCallback(GLFWwindow* window, int width, int height){
     //view_width = width;
     //view_height = height;
-    Engine::window_size = glm::vec2(width, height);
+    Engine::getInstance().window_size = glm::vec2(width, height);
     glViewport(0, 0, width, height);
-    Engine::setProjMatrix(glm::perspective(45.0f,(float)width/height,0.1f,100000.0f));
-    Engine::setOrthoMatrix(glm::ortho(0.f, (float)width, (float)height, 0.f, -Engine::znear2D, -(Engine::zfar2D+1)));
+    Engine::getInstance().setProjMatrix(glm::perspective(45.0f,(float)width/height,0.1f,100000.0f));
+    Engine::getInstance().setOrthoMatrix(glm::ortho(0.f, (float)width, (float)height, 0.f, -Engine::getInstance().znear2D, -(Engine::getInstance().zfar2D+1)));
 }
 void windowFocusCallback(GLFWwindow* window, int focus){
     
     if(focus){
-        if(Engine::isCursorHidden)
+        if(Engine::getInstance().isCursorHidden)
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
         else
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -115,8 +111,6 @@ void windowFocusCallback(GLFWwindow* window, int focus){
  */
 void Engine::StepEvent(){
     glfwPollEvents();
-    
-    viewMat = camera3d.getMatrix();
     viewMat2D = glm::translate(glm::mat4(1.0f), glm::vec3(-view_xview, view_yview, 0.0f));
 }
 /**
@@ -152,9 +146,6 @@ const float* Engine::getProjMatrix(){
 }
 void Engine::setProjMatrix(glm::mat4 mat){
     projMat = mat;
-}
-const float* Engine::getViewMatrix(){
-    return (const float*)glm::value_ptr(viewMat);
 }
 const float* Engine::getOrthoMatrix(){
     return (const float*)glm::value_ptr(orthoMat);
@@ -212,71 +203,4 @@ int Engine::getViewX(){
  */
 int Engine::getViewY(){
     return view_yview;
-}
-/**
- * @brief Compiles a shader depending on the type (vertex or fragment)
- * 
- * @param type type of shader (GL_VERTEX_SHADER or GL_FRAGMENT_SHADER)
- * @param source path to shader
- * @return unsigned int id of the shader
- */
-unsigned int Engine::CompileShader(unsigned int type, const char* source){
-    unsigned int id = glCreateShader(type);
-
-    glShaderSource(id, 1, &source, nullptr);
-    glCompileShader(id);
-    int result;
-    glGetShaderiv(id, GL_COMPILE_STATUS,&result);
-    if(!result){
-        int length;
-        glGetShaderiv(id,GL_INFO_LOG_LENGTH,&length);
-        //char *errMessage=(char*)malloc(length*sizeof(char));
-        char errMessage[length];
-        glGetShaderInfoLog(id, length,&length, errMessage);
-        std::cout << "Couldn't Load " << (type==GL_VERTEX_SHADER?"Vertex":"Fragment")<<"Shader"<< std::endl;
-        std::cout << errMessage << std::endl;
-        glDeleteShader(id);
-        return 0;
-    }
-    return id;
-}
-/**
- * @brief Creates a full shader from text (Used after LoadShaderFromFile)
- * 
- * @param vertexShader vertex shader as text
- * @param fragmentShader fragment shader as text
- * @return unsigned int returns the id of the shader program to use
- */
-unsigned int Engine::CreateShader(const char*vertexShader, const char*fragmentShader){
-
-    unsigned int program=glCreateProgram();
-
-    unsigned int vs=CompileShader(GL_VERTEX_SHADER,vertexShader);
-    unsigned int fs=CompileShader(GL_FRAGMENT_SHADER,fragmentShader);
-    glAttachShader(program,vs);
-    glAttachShader(program,fs);
-    glLinkProgram(program);
-    glValidateProgram(program);
-    glDeleteShader(vs);
-    glDeleteShader(fs);
-    return program;
-}
-/**
- * @brief Loads a shader from file and saves it as text
- * 
- * @param ShaderPath Path to shader
- * @return std::string shader as string
- */
-std::string Engine::LoadShaderFromFile(const char* ShaderPath){
-    FILE* file=fopen(ShaderPath,"rt");
-    fseek(file,0,SEEK_END);
-    unsigned long length=ftell(file);
-    char* data=new char[length+1];
-    memset(data,0,length+1);
-    fseek(file,0,SEEK_SET);
-    fread(data,1,length,file);
-    fclose(file);
-    std::string src(data);
-    delete [] data;
-    return src;
 }

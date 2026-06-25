@@ -51,19 +51,14 @@ std::wstring ar_fix(std::wstring);
 std::vector<unsigned char*> LoadNGESprite(const char*, Sprite*);
 void LoadModelsToMemory();
 void LoadSpritesToMemroy();
-
+unsigned int CompileShader(unsigned int, const char*);
+unsigned int CreateShader(const char*, const char*);
+std::string LoadShaderFromFile(const char*);
 struct CollisionBox{
     float left, right, top, bottom;
     CollisionBox();
     CollisionBox(float box) : left(box), right(box), top(box), bottom(box) {}
     CollisionBox(float l, float r, float u, float d): left(l), right(r), top(u), bottom(d){}
-};
-
-namespace ngestd{
-    void DrawSetColor(glm::vec3);
-    void DrawPoint(float, float);
-    void DrawRectangle(glm::vec4, bool);
-    glm::vec3 DrawGetColor();
 };
 
 #endif

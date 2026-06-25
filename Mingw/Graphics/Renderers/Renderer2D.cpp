@@ -45,8 +45,8 @@ Renderer2D::Renderer2D() : m_fence(nullptr){
     glVertexArrayAttribFormat(m_VAO, 5, 2, GL_FLOAT, GL_FALSE, offsetof(vboData, texCoords));
     glVertexArrayAttribIFormat(m_VAO, 6, 1, GL_INT, offsetof(vboData, textureSlot));
     
-    m_Shader=Engine::CreateShader(Engine::LoadShaderFromFile("./Graphics/Shaders/shader.vs").c_str(),
-                                  Engine::LoadShaderFromFile("./Graphics/Shaders/shader.fs").c_str());
+    m_Shader=CreateShader(LoadShaderFromFile("./Graphics/Shaders/shader.vs").c_str(),
+                          LoadShaderFromFile("./Graphics/Shaders/shader.fs").c_str());
 }
 /**
  * @brief Frees the buffers in memory
@@ -106,8 +106,8 @@ void Renderer2D::Render(){
     
     glUseProgram(m_Shader);
 
-    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "proj_matrix"),1,GL_FALSE,Engine::getOrthoMatrix());
-    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "vw_matrix"),1,GL_FALSE,Engine::getViewMatrix2D());
+    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "proj_matrix"),1,GL_FALSE,Engine::getInstance().getOrthoMatrix());
+    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "vw_matrix"),1,GL_FALSE,Engine::getInstance().getViewMatrix2D());
     glUniform1i(glGetUniformLocation(m_Shader, "texture[0]"), MainTextureAtlas.GetTextureSlot());
     MainTextureAtlas.Bind();
     glBindVertexArray(m_VAO);
