@@ -73,15 +73,15 @@ void Renderer2D::Render(){
         m_fence=nullptr;
     }
 
-    for(Sprite& spr:SpritesToRender){
-        float textureSlot =spr.getTextureSlot();
-        glm::vec3& _pos = spr.getPosition();
-        glm::vec2& _origin = spr.getOrigin();
-        float& _rot = spr.getRotation();
-        glm::vec2& _scale = spr.getScale();
-        glm::vec2& _size = spr.getSize();
-        glm::vec4& _col = spr.getColor();
-        std::vector<glm::vec2> uvs = spr.getUV();
+    for(Object2D obj: Objects2DtoRender){
+        float textureSlot =obj.textureSlot;
+        glm::vec3& _pos = obj.position;
+        glm::vec2& _origin = obj.origin;
+        float& _rot = obj.rotation;
+        glm::vec2& _scale = obj.scale;
+        glm::vec2& _size = obj.getSpriteSize();
+        glm::vec4& _col = obj.color;
+        std::vector<glm::vec2> uvs = obj.UVs[(int)obj.frame_index];
         std::vector<glm::vec3> _lpos;
         
         _lpos.push_back(glm::vec3(-_origin,0));
@@ -102,7 +102,7 @@ void Renderer2D::Render(){
         m_indexCount+=6;
     }
     
-    SpritesToRender.clear();
+    Objects2DtoRender.clear();
     
     glUseProgram(m_Shader);
 

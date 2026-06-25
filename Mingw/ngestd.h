@@ -5,10 +5,9 @@
 #include <algorithm>
 #include <dirent.h>
 #include <regex>
-#include "Graphics/Sprite.h"
+#include <Object2D.h>
 #include "Graphics/Object3D.h"
-extern std::vector<std::reference_wrapper<Sprite>> SpritesToRender;
-extern std::vector<std::reference_wrapper<Object3D>> ObjectsToRender;
+extern std::vector<std::reference_wrapper<Object3D>> Objects3DToRender;
 static const std::wstring ar_alphabet = {
     0xfe8f, 0xfe95, 0xfe99, 0xfe9d,
     0xfea1, 0xfea5, 0xfeb1, 0xfeb5,
@@ -54,11 +53,11 @@ void LoadSpritesToMemroy();
 unsigned int CompileShader(unsigned int, const char*);
 unsigned int CreateShader(const char*, const char*);
 std::string LoadShaderFromFile(const char*);
-struct CollisionBox{
-    float left, right, top, bottom;
-    CollisionBox();
-    CollisionBox(float box) : left(box), right(box), top(box), bottom(box) {}
-    CollisionBox(float l, float r, float u, float d): left(l), right(r), top(u), bottom(d){}
-};
+
+namespace Collision{
+    Object2D* line(float, float, float, float, Object2D&);
+    Object2D* circle(float, float, float, Object2D&);
+    Object2D* point(float, float, Object2D&);
+}
 
 #endif

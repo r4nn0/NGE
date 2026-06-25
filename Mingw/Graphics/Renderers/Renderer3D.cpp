@@ -151,7 +151,7 @@ void Renderer3D::Render(){
     Material defaultMat{};
     materialSSBOptr[0] = defaultMat;
     vboOffset = m_indexCount = m_instanceCount = m_morphPositionsOffset = m_jointOffset = m_morphWeightsOffset =  m_nodeMatrixOffset = m_materialOffset = m_drawDataOffset = 0;
-    for(Object3D& obj:ObjectsToRender){
+    for(Object3D& obj : Objects3DToRender){
         if(obj.instanceID==-1) obj.instanceID=m_instanceCount;
         mmSSBOptr[obj.instanceID] = obj.modelMatrix; 
         
@@ -246,7 +246,7 @@ void Renderer3D::Render(){
     glUnmapNamedBuffer(m_JointMatricesSSBO);
     glUnmapNamedBuffer(m_MorphWeightsSSBO);
     glUnmapNamedBuffer(m_NodeMatricesSSBO);*/
-    ObjectsToRender.clear();
+    Objects3DToRender.clear();
     
     /////////////////////
     

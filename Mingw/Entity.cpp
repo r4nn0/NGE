@@ -21,7 +21,7 @@ void Entity::Render(){
                         glm::rotate(glm::mat4(1.0),rotation.z, glm::vec3(0,0,1));
     glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0), position);
     model->modelMatrix = translationMatrix*rotationMatrix*scaleMatrix;
-    ObjectsToRender.push_back(*model);
+    Objects3DToRender.push_back(*model);
 }
 void Entity::modelSet(std::string objName){
     objectName=objName;

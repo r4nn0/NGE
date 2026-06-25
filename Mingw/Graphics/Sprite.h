@@ -10,63 +10,20 @@ class Sprite{
 
 public:
 	Sprite();
-    void setColor(glm::vec4);
-    void setFrameIndex(unsigned);
-    void setOrigin(glm::vec2);
-    void setPosition(glm::vec3);
-    void setScale(glm::vec2);
-    void setRotation(float);
-    inline glm::vec3& getPosition(){return m_Position;}
-    inline glm::vec2& getScale(){return m_Scale;}
-    inline float& getRotation(){return m_Rotation;}
-    inline unsigned& getFrameCount(){return m_Frames;}
+    inline std::vector<glm::vec2>& getFramesSize(){return m_FramesSize;}
     inline int& getTextureSlot(){return m_texSlot;}
-	inline glm::vec2& getOrigin(){return m_Origin;}
-    inline glm::vec2& getSize(){return m_CurrentFrameSize[m_FrameIndex];}
-    inline glm::vec2 getLargestFrame(){return glm::vec2(m_Widest, m_Heighest);}
-    inline glm::vec2 getSumSize(){return glm::vec2(m_WidthCombined, m_HeightCombined);}
-    inline glm::vec4& getColor(){return m_Color;}
-    inline std::vector<glm::vec2>& getUV(){return m_UV[m_FrameIndex];}
+    inline std::vector<std::vector<glm::vec2>>& getUVs() {return m_UVs;}
+    inline std::vector<std::vector<bool>>& getCollisionMask() {return collisionMask;}
+    
 
     friend class TexturePage;
     friend std::vector<unsigned char*> LoadNGESprite(const char*, Sprite*);
 
-    Sprite& operator=(const Sprite& other){
-        this->m_Name = other.m_Name;
-        this->m_Frames = other.m_Frames;
-        this->m_FrameIndex = other.m_FrameIndex;
-        this->m_CurrentFrameSize = other.m_CurrentFrameSize;
-        this->m_Color = other.m_Color;
-        this->m_texSlot = other.m_texSlot;
-        this->m_UV = other.m_UV;
-        return *this;
-    
-    }
-    /*void setUV(){
-        std::vector<glm::vec2> UV;
-        UV.push_back(glm::vec2(0));
-        UV.push_back(glm::vec2(0,1));
-        UV.push_back(glm::vec2(1,1));
-        UV.push_back(glm::vec2(1,0));
-        m_UV.push_back(UV);
-        m_hasTexture=true;
-        m_texSlot=0;
-    }*/
 protected:
-    std::string m_Name;
-    unsigned int m_Frames;
-    unsigned int m_FrameIndex;
-    std::vector<glm::vec2> m_CurrentFrameSize;
-    glm::vec2 m_Origin;
-    glm::vec4 m_Color;
+    std::vector<glm::vec2> m_FramesSize;
     int m_texSlot;
-    
-    std::vector<std::vector<glm::vec2>> m_UV;
-    unsigned long long m_Widest, m_Heighest, m_WidthCombined, m_HeightCombined;
-	glm::vec2 m_Scale;
-    float m_Rotation;
-    glm::vec3 m_Position;
-    
+    std::vector<std::vector<glm::vec2>> m_UVs;
+    std::vector<std::vector<bool>> collisionMask;
 };
 class TexturePage{
 private:

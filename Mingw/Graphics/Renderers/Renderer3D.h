@@ -1,7 +1,7 @@
 #ifndef RENDERER3D_H
 #define RENDERER3D_H
 
-#include "../../ngestd.h"
+#include <ngestd.h>
 #include "../TextureManager.h"
 
 class Renderer3D{

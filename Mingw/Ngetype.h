@@ -1,5 +1,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <Object2D.h>
 #ifndef NGETYPE_H
 #define NGETYPE_H
 struct Vertex3D{
@@ -25,7 +26,6 @@ struct DrawData{
 };
 struct Material {
 
-
     glm::vec4 baseColorFactor = glm::vec4(1.0f);            // 16 bytes
     glm::vec4 emissiveFactor = glm::vec4(1.0f);             // 16 bytes
     
@@ -45,4 +45,5 @@ struct Material {
     int alphaMode = 0;
     int hasTexture;
 };
+
 #endif

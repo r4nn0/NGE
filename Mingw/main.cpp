@@ -133,11 +133,13 @@ int main (){
         
 
         obj.Update();
+
         obj.position += glm::vec3(hsp, vsp, zsp);
         obj.scale = glm::vec2(3);
         obj.anim_speed = 0.15;
-
-
+        if(Collision::point(800, 450, obj))
+            obj.color = glm::vec4(0.0,0.0,1.0,1.0);
+        else obj.color = glm::vec4(1.0,1.0,1.0,1.0);
         gameEngine.BeginDraw();
         
         //test.Render();
@@ -145,15 +147,15 @@ int main (){
         //renderer3D.Render();
         //
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
-        
+
         obj.Render();
         
-        tr.setValign(Align::CENTER);
-        tr.setHalign(Align::RIGHT);
-        tr.setFontColor(glm::vec4(0.0,1.0,0.0,1.0));
-        tr.setFontSize(2);
+        tr.setValign(Align::TOP);
+        tr.setHalign(Align::LEFT);
+        tr.setFontColor(glm::vec4(1.0,1.0,0.0,1.0));
+        tr.setFontSize(0.5f);
         
-        tr.renderText(ar_fix(L"مرحباً"), gameEngine.getWindowSize().x/2.0, gameEngine.getWindowSize().y/2, 0);
+        tr.renderText(fpsString, 0, 0, 0);
 
         
         

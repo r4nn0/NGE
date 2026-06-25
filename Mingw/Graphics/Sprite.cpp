@@ -2,36 +2,9 @@
 std::map<std::string, Sprite*> SpritesTotal;
 TexturePage MainTextureAtlas(4096,4096,4,0);
 
-/**
- * @brief Create a sprite without texture
- * 
- * @param _pos position where to render the sprite
- * @param _size size of the sprite
- */
-Sprite::Sprite(): m_Name(""), m_Frames(0), m_FrameIndex(0),
-                  m_Origin(glm::vec2(0,0)), m_Color(glm::vec4(1.0f)), m_texSlot(-1),
-                  m_Widest(0), m_Heighest(0),
-                  m_WidthCombined(0), m_HeightCombined(0),
-                  m_Scale(glm::vec2(1.0f)), m_Rotation(0.f), m_Position(glm::vec3(0.0f)){
-}
-void Sprite::setOrigin(glm::vec2 origin){
-    m_Origin = origin;
-}
-void Sprite::setColor(glm::vec4 color){
-    m_Color = color;
-}
-void Sprite::setFrameIndex(unsigned _index){
-    m_FrameIndex = _index%m_Frames;
-}
-void Sprite::setScale(glm::vec2 scale){
-    m_Scale = scale;
-}
-void Sprite::setRotation(float rotation){
-    m_Rotation = rotation;
-}
-void Sprite::setPosition(glm::vec3 pos){
-    m_Position = pos;
-}
+Sprite::Sprite(): m_FramesSize(0),
+                  m_texSlot(-1), m_UVs(0){}
+
 /**
  * @brief Initialize the texture page where the sprites should be saved
  * 
@@ -119,8 +92,8 @@ void TexturePage::maxRect(unsigned char* data, Sprite* spr, int t_Frame){
         Unbind();
         m_Initiated=true;
     }
-    int width = spr->m_CurrentFrameSize[t_Frame].x;
-	int height = spr->m_CurrentFrameSize[t_Frame].y;
+    int width = spr->m_FramesSize[t_Frame].x;
+	int height = spr->m_FramesSize[t_Frame].y;
     Rect* found = nullptr;
     int index = 0;
     for(Rect& rect: m_FreeRects){
@@ -152,10 +125,10 @@ void TexturePage::maxRect(unsigned char* data, Sprite* spr, int t_Frame){
           x2 = (float)(newTex.x + width) / m_Width,
           y2 = (float)(newTex.y + height) / m_Height;
 
-    spr->m_UV[t_Frame][0]=glm::vec2(x1,y1);
-    spr->m_UV[t_Frame][1]=glm::vec2(x2,y1);
-    spr->m_UV[t_Frame][2]=glm::vec2(x2,y2);
-    spr->m_UV[t_Frame][3]=glm::vec2(x1,y2);
+    spr->m_UVs[t_Frame][0]=glm::vec2(x1,y1);
+    spr->m_UVs[t_Frame][1]=glm::vec2(x2,y1);
+    spr->m_UVs[t_Frame][2]=glm::vec2(x2,y2);
+    spr->m_UVs[t_Frame][3]=glm::vec2(x1,y2);
     //std::cout << x1 << " " << y1 << " " << x2 << " " << y2 << std::endl;
     spr->m_texSlot=m_Slot;
     Bind();

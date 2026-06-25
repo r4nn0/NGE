@@ -1,53 +1,36 @@
 #include "Object2D.h"
-/**
- * @brief Construct a new Object2D
- * 
- * @param sprName the name of the sprite to use for the object
- */
+
+std::vector<Object2D> Objects2DtoRender;
+
 Object2D::Object2D(std::string sprName) : position(glm::vec3(0)),
                                           origin(glm::vec2(0)),
                                           scale(glm::vec2(1)),
                                           rotation(0),
                                           color(glm::vec4(1)),
                                           frame_index(0), anim_speed(0),
-                                          bbox(1), sprite_name(sprName),sprite(nullptr){
-    SpriteSet(sprite_name);
+                                          textureSlot(-1){
+    SpriteSet(sprName);
 }
 /**
  * @brief Destroy the Object2D
  * 
  */
 Object2D::~Object2D(){
-    delete sprite;
 }
 /**
  * @brief Update the object every frame
  * 
  */
 void Object2D::Update(){
-    bbox.left=position.x;
-    bbox.top = position.y;
-    bbox.right=position.x;
-    bbox.bottom=position.y;
-    if(sprite!=nullptr){
-        sprite->setFrameIndex(frame_index);
-        sprite->setColor(color);
-        sprite->setOrigin(origin);
-        sprite->setPosition(position);
-        sprite->setScale(scale);
-        sprite->setRotation(rotation);
-        bbox.right+=sprite->getSize().x;
-        bbox.bottom+=sprite->getSize().y;
-    }
     frame_index+=anim_speed;
+    frame_index = std::fmod(frame_index, UVs.size());
 }
 /**
  * @brief Add the sprite of the object to the rendering list
  * 
  */
 void Object2D::Render(){
-    if(sprite==nullptr) return;
-    SpritesToRender.push_back(*sprite);
+    Objects2DtoRender.push_back(*this);
 }
 /**
  * @brief Set the sprite for the object
@@ -55,18 +38,15 @@ void Object2D::Render(){
  * @param sprName name of the sprite to use (same name as the files in the Sprites folder without ".ngesprite")
  */
 void Object2D::SpriteSet(std::string sprName){
-    sprite_name=sprName;
-    if(sprite!=nullptr) delete sprite;
-    sprite = new Sprite();
-    
-    std::map<std::string, Sprite*>::iterator pos = SpritesTotal.find(sprite_name);
+    std::map<std::string, Sprite*>::iterator pos = SpritesTotal.find(sprName);
     
     if(pos==SpritesTotal.end()){
         std::cout << "Sprite not found or not loaded to memory!" << std::endl;
-        delete sprite;
-        sprite = nullptr;
         return;
     }
-    
-    *sprite = *(pos->second);
+    Sprite temp = *(pos->second);
+    sprite_size = temp.getFramesSize();
+    textureSlot = temp.getTextureSlot();
+    UVs = temp.getUVs();
+    collisionMask = temp.getCollisionMask();
 }

@@ -1,7 +1,8 @@
 #ifndef RENDERER2D_H
 #define RENDERER2D_H
 
-#include "../ngestd.h"
+#include <Object2D.h>
+#include <ngestd.h>
 
 
 class Renderer2D {

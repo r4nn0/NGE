@@ -1,6 +1,5 @@
 #include "ngestd.h"
-std::vector<std::reference_wrapper<Sprite>> SpritesToRender;
-std::vector<std::reference_wrapper<Object3D>> ObjectsToRender;
+std::vector<std::reference_wrapper<Object3D>> Objects3DToRender;
 std::wstring ar_fix(std::wstring str){
     for(size_t i = 0; i<str.size();i++){
         
@@ -64,10 +63,9 @@ std::vector<unsigned char*> LoadNGESprite(const char* path, Sprite* spr){
     char t_Name[t_NameLength+1];
     std::memcpy(t_Name, &t_Data[1], t_NameLength);
     t_Name[t_NameLength]='\0';
-    spr->m_Name=t_Name;
     cursor++;
     /*--------------------Get frames count-------------------*/
-    spr->m_Frames=t_Data[cursor];
+    unsigned FrameCount=t_Data[cursor];
     cursor++;
     /*------------------Load Image to memory-----------------*/
     unsigned char t_Size[8] {0};
@@ -76,9 +74,9 @@ std::vector<unsigned char*> LoadNGESprite(const char* path, Sprite* spr){
 
     unsigned i=0;
     std::vector<unsigned char*> t_Pixels;
-    spr->m_CurrentFrameSize.clear();
-    spr->m_UV.clear();
-    while(i<spr->m_Frames){
+    spr->m_FramesSize.clear();
+    spr->m_UVs.clear();
+    while(i<FrameCount){
         
         std::memcpy(t_Size, &t_Data[cursor], 8);
         cursor+=8;
@@ -112,6 +110,7 @@ std::vector<unsigned char*> LoadNGESprite(const char* path, Sprite* spr){
         int _width, _height, _bpp;
         
         unsigned char* m_Pixels = stbi_load_from_memory((unsigned char*)t_Sprite.c_str(), t_Sprite.length(), &_width, &_height, &_bpp, 4);
+        
         if(stbi_failure_reason()){
             std::cout << "Error loading frame! Image(s) in file are corrupted." << std::endl;
             std::cout << stbi_failure_reason() << std::endl;
@@ -121,22 +120,30 @@ std::vector<unsigned char*> LoadNGESprite(const char* path, Sprite* spr){
             t_Pixels.clear();
             return t_Pixels;
         }
-        spr->m_Widest=(spr->m_Widest>(unsigned)_width)? spr->m_Widest:_width;
-        spr->m_Heighest=(spr->m_Heighest>(unsigned)_height)? spr->m_Heighest:_height;
-        spr->m_HeightCombined+=_height;
-        spr->m_WidthCombined+=_width;
-        spr->m_CurrentFrameSize.push_back(glm::vec2(_width, _height));
+        if(spr->collisionMask.size()<=0){
+            spr->collisionMask = std::vector<std::vector<bool>>(_height, std::vector<bool>(_width, false));
+            for (int y = 0; y < _height; y++){
+                for (int x = 0; x < _width; x++){
+                    int index = (y * _width + x) * 4;
+                    unsigned char a = m_Pixels[index + 3];
+                    if (a >= 50){
+                        spr->collisionMask[y][x] = true;
+                    }
+                }
+            }
+        }
+        spr->m_FramesSize.push_back(glm::vec2(_width, _height));
         t_Pixels.push_back(m_Pixels);
         std::vector<glm::vec2> UV;
         UV.push_back(glm::vec2(0, 0));
         UV.push_back(glm::vec2(1, 0));
         UV.push_back(glm::vec2(1, 1));
         UV.push_back(glm::vec2(0, 1));
-        spr->m_UV.push_back(UV);
+        spr->m_UVs.push_back(UV);
         i++;
     }
     
-    SpritesTotal.insert({spr->m_Name, spr});
+    SpritesTotal.insert({t_Name, spr});
    
     return t_Pixels;
 }
@@ -159,16 +166,11 @@ void LoadSpritesToMemroy(){
             if(std::regex_match(sname, ext)){
                 Sprite *spr= new Sprite();
                 t_Pixels.push_back(LoadNGESprite(sname.c_str(), spr));
-                
-                //t_TextureAtlasSize.x=(t_TextureAtlasSize.x>spr->getSize().x)? t_TextureAtlasSize.x : spr->getSize().x;
-                //t_TextureAtlasSize.y+=spr->getSumSize().y;
-                
             }
         }
         closedir(dr);
     }
     
-    //MainTextureAtlas.ImageResizeCanvas(t_TextureAtlasSize.x, t_TextureAtlasSize.y);
     
     std::map<std::string, Sprite*>::iterator sprIT = SpritesTotal.begin();
     
@@ -253,4 +255,81 @@ std::string LoadShaderFromFile(const char* ShaderPath){
     std::string src(data);
     delete [] data;
     return src;
+}
+
+namespace Collision{
+    Object2D* line(float x1, float y1, float x2, float y2, Object2D& other){
+        int dx = abs(x2 - x1);
+        int dy = abs(y2 - y1);
+
+        int sx = x1 < x2 ? 1 : -1;
+        int sy = y1 < y2 ? 1 : -1;
+
+        int err = dx - dy;
+
+        
+        glm::vec2 objSize = glm::vec2(other.collisionMask[0].size(), other.collisionMask.size());
+        while(true){
+            int localX = (int)((x1 - other.position.x)/other.scale.x);
+            int localY = (int)((y1 - other.position.y)/other.scale.y);
+            if(localX >= 0 && localX < objSize.x && localY>=0 && localY<objSize.y){
+                if(other.collisionMask[localY][localX]){
+                    return &other;
+                }
+            }
+
+            if(x1==x2 && y1==y2) break;
+            int e2 = err * 2;
+            if(e2 > -dy){
+                err -=dy;
+                x1 += sx;
+            }
+            if(e2<dx){
+                err +=dx;
+                y1 +=sy;
+            }
+        }
+        return nullptr;
+    }
+    Object2D* circle(float cx, float cy, float radius, Object2D& other){
+        float minX = cx - radius;
+        float maxX = cx + radius;
+        float minY = cy - radius;
+        float maxY = cy + radius;
+
+        glm::vec2 objSize = glm::vec2(other.collisionMask[0].size(), other.collisionMask.size());
+        for (float y = minY; y <= maxY; y++)
+        {
+            for (float x = minX; x <= maxX; x++)
+            {
+                float dx = x - cx;
+                float dy = y - cy;
+
+                if (dx * dx + dy * dy > radius * radius)
+                    continue;
+
+                int localX = (int)((x - other.position.x)/other.scale.x);
+                int localY = (int)((y - other.position.y)/other.scale.y);
+
+                if (localX < 0 || localY < 0 ||
+                    localX >= objSize.x || localY >= objSize.y)
+                    continue;
+
+                if (other.collisionMask[localY][localX])
+                    return &other;
+            }
+        }
+        return nullptr;
+    }
+    Object2D* point(float x, float y, Object2D& other){
+        glm::vec2 objSize = glm::vec2(other.collisionMask[0].size(), other.collisionMask.size());
+
+        int localX = (int)((x - other.position.x)/other.scale.x);
+        int localY = (int)((y - other.position.y)/other.scale.y);
+
+        if (localX < 0 || localY < 0 || localX >= objSize.x || localY >= objSize.y)
+            return nullptr;
+
+        return (other.collisionMask[localY][localX]) ? &other : nullptr;
+    }
 }
