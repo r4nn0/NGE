@@ -41,7 +41,8 @@ int main (){
     
     
     TextRenderer tr;
-    TestPlayer obj2D("sonic_roll");
+    TestPlayer obj2D("sonic_run");
+    TestPlayer obj("sonic_run");
     //Entity obj("test");
     
     std::wstring fpsString = L"0";
@@ -49,7 +50,7 @@ int main (){
     float actpitch=60;
     float hsp=-10, vsp=-10, zsp=-1;
     float sense = 0.12f;*/
-    float hsp=0, vsp=0;
+    
     const float desiredFPS = 200;
     
     gameEngine.setBackgroundColor(BACKGROUND_COLOR);
@@ -120,25 +121,40 @@ int main (){
         gameEngine.StepEvent();
         char hinput = (keyboard_check('D') - keyboard_check('A')) | (char)(LX);
         char vinput = (keyboard_check('S') - keyboard_check('W')) | (char)(LY);
-        hsp = hinput * 3 * deltaTime;
-        vsp = vinput * 3 * deltaTime;
+        float hsp = hinput * 3 * deltaTime;
+        float vsp = vinput * 3 * deltaTime;
+
+
+        char hinput2 = (keyboard_check(GLFW_KEY_RIGHT) - keyboard_check(GLFW_KEY_LEFT)) | (char)(RX);
+        char vinput2 = (keyboard_check(GLFW_KEY_DOWN) - keyboard_check(GLFW_KEY_UP)) | (char)(RY);
+        float hsp2 = hinput2 * 3 * deltaTime;
+        float vsp2 = vinput2 * 3 * deltaTime;
+        float zsp = (keyboard_check('Z') - keyboard_check('X')) * 3 * deltaTime;
         obj2D.Update();
         obj2D.position += glm::vec3(hsp, vsp, 0.0f);
         obj2D.scale = glm::vec2(3);
         obj2D.anim_speed = 0.15;
+
+        obj.Update();
+        obj.position += glm::vec3(hsp2, vsp2, zsp);
+        obj.scale = glm::vec2(3);
+        obj.anim_speed = 0.15;
+
+
+
         gameEngine.BeginDraw();
         //skybox.Render();
-        //obj.Render();
+        //
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
-        
-        
         obj2D.Render();
+        obj.Render();
         
-        tr.setFontColor(glm::vec4(1.0,1.0,1.0,0.5));
-        tr.setFontSize(2);
         tr.setValign(Align::CENTER);
         tr.setHalign(Align::MIDDLE);
-        tr.renderText(ar_fix(L"مرحبا هذه تجربة"), 800, 450, 0);
+        tr.setFontColor(glm::vec4(0.0,1.0,1.0,1.0));
+        tr.setFontSize(2);
+        
+        tr.renderText(ar_fix(L"مرحباً"), 800, 450, 0);
 
         
         

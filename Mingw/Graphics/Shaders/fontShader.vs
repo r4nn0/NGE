@@ -10,7 +10,7 @@ uniform mat4 vw_matrix;
 out vec4 color;
 
 void main() {
-    vec3 finalPos = (vec3(lpos.x, -lpos.y, lpos.z)) * scale;
+    vec3 finalPos = lpos * scale;
     float c = cos(rot);
     float s = sin(rot);
     finalPos = vec3(finalPos.x*c - finalPos.y*s, finalPos.x*s + finalPos.y*c, finalPos.z) + wpos;

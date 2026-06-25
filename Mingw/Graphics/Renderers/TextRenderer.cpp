@@ -95,14 +95,20 @@ TextRenderer::GlyphMesh TextRenderer::tessellateGlyph(FT_Face face, FT_UInt glyp
     mesh.max = {-FLT_MAX, -FLT_MAX};
     
     for (int i = 0; i < nverts; i++) {
-        glm::vec3 vert = glm::vec3(verts[i*3], verts[i*3+1], verts[i*3+2]);
-        mesh.vertices[i] = vert;
+        glm::vec3 vert = glm::vec3(verts[i*3], -verts[i*3+1], verts[i*3+2]);
+        
         mesh.min.x = std::min(mesh.min.x, vert.x);
         mesh.min.y = std::min(mesh.min.y, vert.y);
 
         mesh.max.x = std::max(mesh.max.x, vert.x);
         mesh.max.y = std::max(mesh.max.y, vert.y);
+
+        mesh.vertices[i] = vert;
     }
+    float meshmaxy = mesh.max.y;
+    mesh.max.y = -mesh.min.y;
+    mesh.min.y = -meshmaxy;
+    
     mesh.indices.resize(nelems * 3);
     for (int i = 0; i < nelems * 3; i++) {
         mesh.indices[i] = elems[i];
@@ -225,8 +231,8 @@ void TextRenderer::renderText(std::wstring str, float x, float y, float z){
         minY = std::min(minY, gyMin);
         maxY = std::max(maxY, gyMax);
     }
-    xalign = (minX+maxX)/2 + (minX+maxX)*(float)Halign/2;
-    yalign = (minY+maxY)/2 + (minY+maxY)*(float)Valign/2;
+    xalign = (minX+maxX) * (1.0f + Halign) / 2.0f;
+    yalign = (minY+maxY) * (1.0f + Valign) / 2.0f - maxY;
     pen_x=0;
     for(wchar_t c : str){
         GlyphMesh& g = loadGlyph(c);

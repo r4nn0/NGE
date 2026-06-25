@@ -327,7 +327,6 @@ void Renderer3D::Render(){
     //glBeginQuery(GL_TIME_ELAPSED, m_timerQuery[m_timerQueryIndex]);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
     glDrawElements(GL_TRIANGLES, OpaqueMask.size(), GL_UNSIGNED_INT, NULL);
     

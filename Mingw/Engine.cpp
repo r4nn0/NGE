@@ -71,6 +71,7 @@ bool Engine::init(const char* window_title, int _window_width, int _window_heigh
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW); // Or GL_CW depending on your model's winding order
     */
+    glDepthMask(GL_TRUE);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     

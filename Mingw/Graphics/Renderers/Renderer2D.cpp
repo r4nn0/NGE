@@ -112,11 +112,11 @@ void Renderer2D::Render(){
     MainTextureAtlas.Bind();
     glBindVertexArray(m_VAO);
     
+    
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_SHORT, NULL);
     glDisable(GL_BLEND);
-    
     glBindVertexArray(0);
     m_fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     MainTextureAtlas.Unbind();
