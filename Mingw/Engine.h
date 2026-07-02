@@ -25,7 +25,7 @@ void windowSizeCallback(GLFWwindow*, int, int);
 void windowFocusCallback(GLFWwindow*, int);
 class Engine{
 public:
-    static Engine& getInstance(const char* = "NGE", int=800, int=600);
+    static Engine& getInstance(const char* = "NGE", int=0, int=0);
     Engine(const char*, int, int);
     void StepEvent();
     void BeginDraw();

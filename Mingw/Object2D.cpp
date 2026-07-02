@@ -1,6 +1,6 @@
 #include "Object2D.h"
 
-std::vector<Object2D> Objects2DtoRender;
+std::vector<Object2D> Objects2DToRender;
 
 Object2D::Object2D(std::string sprName) : position(glm::vec3(0)),
                                           origin(glm::vec2(0)),
@@ -30,7 +30,7 @@ void Object2D::Update(){
  * 
  */
 void Object2D::Render(){
-    Objects2DtoRender.push_back(*this);
+    Objects2DToRender.push_back(*this);
 }
 /**
  * @brief Set the sprite for the object

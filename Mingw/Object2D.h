@@ -22,5 +22,5 @@ protected:
     std::vector<glm::vec2> sprite_size;
 
 };
-extern std::vector<Object2D> Objects2DtoRender;
+extern std::vector<Object2D> Objects2DToRender;
 #endif

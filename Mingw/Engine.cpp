@@ -25,9 +25,14 @@ Engine::Engine(const char* window_title, int _window_width, int _window_height) 
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 5);
     //glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
-    //window_width = _window_width;
-    //window_height= _window_height;
-    window=glfwCreateWindow(_window_width, _window_height, window_title, NULL, NULL);
+    
+    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode= glfwGetVideoMode(monitor);
+    std::cout << mode->refreshRate << "hz" << std::endl;
+    if(_window_width<=0 || _window_height<=0)
+        window_size = glm::vec2(mode->width, mode->height);
+    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+    window=glfwCreateWindow(window_size.x, window_size.y, window_title, NULL, NULL);
     
     if(window==NULL){
         std::cout << "Error Creating Window" << std::endl;
@@ -49,14 +54,13 @@ Engine::Engine(const char* window_title, int _window_width, int _window_height) 
     glfwSetCursorPosCallback(window,mousePosCallback);
     glfwSetMouseButtonCallback(window,mouseButtonCallback);
 	glfwSetJoystickCallback(joystickCallback);
-    const GLFWvidmode* mode= glfwGetVideoMode(glfwGetPrimaryMonitor());
-    std::cout << mode->refreshRate << "hz" << std::endl;
-    int xPos=(mode->width - _window_width)/2;
-    int yPos=(mode->height - _window_height)/2;
-    glfwSetWindowPos(window, xPos, yPos);
     
-
-    glViewport(0, 0, _window_width, _window_height);
+    
+    //int xPos=(mode->width - _window_width)/2;
+    //int yPos=(mode->height - _window_height)/2;
+    //glfwSetWindowPos(window, 0, 0);
+    
+    
     
     //glEnable(GL_BLEND);
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -72,9 +76,9 @@ Engine::Engine(const char* window_title, int _window_width, int _window_height) 
     
     //glEnable(GL_DEPTH_WRITEMASK);
 
-    
-    projMat=glm::perspective(45.0f, (float)_window_width/_window_height,0.1f,100000.0f);
-    orthoMat=glm::ortho(0.f, (float)_window_width, (float)_window_height, 0.f, -znear2D, -(zfar2D+1));
+    glViewport(0, 0, window_size.x, window_size.y);
+    projMat=glm::perspective(45.0f, window_size.x/window_size.y,0.1f,100000.0f);
+    orthoMat=glm::ortho(0.f, window_size.x, window_size.y, 0.f, -znear2D, -(zfar2D+1));
 }
 
 

@@ -142,7 +142,7 @@ std::vector<unsigned char*> LoadNGESprite(const char* path, Sprite* spr){
         spr->m_UVs.push_back(UV);
         i++;
     }
-    
+    //std::cout << t_Name << std::endl;
     SpritesTotal.insert({t_Name, spr});
    
     return t_Pixels;
@@ -163,7 +163,9 @@ void LoadSpritesToMemroy(){
         while ((en = readdir(dr)) != NULL) {
             std::string sname="Sprites/";
             sname+=en->d_name;
+            //std::cout << sname << std::endl;
             if(std::regex_match(sname, ext)){
+                //std::cout << sname << std::endl;
                 Sprite *spr= new Sprite();
                 t_Pixels.push_back(LoadNGESprite(sname.c_str(), spr));
             }
@@ -270,8 +272,8 @@ namespace Collision{
         
         glm::vec2 objSize = glm::vec2(other.collisionMask[0].size(), other.collisionMask.size());
         while(true){
-            int localX = (int)((x1 - other.position.x)/other.scale.x);
-            int localY = (int)((y1 - other.position.y)/other.scale.y);
+            int localX = (int)((x1 - other.position.x)/other.scale.x) + other.origin.x;
+            int localY = (int)((y1 - other.position.y)/other.scale.y) + other.origin.y;
             if(localX >= 0 && localX < objSize.x && localY>=0 && localY<objSize.y){
                 if(other.collisionMask[localY][localX]){
                     return &other;
@@ -308,8 +310,8 @@ namespace Collision{
                 if (dx * dx + dy * dy > radius * radius)
                     continue;
 
-                int localX = (int)((x - other.position.x)/other.scale.x);
-                int localY = (int)((y - other.position.y)/other.scale.y);
+                int localX = (int)((x - other.position.x)/other.scale.x) + other.origin.x;
+                int localY = (int)((y - other.position.y)/other.scale.y) + other.origin.y;
 
                 if (localX < 0 || localY < 0 ||
                     localX >= objSize.x || localY >= objSize.y)
@@ -324,8 +326,8 @@ namespace Collision{
     Object2D* point(float x, float y, Object2D& other){
         glm::vec2 objSize = glm::vec2(other.collisionMask[0].size(), other.collisionMask.size());
 
-        int localX = (int)((x - other.position.x)/other.scale.x);
-        int localY = (int)((y - other.position.y)/other.scale.y);
+        int localX = (int)((x - other.position.x)/other.scale.x) + other.origin.x;
+        int localY = (int)((y - other.position.y)/other.scale.y) + other.origin.y;
 
         if (localX < 0 || localY < 0 || localX >= objSize.x || localY >= objSize.y)
             return nullptr;

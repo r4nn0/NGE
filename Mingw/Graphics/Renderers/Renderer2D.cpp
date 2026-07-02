@@ -73,7 +73,7 @@ void Renderer2D::Render(){
         m_fence=nullptr;
     }
 
-    for(Object2D obj: Objects2DtoRender){
+    for(Object2D obj: Objects2DToRender){
         float textureSlot =obj.textureSlot;
         glm::vec3& _pos = obj.position;
         glm::vec2& _origin = obj.origin;
@@ -102,7 +102,7 @@ void Renderer2D::Render(){
         m_indexCount+=6;
     }
     
-    Objects2DtoRender.clear();
+    Objects2DToRender.clear();
     
     glUseProgram(m_Shader);
 

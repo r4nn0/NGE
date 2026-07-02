@@ -3,6 +3,7 @@
 #include "Graphics/Renderers/Renderer3D.h"
 #include "Graphics/Renderers/TextRenderer.h"
 #include "Graphics/Renderers/SkyboxRenderer.h"
+#include "Graphics/Renderers/PrimitiveRenderer.h"
 #include <glm/gtx/string_cast.hpp>
 #include <windows.h>
 #include "ngestd.h"
@@ -29,7 +30,7 @@
 
 int main (){
     glm::vec3 BACKGROUND_COLOR(0.25,0.0,0.25);
-    Engine& gameEngine = Engine::getInstance("NGE", 1600, 900);
+    Engine& gameEngine = Engine::getInstance("NGE");
     gameEngine.setBackgroundColor(BACKGROUND_COLOR);
 
 
@@ -38,7 +39,8 @@ int main (){
 
     
 	Renderer2D renderer;
-    
+    PrimitiveRenderer prim;
+    Shape circle = Shape::Circle(75, true);
 
     //Skybox skybox;
     //Renderer3D renderer3D;
@@ -46,6 +48,7 @@ int main (){
     
     TextRenderer tr;
     TestPlayer obj("sonic_run");
+    Object2D wall("wall");
     //Entity test("test");
     
     std::wstring fpsString = L"0";
@@ -60,7 +63,7 @@ int main (){
     
     float fpsReal=0;
     auto prevTime=std::chrono::steady_clock::now();
-    
+    float hsp=0, vsp=0;
     while(!glfwWindowShouldClose(gameEngine.get_window())){
         float LX = gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_X) > 0.5 ? 1 : gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_X) <-0.5 ? -1 : 0;
         float LY = gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_Y) > 0.5 ? 1 : gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_Y) <-0.5 ? -1 : 0;
@@ -78,7 +81,7 @@ int main (){
         // Render fps text every half a second
         static double updatestrFPS = 0;
         updatestrFPS++;
-        if(updatestrFPS>=(fpsReal/5.0)){
+        if(updatestrFPS>=fpsReal){
             fpsString = std::to_wstring((int)gmath::round(fpsReal));
             updatestrFPS=0;
         }
@@ -127,17 +130,26 @@ int main (){
         
         char hinput = (keyboard_check('D') - keyboard_check('A')) | (char)(LX) | (keyboard_check(GLFW_KEY_RIGHT) - keyboard_check(GLFW_KEY_LEFT)) | (char)(RX);
         char vinput = (keyboard_check('S') - keyboard_check('W')) | (char)(LY) | (keyboard_check(GLFW_KEY_DOWN) - keyboard_check(GLFW_KEY_UP)) | (char)(RY);
-        float hsp = hinput * 3 * deltaTime;
-        float vsp = vinput * 3 * deltaTime;
+        hsp = hinput * 3 * deltaTime;
+        vsp = vinput * 3 * deltaTime;
         float zsp = (keyboard_check('Z') - keyboard_check('X')) * 3 * deltaTime;
         
 
         obj.Update();
+        wall.Update();
+        wall.origin = glm::vec2(0,32);
+        wall.position = glm::vec3(0,1080, 0);
+        wall.scale = glm::vec2(60,1);
 
+        //vsp+=0.03 * deltaTime;
+        //if(Collision::circle(obj.position.x, obj.position.y+vsp, 64, wall)){
+        //    vsp=0;
+        //}
+        obj.origin = glm::vec2(16,16);
         obj.position += glm::vec3(hsp, vsp, zsp);
         obj.scale = glm::vec2(3);
         obj.anim_speed = 0.15;
-        if(Collision::point(800, 450, obj))
+        if(Collision::circle(1920/2.0, 975, 75, obj))
             obj.color = glm::vec4(0.0,0.0,1.0,1.0);
         else obj.color = glm::vec4(1.0,1.0,1.0,1.0);
         gameEngine.BeginDraw();
@@ -147,9 +159,14 @@ int main (){
         //renderer3D.Render();
         //
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
-
-        obj.Render();
         
+        circle.position = glm::vec3(1920/2,975,0.0);
+
+
+
+        ShapesToRender.push_back(circle);
+        obj.Render();
+        wall.Render();
         tr.setValign(Align::TOP);
         tr.setHalign(Align::LEFT);
         tr.setFontColor(glm::vec4(1.0,1.0,0.0,1.0));
@@ -161,6 +178,7 @@ int main (){
         
         renderer.Render();
         tr.flush();
+        prim.Render();
         gameEngine.EndDraw();
         
     }
