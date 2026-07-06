@@ -1,10 +1,17 @@
-#version 450 core
-layout (location=0) in vec3 wpos;
-layout (location=1) in vec3 lpos;
-layout (location=2) in float rot;
-layout (location=3) in vec2 scale;
-layout (location=4) in vec4 color;
+#version 460 core
+layout (location=0) in vec3 pos;
+layout (location=1) in uint id;
 
+struct ssboData{
+    vec3 pos;
+    float rot;
+    vec3 scale;
+    float pad;
+    vec4 color;
+};
+layout(binding = 0, std430) readonly buffer SSBOData {
+    ssboData uSSBOData[];
+};
 uniform mat4 proj_matrix;
 uniform mat4 vw_matrix;
 
@@ -14,12 +21,12 @@ out vec4 col;
 
 
 void main() {
-    vec3 finalPos = lpos * vec3(scale.x, scale.y, 1);
-    float c = cos(rot);
-    float s = sin(rot);
-    finalPos = vec3(finalPos.x*c - finalPos.y*s, finalPos.x*s + finalPos.y*c, finalPos.z) + wpos;
+    vec3 finalPos = pos * uSSBOData[id].scale;
+    float c = cos(uSSBOData[id].rot);
+    float s = sin(uSSBOData[id].rot);
+    finalPos = vec3(finalPos.x*c - finalPos.y*s, finalPos.x*s + finalPos.y*c, finalPos.z) + uSSBOData[id].pos;
    
     
     gl_Position =proj_matrix*vw_matrix*vec4(finalPos,1);
-    col=color;
+    col=uSSBOData[id].color;
 }

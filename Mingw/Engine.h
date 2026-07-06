@@ -16,7 +16,7 @@
 #include <GLFW/glfw3.h>
 #include "Input.h"
 #include "gmath.h"
-#include "Graphics/Camera3D.h"
+#include "Graphics/Camera.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtc/type_ptr.hpp>
@@ -31,24 +31,13 @@ public:
     void BeginDraw();
     void EndDraw();
     void ToggleCursorVisibility();
-    float znear2D, zfar2D;
-    Camera3D camera3d;
+    Camera camera;
     bool isCursorHidden;
     GLFWwindow* get_window();
     
-    const float* getProjMatrix();
-    void setProjMatrix(glm::mat4);
-    const float* getOrthoMatrix();
-    void setOrthoMatrix(glm::mat4);
-    const float* getViewMatrix2D();
     void setBackgroundColor(glm::vec3);
     glm::vec2 getWindowSize();
-    int getViewWidth();
-    int getViewHeight();
-    int getViewX();
-    int getViewY();
 private:
-    int view_xview, view_yview;
     glm::vec2 window_size;
     glm::vec3 background_color;
 
@@ -56,13 +45,6 @@ private:
 
     GLFWwindow* window;
 
-    glm::mat4 projMat;
-    glm::mat4 orthoMat;
-    glm::mat4 viewMat2D;
-
 };
-
-
-
 
 #endif

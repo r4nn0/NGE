@@ -6,7 +6,6 @@ public:
     Object2D(std::string="");
     ~Object2D();
     virtual void Update();
-    void Render();
     void SpriteSet(std::string);
     glm::vec3 position;
     glm::vec2 origin;
@@ -22,5 +21,5 @@ protected:
     std::vector<glm::vec2> sprite_size;
 
 };
-extern std::vector<Object2D> Objects2DToRender;
+
 #endif

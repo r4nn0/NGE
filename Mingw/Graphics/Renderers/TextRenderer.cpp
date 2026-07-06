@@ -205,7 +205,7 @@ void TextRenderer::setValign(Align alignment){
 void TextRenderer::setHalign(Align alignment){
     Halign = alignment;
 }
-void TextRenderer::renderText(std::wstring str, float x, float y, float z){
+void TextRenderer::Render(Text text){
     float pen_x = 0;
     float minX = +FLT_MAX;
     float maxX = -FLT_MAX;
@@ -218,7 +218,7 @@ void TextRenderer::renderText(std::wstring str, float x, float y, float z){
         glDeleteSync(m_fence);
         m_fence=nullptr;
     }
-    for(wchar_t c : str){
+    for(wchar_t c : text.text){
         GlyphMesh& g = loadGlyph(c);
         float gxMin = pen_x + g.min.x;
         float gxMax = pen_x + g.max.x;
@@ -234,17 +234,17 @@ void TextRenderer::renderText(std::wstring str, float x, float y, float z){
     xalign = (minX+maxX) * (1.0f + (float) Halign) / 2.0f;
     yalign = (minY+maxY) * (1.0f + (float) Valign) / 2.0f - maxY;
     pen_x=0;
-    for(wchar_t c : str){
+    for(wchar_t c : text.text){
         GlyphMesh& g = loadGlyph(c);
         for(unsigned index : g.indices){
             indexBuff[indexCount++] = index + vboOffset;
         }
         for(glm::vec3 pos : g.vertices){
             charVertBuff[vboOffset].lpos = pos;
-            charVertBuff[vboOffset].wpos = glm::vec3(x - xalign * fontScale + pen_x, y - yalign * fontScale, z * fontScale);
-            charVertBuff[vboOffset].col = fontColor;
-            charVertBuff[vboOffset].scale = fontScale;
-            charVertBuff[vboOffset].rot = fontRotation;
+            charVertBuff[vboOffset].wpos = glm::vec3(text.pos.x - xalign * fontScale + pen_x, text.pos.y - yalign * fontScale, text.pos.z * fontScale);
+            charVertBuff[vboOffset].col = text.col;
+            charVertBuff[vboOffset].scale = text.scale;
+            charVertBuff[vboOffset].rot = text.rot;
             vboOffset++;
         }
         pen_x += g.advance * fontScale;
@@ -252,8 +252,9 @@ void TextRenderer::renderText(std::wstring str, float x, float y, float z){
 }
 void TextRenderer::flush(){
     glUseProgram(m_Shader);
-    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "proj_matrix"),1,GL_FALSE,Engine::getInstance().getOrthoMatrix());
-    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "vw_matrix"),1,GL_FALSE,Engine::getInstance().getViewMatrix2D());
+    Camera cam = Engine::getInstance().camera;
+    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "vw_matrix"), 1, GL_FALSE, glm::value_ptr(cam.GetView2D()));
+    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "proj_matrix"), 1, GL_FALSE, glm::value_ptr(cam.GetProj2D()));
     
     
     glBindVertexArray(m_VAO);

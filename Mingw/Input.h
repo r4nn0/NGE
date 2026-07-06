@@ -6,8 +6,11 @@
 /// Mouse Functions
 extern double mouse_x;
 extern double mouse_y;
+extern double scrollX;
+extern double scrollY;
 extern void mousePosCallback(GLFWwindow*, double, double);
 extern void mouseButtonCallback(GLFWwindow*, int, int, int);
+extern void mouseScrollCallback(GLFWwindow*, double, double);
 extern bool mouse_check_button_pressed(int);
 extern bool mouse_check_button(int);
 extern bool mouse_check_button_released(int);

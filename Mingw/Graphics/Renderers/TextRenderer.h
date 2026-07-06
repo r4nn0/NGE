@@ -5,6 +5,7 @@
 #include <tesselator.h>
 #include <unordered_map>
 #include <ft2build.h>
+#include <Graphics/Text.h>
 #include FT_FREETYPE_H
 enum Align{
     LEFT = -1, TOP = -1, MIDDLE = 0, CENTER=0, RIGHT=1, BOTTOM=1
@@ -29,7 +30,7 @@ private:
 public:
     TextRenderer(std::string = "", float=1.0f);
     ~TextRenderer();
-    void renderText(std::wstring, float, float, float);
+    void Render(Text);
     void setFontSize(float);
     void setFontColor(glm::vec4);
     void setFontRotation(float);

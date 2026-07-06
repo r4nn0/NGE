@@ -1,7 +1,7 @@
 #ifndef ENTITY_HEADER
 #define ENTITY_HEADER
 
-#include "Graphics/Renderers/Renderer3D.h"
+#include "Graphics/Object3D.h"
 
 class Entity{
 public:
@@ -11,7 +11,7 @@ public:
     void UpdateAnimation(float);
     void Render();
     void modelSet(std::string);
-    Object3D& getModel();
+    Object3D& getModel() {return *model;}
     void setTexture(int texID);
     const std::string& getModelName()const { return objectName;} 
     glm::vec3 scale, rotation, position;

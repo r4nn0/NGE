@@ -6,8 +6,8 @@
 #include <dirent.h>
 #include <regex>
 #include <Object2D.h>
-#include "Graphics/Object3D.h"
-extern std::vector<std::reference_wrapper<Object3D>> Objects3DToRender;
+#include <Graphics/Object3D.h>
+
 static const std::wstring ar_alphabet = {
     0xfe8f, 0xfe95, 0xfe99, 0xfe9d,
     0xfea1, 0xfea5, 0xfeb1, 0xfeb5,

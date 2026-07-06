@@ -2,14 +2,16 @@
 #define RENDERER3D_H
 
 #include <ngestd.h>
-#include "../TextureManager.h"
+#include <Entity.h>
+#include <Graphics/TextureManager.h>
 
 class Renderer3D{
 public:
     Renderer3D();
     virtual ~Renderer3D();
-    void LoadVerticesToGPU(Object3D&);
-    void Render();
+    
+    void Render(Entity&);
+    void flush();
     /**
      * @brief A variable that counts drawcalls per frame
      * 
@@ -45,6 +47,7 @@ private:
     GLint m_uLightIntensity = -1;
     GLint m_uAmbientStrength = -1;
     
+    std::vector<std::reference_wrapper<Object3D>> Objects3DToRender;
 };
 
 #endif // RENDERER2D_H

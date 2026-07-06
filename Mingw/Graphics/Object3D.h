@@ -5,9 +5,8 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include "../Ngetype.h"
-#include "tiny_gltf.h"
-#include "Sprite.h"
+#include <tiny_gltf.h>
+#include <Ngetype.h>
 class Object3D
 {
 public:

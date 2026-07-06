@@ -1,7 +1,6 @@
 #ifndef RENDERER2D_H
 #define RENDERER2D_H
 
-#include <Object2D.h>
 #include <ngestd.h>
 
 
@@ -9,7 +8,8 @@ class Renderer2D {
 public:
     Renderer2D();
     virtual ~Renderer2D();
-    void Render();
+    void Render(Object2D);
+    void flush();
 protected:
 
 private:
@@ -25,6 +25,8 @@ private:
         int textureSlot;
     };
     GLsync m_fence;
+
+    std::vector<Object2D> objToRender;
 };
 
 #endif // RENDERER2D_H

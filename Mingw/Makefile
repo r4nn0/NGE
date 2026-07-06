@@ -20,8 +20,9 @@ CXX			:= C:/mingw${TARGET}/bin/g++
 buildDBG	:= $(CXX) -std=c++20 -Wall -g
 buildREL	:= $(CXX) -std=c++20 -Wall -O2 -s
 SHELL		:= cmd.exe
-relEXE		:= $(OutFolder)/Nge-rel.exe
-dbgEXE		:= $(OutFolder)/Nge-dbg.exe
+outName		:= "NGE"
+relEXE		:= $(OutFolder)/$(outName)-rel.exe
+dbgEXE		:= $(OutFolder)/$(outName)-dbg.exe
 # Debug
 $(dbgEXE): $(patsubst %, $(ObjDBG)/%,  $(objFiles))
 	$(buildDBG) $(CXXFLAGS) $^ -o $@ $(buildFlags) $(LinkLibs) $(patsubst %, -l%, $(Libs))

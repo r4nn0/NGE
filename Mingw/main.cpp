@@ -4,6 +4,7 @@
 #include "Graphics/Renderers/TextRenderer.h"
 #include "Graphics/Renderers/SkyboxRenderer.h"
 #include "Graphics/Renderers/PrimitiveRenderer.h"
+#include "Graphics/Renderer.h"
 #include <glm/gtx/string_cast.hpp>
 #include <windows.h>
 #include "ngestd.h"
@@ -29,41 +30,40 @@
 
 
 int main (){
-    glm::vec3 BACKGROUND_COLOR(0.25,0.0,0.25);
+    glm::vec3 BACKGROUND_COLOR(0.25,0.25,0.25);
     Engine& gameEngine = Engine::getInstance("NGE");
     gameEngine.setBackgroundColor(BACKGROUND_COLOR);
 
 
     LoadSpritesToMemroy();
-    //LoadModelsToMemory();
+    LoadModelsToMemory();
 
+    Renderer renderer;
     
-	Renderer2D renderer;
-    PrimitiveRenderer prim;
-    Shape circle = Shape::Circle(75, true);
+	//Renderer2D renderer;
+    //PrimitiveRenderer prim;
+    Shape circle;
 
     //Skybox skybox;
-    //Renderer3D renderer3D;
     
     
-    TextRenderer tr;
-    TestPlayer obj("sonic_run");
-    Object2D wall("wall");
-    //Entity test("test");
+    Object2D obj("sonic_run");
+    //Object2D wall("wall");
+    Entity test("test");
     
     std::wstring fpsString = L"0";
-    /*
+    
     float actdir= -60;
     float actpitch=60;
     float sense = 0.12f;
-    float hsp = 0, vsp=0, zsp=0;*/
+    float hsp = 0, vsp=0, zsp=0;
     const float desiredFPS = 200;
     
-    
+    Camera& cam = gameEngine.camera;
     
     float fpsReal=0;
     auto prevTime=std::chrono::steady_clock::now();
-    float hsp=0, vsp=0;
+    
     while(!glfwWindowShouldClose(gameEngine.get_window())){
         float LX = gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_X) > 0.5 ? 1 : gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_X) <-0.5 ? -1 : 0;
         float LY = gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_Y) > 0.5 ? 1 : gamepad_axis_value(0, GLFW_GAMEPAD_AXIS_LEFT_Y) <-0.5 ? -1 : 0;
@@ -89,23 +89,21 @@ int main (){
         if (keyboard_check_pressed(GLFW_KEY_ESCAPE))
             break;
         
-        /*
+        
         if(keyboard_check_pressed('L'))
             gameEngine.ToggleCursorVisibility();
-        glfwSetCursorPos(gameEngine.get_window(),gameEngine.getViewWidth()/2, gameEngine.getViewHeight()/2);
+        //glfwSetCursorPos(gameEngine.get_window(),cam.view_size.x/2, cam.view_size.y/2);
         
-        actdir+=(mouse_x-gameEngine.getViewWidth()/2) * sense + (RX);
+        actdir+=(mouse_x-cam.view_size.x/2) * sense + (RX);
         if(actdir>360) actdir -= 360;
         if(actdir<0) actdir += 360;
         float dir = glm::radians(actdir);
-        actpitch+=(mouse_y-gameEngine.getViewHeight()/2) * sense + (RY);
+        actpitch+=(mouse_y-cam.view_size.y/2) * sense + (RY);
         if (actpitch > 60.0f) actpitch = 60.0f;
         if (actpitch < -60.0f) actpitch = -60.0f;
         float pitch = glm::radians(actpitch);
 
-        gameEngine.camera3d.setPosition(glm::vec3(hsp,zsp,vsp));
-        gameEngine.camera3d.setRotation(glm::vec3(dir , pitch, glm::radians(180.f)));
-        gameEngine.camera3d.setOrbit(glm::vec3(hsp,zsp,vsp));
+        
         
 
         float moveSpeed = 0.03 * deltaTime;
@@ -120,65 +118,51 @@ int main (){
         vsp += (((keyboard_check('D') - keyboard_check('A')) * glm::sin(dir)
              -(keyboard_check('W') - keyboard_check('S')) * glm::cos(dir))  + (LX * glm::sin(dir) + LY*glm::cos(dir)))* moveSpeed;
         zsp +=(keyboard_check('E') - keyboard_check('Q')) * moveSpeed;
-        */
         
+        cam.position3D = glm::vec3(hsp,zsp,vsp);
+        cam.rotation3D = glm::vec3(dir , pitch, glm::radians(180.f));
+        cam.orbit = glm::vec3(hsp, zsp, vsp);
+        //gameEngine.camera3d.setPosition(glm::vec3(hsp,zsp,vsp));
+        //gameEngine.camera3d.setRotation(glm::vec3());
+        //gameEngine.camera3d.setOrbit(glm::vec3(hsp,zsp,vsp));
         //truckRot += glm::radians((keyboard_check('Z') - keyboard_check('X'))*0.1f);
-        
-        
+        cam.ZoomAt(glm::vec2(scrollY*0.003), glm::vec2(mouse_x, mouse_y));
+        //cam.zoom2D = glm::clamp(cam.zoom2D, glm::vec2(1.0f), glm::vec2(100.f));
         
         gameEngine.StepEvent();
         
         char hinput = (keyboard_check('D') - keyboard_check('A')) | (char)(LX) | (keyboard_check(GLFW_KEY_RIGHT) - keyboard_check(GLFW_KEY_LEFT)) | (char)(RX);
         char vinput = (keyboard_check('S') - keyboard_check('W')) | (char)(LY) | (keyboard_check(GLFW_KEY_DOWN) - keyboard_check(GLFW_KEY_UP)) | (char)(RY);
-        hsp = hinput * 3 * deltaTime;
+        /*hsp = hinput * 3 * deltaTime;
         vsp = vinput * 3 * deltaTime;
         float zsp = (keyboard_check('Z') - keyboard_check('X')) * 3 * deltaTime;
+        */
+
         
-
-        obj.Update();
-        wall.Update();
-        wall.origin = glm::vec2(0,32);
-        wall.position = glm::vec3(0,1080, 0);
-        wall.scale = glm::vec2(60,1);
-
         //vsp+=0.03 * deltaTime;
         //if(Collision::circle(obj.position.x, obj.position.y+vsp, 64, wall)){
         //    vsp=0;
         //}
-        obj.origin = glm::vec2(16,16);
-        obj.position += glm::vec3(hsp, vsp, zsp);
-        obj.scale = glm::vec2(3);
-        obj.anim_speed = 0.15;
-        if(Collision::circle(1920/2.0, 975, 75, obj))
-            obj.color = glm::vec4(0.0,0.0,1.0,1.0);
-        else obj.color = glm::vec4(1.0,1.0,1.0,1.0);
+        
+        obj.position += glm::vec3(hinput, vinput,0.0) * 3.0f * deltaTime;
+        obj.anim_speed = 0.03 * deltaTime;
+        obj.Update();
         gameEngine.BeginDraw();
         
-        //test.Render();
-        //skybox.Render();
-        //renderer3D.Render();
-        //
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
+        Text text(L"Hello World", glm::vec3(100,100,0));
+        text.col = glm::vec4(1.0,0.0,0.0,1.0);
         
-        circle.position = glm::vec3(1920/2,975,0.0);
-
-
-
-        ShapesToRender.push_back(circle);
-        obj.Render();
-        wall.Render();
-        tr.setValign(Align::TOP);
-        tr.setHalign(Align::LEFT);
-        tr.setFontColor(glm::vec4(1.0,1.0,0.0,1.0));
-        tr.setFontSize(0.5f);
+        renderer.Render(text);
+        renderer.Render(Shape::Circle(glm::vec3(100,100,0.0), 50, true));
+        renderer.Render(Shape::Circle(glm::vec3(100,200,0.0), 50, false));
+        renderer.Render(Shape::Circle(glm::vec3(100,300,0.0), 50, true));
+        renderer.Render(obj);
         
-        tr.renderText(fpsString, 0, 0, 0);
-
+        //renderer.Render(test);
         
+        renderer.Flush();
         
-        renderer.Render();
-        tr.flush();
-        prim.Render();
         gameEngine.EndDraw();
         
     }

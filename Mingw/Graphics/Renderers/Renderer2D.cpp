@@ -58,12 +58,14 @@ Renderer2D::~Renderer2D() {
     
     glDeleteProgram(m_Shader);
 }
-
+void Renderer2D::Render(Object2D obj){
+    objToRender.push_back(obj);
+}
 /**
  * @brief Start rendering objects added to the renderer
  * 
  */
-void Renderer2D::Render(){
+void Renderer2D::flush(){
     GLsizei m_indexCount=0;
     vboData* m_Buff = (vboData*) m_vboBase;
 
@@ -73,7 +75,7 @@ void Renderer2D::Render(){
         m_fence=nullptr;
     }
 
-    for(Object2D obj: Objects2DToRender){
+    for(Object2D obj: objToRender){
         float textureSlot =obj.textureSlot;
         glm::vec3& _pos = obj.position;
         glm::vec2& _origin = obj.origin;
@@ -102,12 +104,12 @@ void Renderer2D::Render(){
         m_indexCount+=6;
     }
     
-    Objects2DToRender.clear();
+    objToRender.clear();
     
     glUseProgram(m_Shader);
-
-    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "proj_matrix"),1,GL_FALSE,Engine::getInstance().getOrthoMatrix());
-    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "vw_matrix"),1,GL_FALSE,Engine::getInstance().getViewMatrix2D());
+    Camera cam = Engine::getInstance().camera;
+    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "proj_matrix"),1,GL_FALSE, glm::value_ptr(cam.GetProj2D()));
+    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "vw_matrix"),1,GL_FALSE, glm::value_ptr(cam.GetView2D()));
     glUniform1i(glGetUniformLocation(m_Shader, "texture[0]"), MainTextureAtlas.GetTextureSlot());
     MainTextureAtlas.Bind();
     glBindVertexArray(m_VAO);

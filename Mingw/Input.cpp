@@ -2,7 +2,8 @@
 
 double mouse_x=0;
 double mouse_y=0;
-
+double scrollX = 0;
+double scrollY = 0;
 static bool mouse_held[GLFW_MOUSE_BUTTON_LAST]={ 0 };
 static bool mouse_pressed[GLFW_MOUSE_BUTTON_LAST]={ 0 };
 static bool mouse_released[GLFW_MOUSE_BUTTON_LAST]={ 0 };
@@ -38,6 +39,10 @@ void mouseButtonCallback(GLFWwindow* window, int _button, int action, int mods){
         mouse_released[_button]=true;
     }
     mouse_held[_button] = action!=GLFW_RELEASE;
+}
+void mouseScrollCallback(GLFWwindow*, double xoffset, double yoffset){
+    scrollX += xoffset;
+    scrollY += yoffset;
 }
 /**
  * @brief Checks if a mouse button has been pressed

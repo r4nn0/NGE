@@ -12,11 +12,8 @@ Engine& Engine::getInstance(const char* window_title, int window_width, int wind
  * 
  */
 Engine::Engine(const char* window_title, int _window_width, int _window_height) :
-                   view_xview(0), view_yview(0),
-                   background_color(100,100,100),
-                   projMat(glm::mat4(0.f)),orthoMat(glm::mat4(0.f)),
-                   viewMat2D(glm::mat4(0.f)), window_size(glm::vec2(_window_width, _window_height)),
-                   window(nullptr), znear2D(-128), zfar2D(127), isCursorHidden(false){
+                   isCursorHidden(false), window_size(glm::vec2(_window_width, _window_height)),
+                   background_color(100,100,100), window(nullptr){
 
     if(!glfwInit()){
         std::cout << "Error Initializing GLFW" << std::endl;
@@ -31,6 +28,7 @@ Engine::Engine(const char* window_title, int _window_width, int _window_height) 
     std::cout << mode->refreshRate << "hz" << std::endl;
     if(_window_width<=0 || _window_height<=0)
         window_size = glm::vec2(mode->width, mode->height);
+    camera.view_size = window_size;
     glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
     window=glfwCreateWindow(window_size.x, window_size.y, window_title, NULL, NULL);
     
@@ -53,6 +51,7 @@ Engine::Engine(const char* window_title, int _window_width, int _window_height) 
     glfwSetKeyCallback(window,keyboardCallback);
     glfwSetCursorPosCallback(window,mousePosCallback);
     glfwSetMouseButtonCallback(window,mouseButtonCallback);
+    glfwSetScrollCallback(window, mouseScrollCallback);
 	glfwSetJoystickCallback(joystickCallback);
     
     
@@ -77,8 +76,6 @@ Engine::Engine(const char* window_title, int _window_width, int _window_height) 
     //glEnable(GL_DEPTH_WRITEMASK);
 
     glViewport(0, 0, window_size.x, window_size.y);
-    projMat=glm::perspective(45.0f, window_size.x/window_size.y,0.1f,100000.0f);
-    orthoMat=glm::ortho(0.f, window_size.x, window_size.y, 0.f, -znear2D, -(zfar2D+1));
 }
 
 
@@ -95,8 +92,6 @@ void windowSizeCallback(GLFWwindow* window, int width, int height){
     //view_height = height;
     Engine::getInstance().window_size = glm::vec2(width, height);
     glViewport(0, 0, width, height);
-    Engine::getInstance().setProjMatrix(glm::perspective(45.0f,(float)width/height,0.1f,100000.0f));
-    Engine::getInstance().setOrthoMatrix(glm::ortho(0.f, (float)width, (float)height, 0.f, -Engine::getInstance().znear2D, -(Engine::getInstance().zfar2D+1)));
 }
 void windowFocusCallback(GLFWwindow* window, int focus){
     
@@ -115,7 +110,6 @@ void windowFocusCallback(GLFWwindow* window, int focus){
  */
 void Engine::StepEvent(){
     glfwPollEvents();
-    viewMat2D = glm::translate(glm::mat4(1.0f), glm::vec3(-view_xview, view_yview, 0.0f));
 }
 /**
  * @brief Initializes rendering by clearing the rendering screen
@@ -140,26 +134,7 @@ void Engine::EndDraw(){
 GLFWwindow* Engine::get_window(){
     return window;
 }
-/**
- * @brief Get current view matrix
- * 
- * @return const float* point to the matrix
- */
-const float* Engine::getProjMatrix(){
-    return (const float*)glm::value_ptr(projMat);
-}
-void Engine::setProjMatrix(glm::mat4 mat){
-    projMat = mat;
-}
-const float* Engine::getOrthoMatrix(){
-    return (const float*)glm::value_ptr(orthoMat);
-}
-void Engine::setOrthoMatrix(glm::mat4 mat){
-    orthoMat = mat;
-}
-const float* Engine::getViewMatrix2D(){
-    return (const float*)glm::value_ptr(viewMat2D);
-}
+
 /**
  * @brief Sets background color for the screen
  * 
@@ -175,36 +150,4 @@ void Engine::setBackgroundColor(glm::vec3 bg){
  */
 glm::vec2 Engine::getWindowSize(){
     return window_size;
-}
-/**
- * @brief Get current view width
- * 
- * @return int view_width
- */
-int Engine::getViewWidth(){
-    return glm::ceil(glm::abs(2.0f/orthoMat[0][0]));
-}
-/**
- * @brief Get current view height
- * 
- * @return int view_height
- */
-int Engine::getViewHeight(){
-    return glm::ceil(glm::abs(2.0f/orthoMat[1][1]));
-}
-/**
- * @brief Get current view X coordinate 
- * 
- * @return int view x poisition
- */
-int Engine::getViewX(){
-    return view_xview;
-}
-/**
- * @brief Get current view Y coordinate 
- * 
- * @return int view y poisition
- */
-int Engine::getViewY(){
-    return view_yview;
 }

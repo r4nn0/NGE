@@ -1,5 +1,5 @@
 #include "ngestd.h"
-std::vector<std::reference_wrapper<Object3D>> Objects3DToRender;
+
 std::wstring ar_fix(std::wstring str){
     for(size_t i = 0; i<str.size();i++){
         

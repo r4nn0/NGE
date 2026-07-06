@@ -61,8 +61,9 @@ void Skybox::Render(){
     glDepthFunc(GL_LEQUAL);
 
     glUseProgram(m_Shader);
-    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "view"), 1, GL_FALSE, glm::value_ptr(Engine::getInstance().camera3d.getMatrix()));
-    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "projection"), 1, GL_FALSE, Engine::getInstance().getProjMatrix());
+    Camera cam = Engine::getInstance().camera;
+    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "view"), 1, GL_FALSE, glm::value_ptr(cam.GetView3D()));
+    glUniformMatrix4fv(glGetUniformLocation(m_Shader, "projection"), 1, GL_FALSE, glm::value_ptr(cam.GetProj3D()));
     glUniform1i(glGetUniformLocation(m_Shader, "skybox"), 0);
 
     glBindVertexArray(m_VAO);

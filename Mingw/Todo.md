@@ -1,12 +1,17 @@
+# Current Features:
+## Render all types of stuff (3D Objects, 2D Sprites, 2D Shapes, Text)
+## Batch Rendering for each type of renderer
+## Automatically pass object to the appropriate renderer for rendering
+## Precis 2D collision masks
+## A couple of collision checking functions
+
 ### Add soundplaying to engine using OpenAL: https://github.com/kcat/openal-soft
 
-### Add primitive renderer + ploygon class to render any object of your choice (Partially done)
-### Add two seperate VBOs for the primitive renderer (One for filled polygons and one for outlined)
 ### Add SSBO instead of passing global values with each VBO (ex. object's transform position is applied to all vertices)
 ### for all 2D objects (sprites, polygons and text)
 
 ### Add 2D camera
-### Fix so that there is only one renderer for sprites and fonts
+### Fix so that there is only one renderer for sprites and fonts (Skip maybe?)
 ### OR Implement rendering to framebuffer (created texture) instead of rendering to the main render target immediately
 
 
@@ -41,7 +46,8 @@
 ### Add modelMatrix for 2D objects (for easier rotaiton and scaling) (Done)
 ### Some models have model parts displaced, probably nodeMatrices issues (Fixed)
 ### Implement MaxRect packing (Done)
-
+### Add primitive renderer + ploygon class to render any object of your choice (Done)
+### Add two seperate VBOs for the primitive renderer (One for filled polygons and one for outlined) (Done)
 
 
 

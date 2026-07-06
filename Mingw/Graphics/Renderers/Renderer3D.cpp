@@ -116,7 +116,10 @@ Renderer3D::~Renderer3D() {
  * @brief Start rendering objects added to the renderer
  * 
  */
-void Renderer3D::Render(){
+void Renderer3D::Render(Entity& obj){
+    Objects3DToRender.push_back(obj.getModel());
+}
+void Renderer3D::flush(){
     
     window_size = Engine::getInstance().getWindowSize();
     //static bool firstFlush = true;
@@ -152,6 +155,7 @@ void Renderer3D::Render(){
     materialSSBOptr[0] = defaultMat;
     vboOffset = m_indexCount = m_instanceCount = m_morphPositionsOffset = m_jointOffset = m_morphWeightsOffset =  m_nodeMatrixOffset = m_materialOffset = m_drawDataOffset = 0;
     for(Object3D& obj : Objects3DToRender){
+        
         if(obj.instanceID==-1) obj.instanceID=m_instanceCount;
         mmSSBOptr[obj.instanceID] = obj.modelMatrix; 
         
@@ -163,13 +167,14 @@ void Renderer3D::Render(){
         memcpy(nmSSBOptr + m_nodeMatrixOffset, obj.nodeGlobalMatrix.data(), obj.nodeGlobalMatrix.size() * sizeof(glm::mat4));
         m_nodeMatrixOffset += obj.nodeGlobalMatrix.size();
 
-
+        
         for(Object3D::Skin& skin: obj.skins){
             skinOffsets[skin.skinIndex] =  m_jointOffset;
             memcpy(jmSSBOptr + m_jointOffset, skin.finalJointMatrices.data(), skin.finalJointMatrices.size()* sizeof(glm::mat4));
             //localJointOffset += skin.finalJointMatrices.size();
             m_jointOffset+=skin.finalJointMatrices.size();
         }
+        
         //lastObjectSkinOffset += localJointOffset;
         //morphWeightsOffsets.push_back(morphWeightsOffset + lastMorphWeightOffset);
         for(std::vector<float>& morphWeights : obj.morphWeights){
@@ -236,7 +241,7 @@ void Renderer3D::Render(){
     indexPtr = std::copy(OpaqueMask.begin(), OpaqueMask.end(),indexPtr);
     indexPtr = std::copy(blend.begin(), blend.end(),indexPtr);
     // After fill loop, before feedback draw:
-
+    
     //std::cout << "Vertex buffer size: " << (vboOffset)*sizeof(Vertex3D) <<std::endl;
     /*
     glUnmapNamedBuffer(m_VBO);
@@ -286,16 +291,16 @@ void Renderer3D::Render(){
     
     
     
-
-    glm::mat4 viewMat = Engine::getInstance().camera3d.getMatrix();
-    glm::vec3 camForward = Engine::getInstance().camera3d.getForward();
+    Camera cam = Engine::getInstance().camera;
+    glm::mat4 viewMat = cam.GetView3D();
+    glm::vec3 camForward = cam.GetForward();
 
 
     glm::vec3 lightDir = glm::normalize(glm::mat3(viewMat) * camForward);
     glm::vec3 lightColor =  glm::vec3(1.f, 1.f, 1.f);
 
     
-    glm::vec3 lightPos = glm::vec3(viewMat * glm::vec4(Engine::getInstance().camera3d.getPosition(), 1.0f));
+    glm::vec3 lightPos = glm::vec3(viewMat * glm::vec4(cam.position3D, 1.0f));
 
     /*glm::mat4 lightView = glm::lookAt(lightPos, sceneCenter, 
                                     glm::vec3(0.0f, -1.0f, 0.0f));
@@ -305,11 +310,11 @@ void Renderer3D::Render(){
     */
 
     //printf("%f %f %f\n", camForward.x, camForward.y, camForward.z);
-    glUniformMatrix4fv(m_uProjMatrix, 1,GL_FALSE,Engine::getInstance().getProjMatrix());
+    glUniformMatrix4fv(m_uProjMatrix, 1,GL_FALSE,glm::value_ptr(cam.GetProj3D()));
     glUniformMatrix4fv(m_uVwMatrix,1,GL_FALSE, glm::value_ptr(viewMat));
     glUniform3fv(m_uLightPos,   1, glm::value_ptr(lightPos));
     glUniform3fv(m_uLightDir,   1, glm::value_ptr(lightDir));
-    glUniform3fv(m_uViewPos,    1, glm::value_ptr(Engine::getInstance().camera3d.getPosition()));
+    glUniform3fv(m_uViewPos,    1, glm::value_ptr(cam.position3D));
     glUniform3fv(m_uLightColor, 1, glm::value_ptr(lightColor));
     glUniform1f(m_uLightIntensity, 5.f);
     glUniform1f(m_uAmbientStrength, 0.01f);
