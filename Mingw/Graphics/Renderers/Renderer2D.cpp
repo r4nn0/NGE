@@ -1,8 +1,5 @@
 #include "Renderer2D.h"
-#define VERTEX_SIZE2D sizeof(vboData)
-#define BUFFER_SIZE2D VERTEX_SIZE2D * 4 * 32000
-#define INDICES_SIZE2D 32000*6
-#define MODEL_MATRICES_SSBO_SIZE3D 2*MEGABYTE
+
 /**
  * @brief Initialize batch renderer to pass correct values to shaders
  * 
@@ -11,14 +8,14 @@ Renderer2D::Renderer2D() : m_fence(nullptr){
     glCreateVertexArrays(1, &m_VAO);
 
     glCreateBuffers(1, &m_VBO);
-    glNamedBufferStorage(m_VBO, BUFFER_SIZE2D, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
-    glVertexArrayVertexBuffer(m_VAO,0,m_VBO,0, VERTEX_SIZE2D);
+    glNamedBufferStorage(m_VBO, VBO_SIZE, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+    glVertexArrayVertexBuffer(m_VAO,0,m_VBO,0, VBO_DATA_SIZE);
 
-    m_vboBase = glMapNamedBufferRange(m_VBO, 0, BUFFER_SIZE2D, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+    m_vboBase = glMapNamedBufferRange(m_VBO, 0, VBO_SIZE, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 
-    unsigned short indices[INDICES_SIZE2D];
+    unsigned short indices[IBO_SIZE];
     unsigned offset=0;
-    for(unsigned i=0;i<INDICES_SIZE2D;i+=6){
+    for(unsigned i=0;i<IBO_SIZE;i+=6){
         indices[ i ]=offset;
         indices[i+1]=offset+1;
         indices[i+2]=offset+2;
@@ -28,22 +25,22 @@ Renderer2D::Renderer2D() : m_fence(nullptr){
         offset+=4;
     }
     glCreateBuffers(1, &m_IBO);
-    glNamedBufferStorage(m_IBO, INDICES_SIZE2D*sizeof(short), indices, 0);
+    glNamedBufferStorage(m_IBO, IBO_SIZE, indices, 0);
     glVertexArrayElementBuffer(m_VAO, m_IBO);
 
+    glCreateBuffers(1, &m_SSBO);
+    glNamedBufferStorage(m_SSBO, SSBO_SIZE, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 
-    for(int i=0;i<7;i++){
+    m_ssboBase = glMapNamedBufferRange(m_SSBO, 0, SSBO_SIZE, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+
+    for(int i=0;i<3;i++){
         glEnableVertexArrayAttrib(m_VAO,i);
         glVertexArrayAttribBinding(m_VAO,i,0);
     }
 
     glVertexArrayAttribFormat(m_VAO, 0, 3, GL_FLOAT, GL_FALSE, offsetof(vboData, pos));
-    glVertexArrayAttribFormat(m_VAO, 1, 3, GL_FLOAT, GL_FALSE, offsetof(vboData, lpos));
-    glVertexArrayAttribFormat(m_VAO, 2, 1, GL_FLOAT, GL_FALSE, offsetof(vboData, rot));
-    glVertexArrayAttribFormat(m_VAO, 3, 2, GL_FLOAT, GL_FALSE, offsetof(vboData, scale));
-    glVertexArrayAttribFormat(m_VAO, 4, 4, GL_FLOAT, GL_FALSE, offsetof(vboData, color));
-    glVertexArrayAttribFormat(m_VAO, 5, 2, GL_FLOAT, GL_FALSE, offsetof(vboData, texCoords));
-    glVertexArrayAttribIFormat(m_VAO, 6, 1, GL_INT, offsetof(vboData, textureSlot));
+    glVertexArrayAttribFormat(m_VAO, 1, 2, GL_FLOAT, GL_FALSE, offsetof(vboData, texCoords));
+    glVertexArrayAttribIFormat(m_VAO, 2, 1, GL_INT, offsetof(vboData, id));
     
     m_Shader=CreateShader(LoadShaderFromFile("./Graphics/Shaders/shader.vs").c_str(),
                           LoadShaderFromFile("./Graphics/Shaders/shader.fs").c_str());
@@ -55,7 +52,7 @@ Renderer2D::Renderer2D() : m_fence(nullptr){
 Renderer2D::~Renderer2D() {
     glDeleteBuffers(1,&m_IBO);
     glDeleteBuffers(1,&m_VBO);
-    
+    glDeleteBuffers(1,&m_SSBO);
     glDeleteProgram(m_Shader);
 }
 void Renderer2D::Render(Object2D obj){
@@ -68,21 +65,22 @@ void Renderer2D::Render(Object2D obj){
 void Renderer2D::flush(){
     GLsizei m_indexCount=0;
     vboData* m_Buff = (vboData*) m_vboBase;
-
+    ssboData* m_ssboPtr = (ssboData*) m_ssboBase;
     if(!m_indexCount && m_fence){
         glClientWaitSync(m_fence, GL_SYNC_FLUSH_COMMANDS_BIT, GL_TIMEOUT_IGNORED);
         glDeleteSync(m_fence);
         m_fence=nullptr;
     }
-
+    unsigned m_instanceCount = 0;
     for(Object2D obj: objToRender){
-        float textureSlot =obj.textureSlot;
-        glm::vec3& _pos = obj.position;
+        m_ssboPtr[m_instanceCount].pos = obj.position;
+        m_ssboPtr[m_instanceCount].rot = obj.rotation; 
+        m_ssboPtr[m_instanceCount].color = obj.color;
+        m_ssboPtr[m_instanceCount].scale = obj.scale;
+        m_ssboPtr[m_instanceCount].textureSlot = obj.textureSlot;
+
         glm::vec2& _origin = obj.origin;
-        float& _rot = obj.rotation;
-        glm::vec2& _scale = obj.scale;
         glm::vec2& _size = obj.getSpriteSize();
-        glm::vec4& _col = obj.color;
         std::vector<glm::vec2> uvs = obj.UVs[(int)obj.frame_index];
         std::vector<glm::vec3> _lpos;
         
@@ -92,21 +90,19 @@ void Renderer2D::flush(){
         _lpos.push_back(glm::vec3(-_origin.x,_size.y-_origin.y,0));
 
         for(int i=0;i<4;i++){
-            m_Buff->pos = _pos;
-            m_Buff->lpos = _lpos[i];
-            m_Buff->rot = _rot;
-            m_Buff->scale = _scale;
-            m_Buff->color=_col;
+            m_Buff->pos = _lpos[i];
             m_Buff->texCoords = uvs[i];
-            m_Buff->textureSlot = textureSlot;
+            m_Buff->id = m_instanceCount;
             m_Buff++;
         }
         m_indexCount+=6;
+        m_instanceCount++;
     }
     
     objToRender.clear();
     
     glUseProgram(m_Shader);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_SSBO);
     Camera cam = Engine::getInstance().camera;
     glUniformMatrix4fv(glGetUniformLocation(m_Shader, "proj_matrix"),1,GL_FALSE, glm::value_ptr(cam.GetProj2D()));
     glUniformMatrix4fv(glGetUniformLocation(m_Shader, "vw_matrix"),1,GL_FALSE, glm::value_ptr(cam.GetView2D()));

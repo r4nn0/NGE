@@ -39,14 +39,18 @@ private:
 
     GLint m_uProjMatrix = -1;
     GLint m_uVwMatrix = -1;
+    
     GLint m_uLightMode = -1;
-    GLint m_uLightPos = -1;
     GLint m_uLightDir = -1;
+    GLint m_uLightPos = -1;
     GLint m_uViewPos = -1;
     GLint m_uLightColor = -1;
     GLint m_uLightIntensity = -1;
     GLint m_uAmbientStrength = -1;
-    
+    GLint m_uLightRadius = -1;
+    GLint m_uSpotInnerCutOff = -1;
+    GLint m_uSpotOuterCutOff = -1;
+
     std::vector<std::reference_wrapper<Object3D>> Objects3DToRender;
 };
 

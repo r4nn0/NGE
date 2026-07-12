@@ -61,21 +61,22 @@ Renderer3D::Renderer3D() : vboOffset(0), m_indexCount(0), m_instanceCount(0),m_m
     m_materialSSBOBase = glMapNamedBufferRange(m_MaterialsSSBO, 0, MATERIAL_SSBO_SIZE_3D, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT | GL_MAP_FLUSH_EXPLICIT_BIT);
     m_ddSSBOBase = glMapNamedBufferRange(m_DrawDataSSBO, 0, 2*MEGABYTE, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT | GL_MAP_FLUSH_EXPLICIT_BIT);
     
-    for(int i=0;i<=7;i++){
+    for(int i=0;i<=8;i++){
         glEnableVertexArrayAttrib(m_VAO,i);
         glVertexArrayAttribBinding(m_VAO,i,0);
     }
-    
-    glVertexArrayAttribFormat(m_VAO, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, pos));
-    glVertexArrayAttribFormat(m_VAO, 1, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, texCoords));
-    glVertexArrayAttribFormat(m_VAO, 2, 4, GL_UNSIGNED_BYTE, GL_TRUE, offsetof(Vertex3D, color));
-    glVertexArrayAttribFormat(m_VAO, 3, 2, GL_UNSIGNED_SHORT, GL_TRUE, offsetof(Vertex3D, normal));
+    glVertexArrayAttribFormat(m_VAO, 0, 4, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, tangent));
+    glVertexArrayAttribFormat(m_VAO, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, pos));
+    glVertexArrayAttribFormat(m_VAO, 2, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, normal));
 
-    glVertexArrayAttribIFormat(m_VAO, 4, 4, GL_UNSIGNED_BYTE, offsetof(Vertex3D, joints));
-    glVertexArrayAttribFormat(m_VAO,  5, 4, GL_UNSIGNED_BYTE, GL_TRUE, offsetof(Vertex3D, weights));
+    glVertexArrayAttribFormat(m_VAO, 3, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, texCoords));
+    glVertexArrayAttribFormat(m_VAO, 4, 4, GL_UNSIGNED_BYTE, GL_TRUE, offsetof(Vertex3D, color));
 
-    glVertexArrayAttribIFormat(m_VAO, 6, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, vertexIndex));
-    glVertexArrayAttribIFormat(m_VAO, 7, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, drawID));
+    glVertexArrayAttribIFormat(m_VAO, 5, 4, GL_UNSIGNED_BYTE, offsetof(Vertex3D, joints));
+    glVertexArrayAttribFormat(m_VAO,  6, 4, GL_UNSIGNED_BYTE, GL_TRUE, offsetof(Vertex3D, weights));
+
+    glVertexArrayAttribIFormat(m_VAO, 7, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, vertexIndex));
+    glVertexArrayAttribIFormat(m_VAO, 8, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, drawID));
 
     m_Shader=CreateShader(LoadShaderFromFile("./Graphics/Shaders/shader3D.vs").c_str(),
                           LoadShaderFromFile("./Graphics/Shaders/shader3D.fs").c_str());
@@ -83,13 +84,17 @@ Renderer3D::Renderer3D() : vboOffset(0), m_indexCount(0), m_instanceCount(0),m_m
     m_uProjMatrix      = glGetUniformLocation(m_Shader, "proj_matrix");
     m_uVwMatrix        = glGetUniformLocation(m_Shader, "vw_matrix");
     
+    
+    m_uLightMode       = glGetUniformLocation(m_Shader, "uLightMode");
+    m_uLightDir        = glGetUniformLocation(m_Shader, "uLightDir");
+    m_uLightPos        = glGetUniformLocation(m_Shader, "uLightPos");
     m_uViewPos         = glGetUniformLocation(m_Shader, "uViewPos");
     m_uLightColor      = glGetUniformLocation(m_Shader, "uLightColor");
-    m_uLightPos        = glGetUniformLocation(m_Shader, "uLightPos");
-    m_uLightDir        = glGetUniformLocation(m_Shader, "uLightDir");
-    m_uLightIntensity = glGetUniformLocation(m_Shader, "uLightIntensity");
+    m_uLightIntensity  = glGetUniformLocation(m_Shader, "uLightIntensity");
     m_uAmbientStrength = glGetUniformLocation(m_Shader, "uAmbientStrength");
-    m_uLightMode       = glGetUniformLocation(m_Shader, "uLightMode");
+    m_uLightRadius     = glGetUniformLocation(m_Shader, "uLightRadius");
+    m_uSpotInnerCutOff = glGetUniformLocation(m_Shader, "uSpotInnerCutOff");
+    m_uSpotOuterCutOff = glGetUniformLocation(m_Shader, "uSpotOuterCutOff");
 
 }
 /**
@@ -202,7 +207,10 @@ void Renderer3D::flush(){
             }else{
                 for(auto idx : prim.indices) OpaqueMask.push_back(idx + vboOffset); 
             }
-            glm::mat4 normalMat = glm::transpose(glm::inverse(obj.nodeGlobalMatrix[prim.nodeIndex]));
+            //glm::mat4 Flip(1.0f);
+            //Flip[1][1] = -1.0f;
+            //Flip[2][2] = -1.0f;
+            glm::mat4 normalMat = glm::transpose(glm::inverse(obj.modelMatrix * obj.nodeGlobalMatrix[prim.nodeIndex]));
             
             ddSSBOptr[m_drawDataOffset]={obj.instanceID, (unsigned)prim.morphPositions.size(), 
                                          (morphWeightsOffsets.size()>(unsigned)prim.nodeIndex) ? morphWeightsOffsets[prim.nodeIndex] : -1,
@@ -293,14 +301,16 @@ void Renderer3D::flush(){
     
     Camera cam = Engine::getInstance().camera;
     glm::mat4 viewMat = cam.GetView3D();
-    glm::vec3 camForward = cam.GetForward();
-
-
-    glm::vec3 lightDir = glm::normalize(glm::mat3(viewMat) * camForward);
+    glm::vec3 camForward=cam.GetForward();
+    //camForward.x *=-1;
+    //camForward.y *=-1;
+    //camForward.z *=-1;
+    
+    glm::vec3 lightDir = glm::normalize(camForward);
     glm::vec3 lightColor =  glm::vec3(1.f, 1.f, 1.f);
 
     
-    glm::vec3 lightPos = glm::vec3(viewMat * glm::vec4(cam.position3D, 1.0f));
+    glm::vec3 lightPos = cam.position3D;
 
     /*glm::mat4 lightView = glm::lookAt(lightPos, sceneCenter, 
                                     glm::vec3(0.0f, -1.0f, 0.0f));
@@ -312,14 +322,18 @@ void Renderer3D::flush(){
     //printf("%f %f %f\n", camForward.x, camForward.y, camForward.z);
     glUniformMatrix4fv(m_uProjMatrix, 1,GL_FALSE,glm::value_ptr(cam.GetProj3D()));
     glUniformMatrix4fv(m_uVwMatrix,1,GL_FALSE, glm::value_ptr(viewMat));
-    glUniform3fv(m_uLightPos,   1, glm::value_ptr(lightPos));
-    glUniform3fv(m_uLightDir,   1, glm::value_ptr(lightDir));
-    glUniform3fv(m_uViewPos,    1, glm::value_ptr(cam.position3D));
-    glUniform3fv(m_uLightColor, 1, glm::value_ptr(lightColor));
-    glUniform1f(m_uLightIntensity, 5.f);
-    glUniform1f(m_uAmbientStrength, 0.01f);
-    glUniform1i(m_uLightMode, 1);
+
     
+    glUniform1i(m_uLightMode, 2); // 0 = Directional Light, 1 = Point Light, 2 = Spotlight
+    glUniform3fv(m_uLightDir,   1, glm::value_ptr(lightDir));
+    glUniform3fv(m_uLightPos,   1, glm::value_ptr(lightPos));
+    glUniform3fv(m_uViewPos,    1, glm::value_ptr(lightPos));
+    glUniform3fv(m_uLightColor, 1, glm::value_ptr(lightColor));
+    glUniform1f(m_uLightIntensity, 15.f);
+    glUniform1f(m_uAmbientStrength, 0.05f);
+    glUniform1f(m_uLightRadius, 50.0f);
+    glUniform1f(m_uSpotInnerCutOff, glm::cos(glm::radians(12.5f)));
+    glUniform1f(m_uSpotOuterCutOff, glm::cos(glm::radians(17.5f)));
     glBindVertexArray(m_VAO);
     /*if (m_timerQueryReady) {
         GLuint64 elapsed;
@@ -330,6 +344,7 @@ void Renderer3D::flush(){
         //    std::cout << "GPU draw time: " << elapsed / 1000000.0f << "ms\n";
     }*/
     //glBeginQuery(GL_TIME_ELAPSED, m_timerQuery[m_timerQueryIndex]);
+    
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glDisable(GL_BLEND);

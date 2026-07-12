@@ -10,6 +10,8 @@
 #include "ngestd.h"
 #include "TestPlayer.h"
 #include "Entity.h"
+#include <locale>
+#include <codecvt>
 //#include <vulkan/vulkan.h>
 /*! \mainpage NGE (NewbiesGameEngine)
  *
@@ -40,23 +42,22 @@ int main (){
 
     Renderer renderer;
     
-	//Renderer2D renderer;
-    //PrimitiveRenderer prim;
-    Shape circle;
-
-    //Skybox skybox;
     
     
     Object2D obj("sonic_run");
-    //Object2D wall("wall");
-    Entity test("test");
-    
+    Object2D wall("wall");
+    Entity map("Woman");
+    //Entity test("test");
+    obj.origin = glm::vec2(16);
+    wall.origin = glm::vec2(32);
+    wall.position = glm::vec3(1920, 1080,0.0);
+    wall.scale = glm::vec2(60,1);
     std::wstring fpsString = L"0";
     
     float actdir= -60;
     float actpitch=60;
     float sense = 0.12f;
-    float hsp = 0, vsp=0, zsp=0;
+    float hsp = 0, vsp=0, zsp=-5;
     const float desiredFPS = 200;
     
     Camera& cam = gameEngine.camera;
@@ -92,8 +93,8 @@ int main (){
         
         if(keyboard_check_pressed('L'))
             gameEngine.ToggleCursorVisibility();
-        //glfwSetCursorPos(gameEngine.get_window(),cam.view_size.x/2, cam.view_size.y/2);
-        
+        glfwSetCursorPos(gameEngine.get_window(),cam.view_size.x/2, cam.view_size.y/2);
+        //cam.orbitDistance = 10;
         actdir+=(mouse_x-cam.view_size.x/2) * sense + (RX);
         if(actdir>360) actdir -= 360;
         if(actdir<0) actdir += 360;
@@ -126,7 +127,7 @@ int main (){
         //gameEngine.camera3d.setRotation(glm::vec3());
         //gameEngine.camera3d.setOrbit(glm::vec3(hsp,zsp,vsp));
         //truckRot += glm::radians((keyboard_check('Z') - keyboard_check('X'))*0.1f);
-        cam.ZoomAt(glm::vec2(scrollY*0.003), glm::vec2(mouse_x, mouse_y));
+        //cam.ZoomAt(glm::vec2(scrollY*0.003), glm::vec2(mouse_x, mouse_y));
         //cam.zoom2D = glm::clamp(cam.zoom2D, glm::vec2(1.0f), glm::vec2(100.f));
         
         gameEngine.StepEvent();
@@ -138,28 +139,26 @@ int main (){
         float zsp = (keyboard_check('Z') - keyboard_check('X')) * 3 * deltaTime;
         */
 
-        
-        //vsp+=0.03 * deltaTime;
-        //if(Collision::circle(obj.position.x, obj.position.y+vsp, 64, wall)){
-        //    vsp=0;
-        //}
-        
         obj.position += glm::vec3(hinput, vinput,0.0) * 3.0f * deltaTime;
+        obj.scale = glm::vec2(2.5);
         obj.anim_speed = 0.03 * deltaTime;
         obj.Update();
         gameEngine.BeginDraw();
         
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
-        Text text(L"Hello World", glm::vec3(100,100,0));
-        text.col = glm::vec4(1.0,0.0,0.0,1.0);
+        
+        //std::wstring pos = to_wstring(glm::to_string(cam.GetForward()));
+        Text text(fpsString, glm::vec3(32,32,0));
+        text.col = glm::vec4(0.5,0.0,0.5,1.0);
         
         renderer.Render(text);
-        renderer.Render(Shape::Circle(glm::vec3(100,100,0.0), 50, true));
-        renderer.Render(Shape::Circle(glm::vec3(100,200,0.0), 50, false));
-        renderer.Render(Shape::Circle(glm::vec3(100,300,0.0), 50, true));
-        renderer.Render(obj);
-        
-        //renderer.Render(test);
+        //renderer.Render(obj);
+        //renderer.Render(wall);
+        map.rotation.x = glm::radians(180.0f);
+        //map.rotation.y += glm::radians(hinput*3.0f);
+        map.UpdateAnimation(1.0);
+        //map.scale = glm::vec3(1,-1,1);
+        renderer.Render(map);
         
         renderer.Flush();
         

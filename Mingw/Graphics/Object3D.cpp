@@ -133,6 +133,7 @@ void Object3D::LoadPrimitive(const tinygltf::Primitive& primitive, int nodeIndex
     
     LoadVertices(primitive, newPrimitive);
     LoadIndices(primitive, newPrimitive);
+    ComputeTangents(newPrimitive);
     LoadMorphTargets(primitive, newPrimitive);
     
 
@@ -143,7 +144,7 @@ std::vector<glm::vec4> Object3D::readVecFloat(const tinygltf::Primitive& primiti
     //for(auto attr : primitive.attributes)
         //std::cout << attr.first << " " << attr.second << std::endl;
     if(primitive.attributes.find(attr)==primitive.attributes.end()){
-        //std::cerr << "Missing attribute: " << attr << std::endl;
+        std::cerr << "Missing attribute: " << attr << std::endl;
         return vecOut;
     }
     const tinygltf::Accessor& posAccessor = model.accessors[primitive.attributes.at(attr)];
@@ -175,20 +176,18 @@ void Object3D::LoadVertices(const tinygltf::Primitive& primitive, Primitive& out
     std::vector<glm::vec4> colors = readVecFloat(primitive, "COLOR_0", 4);
     std::vector<glm::vec4> joints = readVecFloat(primitive, "JOINTS_0", 4);
     std::vector<glm::vec4> weights = readVecFloat(primitive, "WEIGHTS_0", 4);
+    std::vector<glm::vec4> tangents = readVecFloat(primitive, "TANGENTS", 4);
 
     outPrimitive.vertices.resize(pos.size());
     for(unsigned i =0;i<pos.size();i++){
             Vertex3D vertex;
             vertex.pos = pos[i];
             vertex.texCoords = (texCoords.size() > i) ? glm::vec2(texCoords[i]) : glm::vec2(0.0f);
-            vertex.texCoords = glm::vec2(glm::fract(vertex.texCoords.x), glm::fract(vertex.texCoords.y));
-            auto packNormal = [](glm::vec3 n) -> unsigned {
-                n = glm::normalize(n);
-                unsigned x = (unsigned)((n.x * 0.5f + 0.5f) * 65535.0f) & 0xFFFF;
-                unsigned y = (unsigned)((n.y * 0.5f + 0.5f) * 65535.0f) & 0xFFFF;
-                return (x << 16) | y;
-            };
-            vertex.normal = (normals.size() > i) ? packNormal(normals[i]) : 0;
+            //vertex.texCoords = glm::vec2(glm::fract(vertex.texCoords.x), glm::fract(vertex.texCoords.y));
+            glm::vec3 n = (normals.size() > i) ? normals[i] : glm::vec3(1.0f);
+            //n.y *= -1.0f;
+            //n.z *= -1.0f;
+            vertex.normal = n;
             auto packColor = [](glm::vec4 c) -> unsigned {
                 return ((unsigned)(c.r * 255) & 0xFF) << 24 |
                     ((unsigned)(c.g * 255) & 0xFF) << 16 |
@@ -253,6 +252,57 @@ void Object3D::LoadIndices(const tinygltf::Primitive& primitive, Primitive& outP
         default:
             std::cerr << "Unsupported index component type: " << accessor.componentType << std::endl;
             break;
+    }
+}
+void Object3D::ComputeTangents(Primitive& outPrimitive){
+    size_t vertexCount = outPrimitive.vertices.size();
+    if (vertexCount == 0 || outPrimitive.indices.empty())
+        return;
+
+    std::vector<glm::vec3> tan1(vertexCount, glm::vec3(0.0f));
+    std::vector<glm::vec3> tan2(vertexCount, glm::vec3(0.0f));
+
+    const auto& indices = outPrimitive.indices;
+
+    for (size_t i = 0; i + 2 < indices.size(); i += 3) {
+        uint32_t i0 = indices[i], i1 = indices[i + 1], i2 = indices[i + 2];
+
+        const glm::vec3& p0 = outPrimitive.vertices[i0].pos;
+        const glm::vec3& p1 = outPrimitive.vertices[i1].pos;
+        const glm::vec3& p2 = outPrimitive.vertices[i2].pos;
+
+        const glm::vec2& uv0 = outPrimitive.vertices[i0].texCoords;
+        const glm::vec2& uv1 = outPrimitive.vertices[i1].texCoords;
+        const glm::vec2& uv2 = outPrimitive.vertices[i2].texCoords;
+
+        glm::vec3 edge1 = p1 - p0;
+        glm::vec3 edge2 = p2 - p0;
+        glm::vec2 deltaUV1 = uv1 - uv0;
+        glm::vec2 deltaUV2 = uv2 - uv0;
+
+        float denom = deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y;
+        if (std::abs(denom) < 1e-8f) continue; // degenerate UV triangle, skip
+
+        float r = 1.0f / denom;
+        glm::vec3 tangent   = (edge1 * deltaUV2.y - edge2 * deltaUV1.y) * r;
+        glm::vec3 bitangent = (edge2 * deltaUV1.x - edge1 * deltaUV2.x) * r;
+
+        tan1[i0] += tangent;   tan1[i1] += tangent;   tan1[i2] += tangent;
+        tan2[i0] += bitangent; tan2[i1] += bitangent; tan2[i2] += bitangent;
+    }
+
+    for (size_t i = 0; i < vertexCount; i++) {
+        const glm::vec3& n = outPrimitive.vertices[i].normal;
+        const glm::vec3& t = tan1[i];
+
+        // Gram-Schmidt orthogonalize against the normal
+        glm::vec3 tangent = t - n * glm::dot(n, t);
+        float len = glm::length(tangent);
+        tangent = (len > 1e-8f) ? (tangent / len) : glm::vec3(1, 0, 0);
+
+        float handedness = (glm::dot(glm::cross(n, t), tan2[i]) < 0.0f) ? -1.0f : 1.0f;
+
+        outPrimitive.vertices[i].tangent = glm::vec4(tangent, handedness);
     }
 }
 void Object3D::LoadMorphTargets(const tinygltf::Primitive& primitive, Primitive& outPrimitive){
@@ -681,7 +731,7 @@ void Object3D::samplePlane2D(){
     botRight.texCoords = glm::vec2(1,0);
     topRight.texCoords = glm::vec2(1,1);
     topLeft.texCoords = glm::vec2(0,1);
-    botLeft.normal = botRight.normal = topLeft.normal = topRight.normal = 0;
+    botLeft.normal = botRight.normal = topLeft.normal = topRight.normal = glm::vec3(1.0f,-1.0f, 1.0f);
     botLeft.color = botRight.color = topLeft.color = topRight.color = 0xffffffff;
     
 

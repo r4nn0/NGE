@@ -30,6 +30,8 @@ Engine::Engine(const char* window_title, int _window_width, int _window_height) 
         window_size = glm::vec2(mode->width, mode->height);
     camera.view_size = window_size;
     glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
+    glEnable(GL_MULTISAMPLE);
     window=glfwCreateWindow(window_size.x, window_size.y, window_title, NULL, NULL);
     
     if(window==NULL){

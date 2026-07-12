@@ -4,10 +4,11 @@
 #ifndef NGETYPE_H
 #define NGETYPE_H
 struct Vertex3D{
+    glm::vec4 tangent;
     glm::vec3 pos;
+    glm::vec3 normal;
     glm::vec2 texCoords;
     unsigned color;
-    unsigned normal;
     unsigned joints;
     unsigned weights;
     unsigned vertexIndex;

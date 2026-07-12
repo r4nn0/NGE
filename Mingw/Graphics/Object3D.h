@@ -74,6 +74,7 @@ public:
     void LoadPrimitive(const tinygltf::Primitive&, int, int);
     void LoadVertices(const tinygltf::Primitive&, Primitive&);
     void LoadIndices(const tinygltf::Primitive&, Primitive&);
+    void ComputeTangents(Primitive&);
     void LoadMorphTargets(const tinygltf::Primitive&, Primitive&);
     void LoadSkins();
     void InitializeMorphWeights();

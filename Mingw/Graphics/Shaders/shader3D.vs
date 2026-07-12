@@ -1,13 +1,13 @@
 #version 460 core
-
-layout(location = 0) in vec3  pos;
-layout(location = 1) in vec2  texCoords;
-layout(location = 2) in vec4  color;      // auto unpacked to 0-1 float by GL_TRUE
-layout(location = 3) in vec2  normal;     // XY components, reconstruct Z
-layout(location = 4) in uvec4 aJoints;    // auto unpacked from bytes
-layout(location = 5) in vec4  aWeights;   // auto unpacked to 0-1 float by GL_TRUE
-layout(location = 6) in uint  vertexIndex;
-layout(location = 7) in uint  drawID;
+layout(location = 0) in vec4 tangent;
+layout(location = 1) in vec3  pos;
+layout(location = 2) in vec3  normal;     // XY components, reconstruct Z
+layout(location = 3) in vec2  texCoords;
+layout(location = 4) in vec4  color;      // auto unpacked to 0-1 float by GL_TRUE
+layout(location = 5) in uvec4 aJoints;    // auto unpacked from bytes
+layout(location = 6) in vec4  aWeights;   // auto unpacked to 0-1 float by GL_TRUE
+layout(location = 7) in uint  vertexIndex;
+layout(location = 8) in uint  drawID;
 
 uniform mat4 proj_matrix;
 uniform mat4 vw_matrix;
@@ -46,10 +46,11 @@ layout(binding = 6, std430) readonly buffer drawData{
 out DATA{
     vec3 FragPos;
     vec3 vNormals;
+    vec4 vTangent;
     vec4 color;
     vec2 texCoords;
     flat int materialIndex;
-}vs_out;
+} vs_out;
 
 void main() {
     
@@ -62,26 +63,28 @@ void main() {
         vec3 delta  = uMorphPositions[morphPosIndex];
         morphedPosition += delta * weight;
     }
-    
+    vec3 N = normal;
     if (aWeights.x + aWeights.y + aWeights.z + aWeights.w > 0.0) {
-        mat4 skinMatrix =
+        skinMatrix =
             aWeights.x * uJointMatrices[uDrawData[drawID].jo + aJoints.x] +
             aWeights.y * uJointMatrices[uDrawData[drawID].jo + aJoints.y] +
             aWeights.z * uJointMatrices[uDrawData[drawID].jo + aJoints.z] +
             aWeights.w * uJointMatrices[uDrawData[drawID].jo + aJoints.w];
+        N = mat3(skinMatrix) * N;
     }
     
     finalPosition = skinMatrix * vec4(morphedPosition, 1.0);
     
     mat4 nodeMatrix = uNodeMatrices[uDrawData[drawID].nodeMatrixIndex];
     
-
-    gl_Position = proj_matrix * vw_matrix * ml_matrix[uDrawData[drawID].modelID] * nodeMatrix * finalPosition;
-    vs_out.FragPos = vec3(vw_matrix * ml_matrix[uDrawData[drawID].modelID] * nodeMatrix * finalPosition);
-    vec2 nXY = normal * 2.0 - 1.0;
-    float nZ = sqrt(max(0.0, 1.0 - dot(nXY, nXY)));
-    vec3 decodedNormal = normalize(vec3(nXY, nZ));
-    vs_out.vNormals = mat3(uDrawData[drawID].normalMat) * decodedNormal;
+    mat4 worldMatrix = ml_matrix[uDrawData[drawID].modelID] * nodeMatrix;
+    
+    gl_Position = proj_matrix * vw_matrix * worldMatrix * finalPosition;
+    vs_out.FragPos = vec3(worldMatrix * finalPosition);
+    
+    mat3 normalMatrix = mat3(uDrawData[drawID].normalMat);
+    vs_out.vNormals = normalize(normalMatrix * N);
+    vs_out.vTangent = vec4(normalize(normalMatrix * tangent.xyz), tangent.w);
     vs_out.color = color;
     vs_out.texCoords = texCoords;
     vs_out.materialIndex = uDrawData[drawID].materialIndex;

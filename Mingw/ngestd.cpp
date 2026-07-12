@@ -38,6 +38,10 @@ std::wstring ar_fix(std::wstring str){
     }
     return out;
 }
+std::wstring to_wstring(std::string str){
+    std::wstring out(str.begin(), str.end());
+    return out;
+}
 /**
  * @brief Load an ngesprite image to memory
  * 
