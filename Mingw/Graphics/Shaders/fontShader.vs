@@ -8,7 +8,6 @@ uniform mat4 proj_matrix;
 uniform mat4 vw_matrix;
 
 out vec4 color;
-
 void main() {
     vec3 finalPos = lpos * scale;
     float c = cos(rot);

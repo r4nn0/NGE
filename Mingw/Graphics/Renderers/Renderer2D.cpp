@@ -41,14 +41,11 @@ Renderer2D::Renderer2D() : m_fence(nullptr){
     glVertexArrayAttribFormat(m_VAO, 0, 3, GL_FLOAT, GL_FALSE, offsetof(vboData, pos));
     glVertexArrayAttribFormat(m_VAO, 1, 2, GL_FLOAT, GL_FALSE, offsetof(vboData, texCoords));
     glVertexArrayAttribIFormat(m_VAO, 2, 1, GL_INT, offsetof(vboData, id));
-    
-    m_Shader=CreateShader(LoadShaderFromFile("./Graphics/Shaders/shader.vs").c_str(),
-                          LoadShaderFromFile("./Graphics/Shaders/shader.fs").c_str());
 }
-/**
- * @brief Frees the buffers in memory
- * 
- */
+void Renderer2D::LoadShader(unsigned _shader){
+    glDeleteProgram(m_Shader);
+    m_Shader = _shader;
+}
 Renderer2D::~Renderer2D() {
     glDeleteBuffers(1,&m_IBO);
     glDeleteBuffers(1,&m_VBO);

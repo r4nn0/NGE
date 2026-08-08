@@ -4,14 +4,16 @@
 ## Automatically pass object to the appropriate renderer for rendering
 ## Precis 2D collision masks
 ## A couple of collision checking functions
+## Shader hotloading
 
+### Use UBO instead of uniforms for lights (Next step)
+### Use Forward+ Lighting (Next step too?)
 ### Add shadow map
 ### Add scenes for better level design
 ### Add soundplaying to engine using OpenAL: https://github.com/kcat/openal-soft
-### Fix 2D Camera zoom
 ### Add collision boxes (Both 2D and 3D)
-### Add SSBO instead of passing global values with each VBO (ex. object's transform position is applied to all vertices) (Partially Done)
-### for all 2D objects (sprites, polygons and text)
+### Fix 2D Camera zoom
+
 
 
 ### Fix so that there is only one renderer for sprites and fonts (Skip maybe?)
@@ -43,6 +45,7 @@
 ### Add Vulkan support since only nvidia and amd gpus support bindless textures (Skip)
 ### Alternativaly add TextureArrays (3D arrays with fixed size, up to 2048 layers per texture array) (Skip)
 
+### Add SSBO instead of passing global values with each VBO (ex. object's transform position is applied to all vertices) (Done)
 ### Add 2D camera (Done)
 ### Add bindless textures (SSBO) (Done)
 ### Fix realistic graphics / lighting (With / without Vulkan) (Done)

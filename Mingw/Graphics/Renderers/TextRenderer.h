@@ -36,6 +36,7 @@ public:
     void setFontRotation(float);
     void setValign(Align);
     void setHalign(Align);
+    void LoadShader(unsigned);
     void flush();
 private:
 

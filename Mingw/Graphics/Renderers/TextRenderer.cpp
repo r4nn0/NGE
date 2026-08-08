@@ -173,9 +173,6 @@ void TextRenderer::initRenderer(){
     glVertexArrayAttribFormat(m_VAO, 2, 4, GL_FLOAT, GL_FALSE, offsetof(Glyph, col));
     glVertexArrayAttribFormat(m_VAO, 3, 1, GL_FLOAT, GL_FALSE, offsetof(Glyph, scale));
     glVertexArrayAttribFormat(m_VAO, 4, 1, GL_FLOAT, GL_FALSE, offsetof(Glyph, rot));
-    
-    m_Shader = CreateShader(LoadShaderFromFile("./Graphics/Shaders/fontShader.vs").c_str(),
-                            LoadShaderFromFile("./Graphics/Shaders/fontShader.fs").c_str());
 
     vboBasePtr = glMapNamedBufferRange(m_VBO, 0, MAX_VERTICES * sizeof(Glyph), GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT );
     m_indexBase = glMapNamedBufferRange(m_IBO, 0, MAX_VERTICES * sizeof(Glyph), GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT );
@@ -249,6 +246,10 @@ void TextRenderer::Render(Text text){
         }
         pen_x += g.advance * fontScale;
     }
+}
+void TextRenderer::LoadShader(unsigned _shader){
+    glDeleteProgram(m_Shader);
+    m_Shader = _shader;
 }
 void TextRenderer::flush(){
     glUseProgram(m_Shader);

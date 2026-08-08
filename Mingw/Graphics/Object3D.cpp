@@ -442,6 +442,7 @@ void Object3D::LoadTextures(){
                         if (imgId >= 0 && imgId < (int)textureIDs.size() && textureIDs[imgId] >= 0) {
                             m.albedoHandle = texManager.getTextureHandle(textureIDs[imgId]);
                             m.hasTexture |= 1;
+                            TextureIDs[0] = textureIDs[imgId];
                         }
                     }
                 }
@@ -452,6 +453,7 @@ void Object3D::LoadTextures(){
             if (imgId >= 0 && imgId < (int)textureIDs.size() && textureIDs[imgId] >= 0) {
                 m.albedoHandle = texManager.getTextureHandle(textureIDs[imgId]);
                 m.hasTexture |= 1;
+                TextureIDs[0] = textureIDs[imgId];
             }
         }
         if (pbr.metallicRoughnessTexture.index >= 0 && pbr.metallicRoughnessTexture.index < (int)model.textures.size()) {
@@ -459,6 +461,7 @@ void Object3D::LoadTextures(){
             if (imgId >= 0 && imgId < (int)textureIDs.size() && textureIDs[imgId] >= 0) {
                 m.metallicHandle = texManager.getTextureHandle(textureIDs[imgId]);
                 m.hasTexture |= 2;
+                TextureIDs[1] = textureIDs[imgId];
             }
         }
         if (mat.normalTexture.index >= 0 && mat.normalTexture.index < (int)model.textures.size()) {
@@ -466,6 +469,7 @@ void Object3D::LoadTextures(){
             if (imgId >= 0 && imgId < (int)textureIDs.size() && textureIDs[imgId] >= 0) {
                 m.normalHandle = texManager.getTextureHandle(textureIDs[imgId]);
                 m.hasTexture |= 4;
+                TextureIDs[2] = textureIDs[imgId];
             }
         }
         if (mat.emissiveTexture.index >= 0 && mat.emissiveTexture.index < (int)model.textures.size()) {
@@ -473,6 +477,7 @@ void Object3D::LoadTextures(){
             if (imgId >= 0 && imgId < (int)textureIDs.size() && textureIDs[imgId] >= 0) {
                 m.emissiveHandle = texManager.getTextureHandle(textureIDs[imgId]);
                 m.hasTexture |= 8;
+                TextureIDs[3] = textureIDs[imgId];
             }
         }
         
@@ -758,9 +763,11 @@ void Object3D::samplePlane2D(){
     
     Material mat;
     mat.hasTexture = 1;
+    
     mat.baseColorFactor = glm::vec4(1.0f);
     TextureManager& texManager = TextureManager::getInstance();
     mat.albedoHandle = texManager.getTextureHandle(0);
+    TextureIDs[0] = 0;
     materials.push_back(mat);
 }
 void Object3D::switchTexture(int texID){

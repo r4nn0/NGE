@@ -38,8 +38,10 @@ PrimitiveRenderer::PrimitiveRenderer() : m_VAO((unsigned*)malloc(sizeof(unsigned
         glVertexArrayAttribFormat(m_VAO[v], 0, 3, GL_FLOAT, GL_FALSE, offsetof(vboData, pos));
         glVertexArrayAttribIFormat(m_VAO[v], 1, 1, GL_UNSIGNED_INT, offsetof(vboData, id));
     }
-    m_Shader=CreateShader(LoadShaderFromFile("./Graphics/Shaders/primShader.vs").c_str(),
-                          LoadShaderFromFile("./Graphics/Shaders/primShader.fs").c_str());
+}
+void PrimitiveRenderer::LoadShader(unsigned _shader){
+    glDeleteProgram(m_Shader);
+    m_Shader = _shader;
 }
 PrimitiveRenderer::~PrimitiveRenderer() {
     glDeleteBuffers(2,m_IBO);

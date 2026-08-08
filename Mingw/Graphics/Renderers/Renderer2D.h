@@ -9,6 +9,7 @@ public:
     Renderer2D();
     virtual ~Renderer2D();
     void Render(Object2D);
+    void LoadShader(unsigned);
     void flush();
 protected:
 

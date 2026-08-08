@@ -77,14 +77,12 @@ Renderer3D::Renderer3D() : vboOffset(0), m_indexCount(0), m_instanceCount(0),m_m
 
     glVertexArrayAttribIFormat(m_VAO, 7, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, vertexIndex));
     glVertexArrayAttribIFormat(m_VAO, 8, 1, GL_UNSIGNED_INT, offsetof(Vertex3D, drawID));
-
-    m_Shader=CreateShader(LoadShaderFromFile("./Graphics/Shaders/shader3D.vs").c_str(),
-                          LoadShaderFromFile("./Graphics/Shaders/shader3D.fs").c_str());
-    
+}
+void Renderer3D::LoadShader(unsigned _shader){
+    glDeleteProgram(m_Shader);
+    m_Shader = _shader;
     m_uProjMatrix      = glGetUniformLocation(m_Shader, "proj_matrix");
     m_uVwMatrix        = glGetUniformLocation(m_Shader, "vw_matrix");
-    
-    
     m_uLightMode       = glGetUniformLocation(m_Shader, "uLightMode");
     m_uLightDir        = glGetUniformLocation(m_Shader, "uLightDir");
     m_uLightPos        = glGetUniformLocation(m_Shader, "uLightPos");
@@ -95,12 +93,8 @@ Renderer3D::Renderer3D() : vboOffset(0), m_indexCount(0), m_instanceCount(0),m_m
     m_uLightRadius     = glGetUniformLocation(m_Shader, "uLightRadius");
     m_uSpotInnerCutOff = glGetUniformLocation(m_Shader, "uSpotInnerCutOff");
     m_uSpotOuterCutOff = glGetUniformLocation(m_Shader, "uSpotOuterCutOff");
-
 }
-/**
- * @brief Frees the buffers in memory
- * 
- */
+
 Renderer3D::~Renderer3D() {
     glDeleteBuffers(1, &m_VBO);
     glDeleteBuffers(1, &m_IBO);
@@ -160,7 +154,9 @@ void Renderer3D::flush(){
     materialSSBOptr[0] = defaultMat;
     vboOffset = m_indexCount = m_instanceCount = m_morphPositionsOffset = m_jointOffset = m_morphWeightsOffset =  m_nodeMatrixOffset = m_materialOffset = m_drawDataOffset = 0;
     for(Object3D& obj : Objects3DToRender){
-        
+        for(int i=0;i<4 ;i++){
+            TextureManager::getInstance().addRef(obj.TextureIDs[i]);
+        }
         if(obj.instanceID==-1) obj.instanceID=m_instanceCount;
         mmSSBOptr[obj.instanceID] = obj.modelMatrix; 
         
@@ -207,9 +203,7 @@ void Renderer3D::flush(){
             }else{
                 for(auto idx : prim.indices) OpaqueMask.push_back(idx + vboOffset); 
             }
-            //glm::mat4 Flip(1.0f);
-            //Flip[1][1] = -1.0f;
-            //Flip[2][2] = -1.0f;
+            
             glm::mat4 normalMat = glm::transpose(glm::inverse(obj.modelMatrix * obj.nodeGlobalMatrix[prim.nodeIndex]));
             
             ddSSBOptr[m_drawDataOffset]={obj.instanceID, (unsigned)prim.morphPositions.size(), 
@@ -259,7 +253,7 @@ void Renderer3D::flush(){
     glUnmapNamedBuffer(m_JointMatricesSSBO);
     glUnmapNamedBuffer(m_MorphWeightsSSBO);
     glUnmapNamedBuffer(m_NodeMatricesSSBO);*/
-    Objects3DToRender.clear();
+    //Objects3DToRender.clear();
     
     /////////////////////
     
@@ -329,9 +323,9 @@ void Renderer3D::flush(){
     glUniform3fv(m_uLightPos,   1, glm::value_ptr(lightPos));
     glUniform3fv(m_uViewPos,    1, glm::value_ptr(lightPos));
     glUniform3fv(m_uLightColor, 1, glm::value_ptr(lightColor));
-    glUniform1f(m_uLightIntensity, 15.f);
+    glUniform1f(m_uLightIntensity, 100.f);
     glUniform1f(m_uAmbientStrength, 0.05f);
-    glUniform1f(m_uLightRadius, 50.0f);
+    glUniform1f(m_uLightRadius, 100.0f);
     glUniform1f(m_uSpotInnerCutOff, glm::cos(glm::radians(12.5f)));
     glUniform1f(m_uSpotOuterCutOff, glm::cos(glm::radians(17.5f)));
     glBindVertexArray(m_VAO);
@@ -360,6 +354,15 @@ void Renderer3D::flush(){
     
     
     m_fence= glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+
+
+    for(Object3D& obj : Objects3DToRender){
+        for(int i=0;i<4 ;i++){
+            TextureManager::getInstance().releaseRef(obj.TextureIDs[i]);
+        }
+    }
+    Objects3DToRender.clear();
+
     glBindVertexArray(0);
     
     glUseProgram(0);

@@ -10,7 +10,7 @@ TextureManager& TextureManager::getInstance() {
 
 TextureManager::TextureManager() 
     : m_nextID(0)
-    , m_memoryBudget(100 * 1024 * 1024) // 512MB default
+    , m_memoryBudget(0 * 1024 * 1024) // 512MB default
     , m_currentMemoryUsage(0) {
 }
 
@@ -161,8 +161,13 @@ int TextureManager::loadTextureFromMemory(const unsigned char* data, size_t size
 
 int TextureManager::createTexture(GLuint glTexture, int width, int height, int mipLevels, size_t memorySize) {
     // Check if we need to evict textures
+    m_currentMemoryUsage += memorySize;
     evictTexturesIfNeeded();
-    
+    /*
+    if(m_currentMemoryUsage>=m_memoryBudget){
+        std::cerr << "Texture can't be loaded due to insufficient memory!" << std::endl;
+        return -1;
+    }*/
     // Check if texture is complete before creating bindless handle
     if (!glIsTexture(glTexture)) {
         std::cerr << "Texture is not valid" << std::endl;
@@ -205,9 +210,9 @@ int TextureManager::createTexture(GLuint glTexture, int width, int height, int m
     
     int textureID = m_nextID++;
     m_textures[textureID] = info;
-    m_currentMemoryUsage += memorySize;
     
-    //std::cout << "Texture created with ID: " << textureID << ", total memory usage: " << (m_currentMemoryUsage / 1024 / 1024) << " MB" << std::endl;
+    
+    std::cout << "Texture created with ID: " << textureID << ", total memory usage: " << (m_currentMemoryUsage / 1024 / 1024) << " MB"  << ", Memory budget: " << (m_memoryBudget/1024/1024) << " MB" << std::endl;
     
     return textureID;
 }
@@ -241,6 +246,7 @@ void TextureManager::addRef(int textureID) {
     auto it = m_textures.find(textureID);
     if (it != m_textures.end()) {
         it->second.refCount++;
+        //std::cout << it->second.refCount << std::endl;
     }
 }
 
@@ -322,6 +328,7 @@ size_t TextureManager::calculateMemorySize(int width, int height, int mipLevels)
 
 void TextureManager::evictTexturesIfNeeded() {
     while (m_currentMemoryUsage > m_memoryBudget && !m_textures.empty()) {
+        std::cout << "Called evict textures" << std::endl;
         // Find least recently used texture with refCount <= 0
         int oldestID = -1;
         std::chrono::steady_clock::time_point oldestTime;

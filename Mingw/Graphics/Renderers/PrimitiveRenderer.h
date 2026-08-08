@@ -9,6 +9,7 @@ public:
     PrimitiveRenderer();
     virtual ~PrimitiveRenderer();
     void Render(Shape);
+    void LoadShader(unsigned);
     void flush();
 private:
     unsigned int m_Shader;

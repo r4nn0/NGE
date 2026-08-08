@@ -48,16 +48,12 @@ int main (){
     Object2D wall("wall");
     Entity map("Woman");
     //Entity test("test");
-    obj.origin = glm::vec2(16);
-    wall.origin = glm::vec2(32);
-    wall.position = glm::vec3(1920, 1080,0.0);
-    wall.scale = glm::vec2(60,1);
     std::wstring fpsString = L"0";
     
     float actdir= -60;
     float actpitch=60;
     float sense = 0.12f;
-    float hsp = 0, vsp=0, zsp=-5;
+    float hsp = 0, vsp=0, zsp=-2.5;
     const float desiredFPS = 200;
     
     Camera& cam = gameEngine.camera;
@@ -145,6 +141,7 @@ int main (){
         obj.Update();
         gameEngine.BeginDraw();
         
+        if(keyboard_check('R')) renderer.ReloadShaders(15);
         /*NOTE: You can only render after Engin::BeginDraw call and before Engine::EndDraw call*/
         
         //std::wstring pos = to_wstring(glm::to_string(cam.GetForward()));
@@ -152,7 +149,7 @@ int main (){
         text.col = glm::vec4(0.5,0.0,0.5,1.0);
         
         renderer.Render(text);
-        //renderer.Render(obj);
+        renderer.Render(obj);
         //renderer.Render(wall);
         map.rotation.x = glm::radians(180.0f);
         //map.rotation.y += glm::radians(hinput*3.0f);

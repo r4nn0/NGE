@@ -11,6 +11,7 @@ public:
     virtual ~Renderer3D();
     
     void Render(Entity&);
+    void LoadShader(unsigned);
     void flush();
     /**
      * @brief A variable that counts drawcalls per frame

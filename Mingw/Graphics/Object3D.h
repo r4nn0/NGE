@@ -59,7 +59,8 @@ public:
 
     bool playing = true;
 
-    bool hasTexture;
+    int TextureIDs[4] {-1};
+
     /*
     std::map<int ,glm::vec2> texScaleFactor;
     std::map<int, glm::vec2> texOffset;

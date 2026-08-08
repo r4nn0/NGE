@@ -36,6 +36,7 @@ public:
             static_assert(always_false<U>, "Unsupported render type");
         }
     }
+    void ReloadShaders(uint8_t);
     void Flush();
 
 private:
